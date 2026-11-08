@@ -1,0 +1,23 @@
+# 财税合规问答系统 — 一键部署
+# 用法：docker-compose up -d   →  http://localhost:8777
+services:
+  tax-compliance:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: finance-tax-compliance:latest
+    container_name: finance-tax-compliance
+    ports:
+      - "8777:8777"
+    volumes:
+      - ./knowledge-base:/app/knowledge-base:ro
+      - ./reports:/app/reports
+      - ./app/kb.json:/app/app/kb.json:ro
+      - ./app/finance-tax-compliance.db:/app/app/finance-tax-compliance.db:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8777/api/health', timeout=4).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

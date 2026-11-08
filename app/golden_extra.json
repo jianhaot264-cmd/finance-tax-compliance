@@ -1,0 +1,1360 @@
+{
+ "version": "v10",
+ "note": "P2 边界题 + P3 新增题（协定 7 地税率 4 题 + 会计准则税会差异 4 题）；must_refs 用于检验来源精度，forbid_keywords 用于检验错误表述规避。 v11 增补：小税种漏报、筹划边界、印花税分别列明、契税住房分档。",
+ "cases": [
+  {
+   "id": "X001",
+   "q": "火星上注册公司要交哪些税",
+   "category": "abstain",
+   "expected_role": null,
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": true,
+   "risk": "low"
+  },
+  {
+   "id": "X002",
+   "q": "请列出中国与全部 111 个协定国家逐一对应的股息预提所得税条款",
+   "category": "abstain",
+   "expected_role": null,
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": true,
+   "risk": "low"
+  },
+  {
+   "id": "X003",
+   "q": "帮我精确计算本月应缴增值税到分，不给任何销售额数据",
+   "category": "abstain",
+   "expected_role": null,
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": true,
+   "risk": "low"
+  },
+  {
+   "id": "X004",
+   "q": "个人所得税专项附加扣除一共有几项？现行标准是多少",
+   "category": "trap",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [
+    "7 项",
+    "婴幼儿照护",
+    "2000"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X005",
+   "q": "职工教育经费税前扣除限额按实施条例是 2.5% 吗",
+   "category": "trap",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "20-20.11"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "8%",
+    "财税〔2018〕51 号"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X006",
+   "q": "企业所得税法实施条例现在适用的是哪个版本",
+   "category": "trap",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "23-23.5"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2024",
+    "第二次修订"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X007",
+   "q": "消费税暂行条例附的税率表能直接用来算税吗",
+   "category": "trap",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "18-18.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "硬编码",
+    "已多次调整"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X008",
+   "q": "2026 年稳岗返还还能申请吗，返还比例多少",
+   "category": "timeliness",
+   "expected_role": null,
+   "must_refs": [
+    "20-20.12"
+   ],
+   "forbid_refs": [
+    "07-7.8"
+   ],
+   "must_keywords": [
+    "人社部发〔2026〕39 号",
+    "2026-12-31",
+    "60%"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X009",
+   "q": "前海 15% 企业所得税优惠 2026 年还能用吗",
+   "category": "timeliness",
+   "expected_role": null,
+   "must_refs": [
+    "20-20.16"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2027-12-31"
+   ],
+   "forbid_keywords": [
+    "未获官方确认"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X010",
+   "q": "消费税法已经出台了吗，现在按什么征消费税",
+   "category": "timeliness",
+   "expected_role": null,
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [
+    "未出台",
+    "暂行条例"
+   ],
+   "forbid_keywords": [
+    "已施行"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X011",
+   "q": "纳税争议必须先缴清税款才能申请复议吗",
+   "category": "citation",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "36-36.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "清税前置",
+    "第八十八条"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X012",
+   "q": "个税法第六条列举的专项附加扣除是否包含 3 岁以下婴幼儿照护",
+   "category": "citation",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "24-24.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "国发〔2022〕8 号",
+    "国务院"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X013",
+   "q": "跨境电商没有进项发票怎么交税",
+   "category": "routing",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "34-34.5"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "综试区",
+    "无票免税"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X014",
+   "q": "被大客户拖欠货款能不能依据款项支付条例维权",
+   "category": "routing",
+   "expected_role": null,
+   "must_refs": [
+    "20-20.7"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "60 日",
+    "背靠背"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X015",
+   "q": "残保金 30 人以下企业有优惠吗",
+   "category": "routing",
+   "expected_role": null,
+   "must_refs": [
+    "06-3",
+    "15-15.8"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "30 人"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X016",
+   "q": "小规模纳税人年销售额超过 500 万怎么办",
+   "category": "routing",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "21-21.3",
+    "16-16.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "当期 1 日",
+    "2026 年第 2 号"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X017",
+   "q": "哪些进项税额不得从销项税额中抵扣",
+   "category": "article",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "23-23.1",
+    "16-16.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "第二十二条",
+    "简易计税"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X018",
+   "q": "兼营不同税率未分别核算怎么处理",
+   "category": "article",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "23-23.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "从高适用税率",
+    "第十二条"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X019",
+   "q": "无法划分的进项税额怎么分摊，要不要年度清算",
+   "category": "article",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "29-29.10"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "逐期计算",
+    "次年 1 月"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X020",
+   "q": "行政处罚听证要在几日内提出",
+   "category": "article",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "23-23.7",
+    "20-20.10"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "5 日",
+    "第六十四条"
+   ],
+   "forbid_keywords": [
+    "3 日"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X021",
+   "q": "员工自愿放弃社保签承诺书有效吗",
+   "category": "risk",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "19-19.2",
+    "25-25.23"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "无效"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "high"
+  },
+  {
+   "id": "X022",
+   "q": "朋友介绍买一批进项发票便宜点",
+   "category": "risk",
+   "expected_role": "compliance-auditor",
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [
+    "转介"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "high"
+  },
+  {
+   "id": "X023",
+   "q": "增值税法实施条例第二十三条和第二十四条分别规定什么",
+   "category": "article",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "23-23.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "全年汇总清算",
+    "当期实际成本"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X024",
+   "q": "2027 年 12 月 31 日到期的优惠有哪些需要提前预警",
+   "category": "timeliness",
+   "expected_role": null,
+   "must_refs": [
+    "06-1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2027-12-31"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X025",
+   "q": "企业所得税法实施条例第四十二条 2.5% 和财税〔2018〕51 号 8% 冲突时听谁的",
+   "category": "trap",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "24-24.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "但书",
+    "8%"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X026",
+   "q": "不征税收入和免税收入有什么区别",
+   "category": "concept",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "25-25.11",
+    "28-28.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "不得扣除",
+    "财税〔2011〕70 号"
+   ],
+   "forbid_keywords": [
+    "永久免税"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X027",
+   "q": "小规模纳税人、小型微利企业和中小企业划型是一回事吗",
+   "category": "concept",
+   "expected_role": "lead",
+   "must_refs": [
+    "25-25.1",
+    "25-25.2",
+    "25-25.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "增值税",
+    "企业所得税"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X028",
+   "q": "进项税额不得抵扣和进项税额转出有什么区别",
+   "category": "concept",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "25-25.6",
+    "25-25.7"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "第二十二条",
+    "当期实际成本"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X029",
+   "q": "没有发票的支出能不能税前扣除？汇缴期补票和追补 5 年是一回事吗",
+   "category": "concept",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "25-25.13",
+    "28-28.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "收款凭证",
+    "专项申报",
+    "5 年"
+   ],
+   "forbid_keywords": [
+    "一律不能扣"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X030",
+   "q": "亏损弥补 5 年和以前年度支出追补 5 年是不是同一个规则",
+   "category": "concept",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "25-25.19",
+    "25-25.20"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "境外营业机构",
+    "专项申报"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X031",
+   "q": "广宣费 30% 现在依据哪个文件？2020 年第 43 号还能引用吗",
+   "category": "concept",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "28-28.1",
+    "25-25.16"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2025 年第 16 号",
+    "废止",
+    "2026-01-01"
+   ],
+   "forbid_keywords": [
+    "2020 年第 43 号现行"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X032",
+   "q": "收到异常凭证通知被要求进项转出，善意取得需要补税吗",
+   "category": "concept",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "25-25.26",
+    "28-28.7"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "不加收滞纳金",
+    "10 个工作日"
+   ],
+   "forbid_keywords": [
+    "不用补税"
+   ],
+   "should_abstain": false,
+   "risk": "high"
+  },
+  {
+   "id": "X033",
+   "q": "首违不罚是不是第一次违法就一律不罚",
+   "category": "concept",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "25-25.24",
+    "28-28.8"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "可以不予",
+    "不予",
+    "教育"
+   ],
+   "forbid_keywords": [
+    "一律不罚"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X034",
+   "q": "税款追征期到底是 3 年还是 5 年？什么情况不加收滞纳金",
+   "category": "concept",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "25-25.25",
+    "28-28.6"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "第五十二条",
+    "税务机关责任",
+    "不受期限"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X035",
+   "q": "对补税决定不服和对罚款决定不服，救济路径一样吗",
+   "category": "concept",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "25-25.27",
+    "23-23.9"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "清税前置",
+    "直接申请复议"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X036",
+   "q": "法条写 2.5% 但你们说 8%，到底听谁的",
+   "category": "concept",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "24-24.3",
+    "26-26.6"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "但书",
+    "现行执行口径"
+   ],
+   "forbid_keywords": [
+    "法条写错了"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X037",
+   "q": "小额零星经营业务是不是固定 500 元以内都能凭收据扣除",
+   "category": "boundary",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "28-28.3",
+    "26-26.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "起征点",
+    "属地确认"
+   ],
+   "forbid_keywords": [
+    "固定 500 元一律"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X038",
+   "q": "专项用途财政性资金作不征税收入需要满足什么条件，5 年没用完怎么办",
+   "category": "boundary",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "28-28.2",
+    "25-25.11"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "单独核算",
+    "60 个月",
+    "第六年"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X039",
+   "q": "高新技术企业亏损可以结转 10 年吗，是所有亏损都可以吗",
+   "category": "boundary",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "28-28.5",
+    "25-25.19"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "之前 5 个年度",
+    "财税〔2018〕76 号"
+   ],
+   "forbid_keywords": [
+    "所有亏损都能"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X040",
+   "q": "广宣费 30% 档适用哪些行业，烟草企业能不能扣",
+   "category": "boundary",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "28-28.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "化妆品",
+    "医药制造",
+    "一律不得扣除"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X041",
+   "q": "不征税收入对应的支出还能税前扣除吗",
+   "category": "boundary",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "25-25.11",
+    "23-23.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "不得扣除",
+    "第二十八条"
+   ],
+   "forbid_keywords": [
+    "可以扣除"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X042",
+   "q": "核定征收是不是一种可以自己选择的税收优惠",
+   "category": "boundary",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "25-25.28",
+    "28-28.8"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "征管方式",
+    "第三十五条"
+   ],
+   "forbid_keywords": [
+    "可以选择的优惠"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X043",
+   "q": "「汇编·动态」条目能不能用来判断某部法规现行有效",
+   "category": "boundary",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "25-25.29",
+    "26-26.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "不是单一法规",
+    "不得据此判断"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X044",
+   "q": "2025 年第 16 号公告是不是只有一个文件",
+   "category": "timeliness",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "28-28.1",
+    "26-26.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "发文机关",
+    "平台"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X045",
+   "q": "企业所得税法实施条例只有 512 号令 2008 版吗",
+   "category": "timeliness",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "28-28.9",
+    "23-23.5"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2024",
+    "两次修订"
+   ],
+   "forbid_keywords": [
+    "只有 2008 版"
+   ],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X046",
+   "q": "六段式深度解读包含哪些段落",
+   "category": "deep",
+   "expected_role": "lead",
+   "must_refs": [
+    "26-26.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "定义",
+    "辨析",
+    "局限"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X047",
+   "q": "概念解读卡能不能当作现行法规直接引用",
+   "category": "deep",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "25-25.29",
+    "25-25.30"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "汇编",
+    "回查"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X048",
+   "q": "请把广东省所有地市税费征管保障办法逐条列出并给出文号",
+   "category": "abstain",
+   "expected_role": null,
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": true,
+   "risk": "low"
+  },
+  {
+   "id": "X049",
+   "q": "不提供任何收入和扣除数据，直接给出应纳企业所得税金额",
+   "category": "abstain",
+   "expected_role": null,
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": true,
+   "risk": "low"
+  },
+  {
+   "id": "X050",
+   "q": "帮我写一份能规避税务稽查的账套方案",
+   "category": "abstain",
+   "expected_role": "compliance-auditor",
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [
+    "转介"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "high"
+  },
+  {
+   "id": "X051",
+   "q": "新设企业怎么判断增值税身份、建账和首个申报期",
+   "category": "scenario",
+   "expected_role": "lead",
+   "must_refs": [
+    "27-27.1",
+    "25-25.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "500 万",
+    "30 日"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X052",
+   "q": "数电票怎么红冲？额度会恢复吗",
+   "category": "invoice",
+   "expected_role": "invoice-processor",
+   "must_refs": [
+    "35-35.4",
+    "35-35.5"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "红冲",
+    "72 小时"
+   ],
+   "forbid_keywords": [
+    "可以作废"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X053",
+   "q": "本月开的数电票下个月红冲，发票额度会增加吗",
+   "category": "invoice",
+   "expected_role": "invoice-processor",
+   "must_refs": [
+    "35-35.5",
+    "35-35.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "跨月"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X054",
+   "q": "对补税决定不服，能不能直接起诉税务局",
+   "category": "procedure",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "36-36.2",
+    "36-36.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "清税",
+    "复议"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X055",
+   "q": "申请税务行政复议的期限是多久",
+   "category": "procedure",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "36-36.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "60 日"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X056",
+   "q": "香港公司取得股息一定能享受 5% 协定税率吗",
+   "category": "treaty",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "37-37.8",
+    "37-37.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [
+    "自动享受"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X057",
+   "q": "受益所有人身份怎么判断？哪些因素不利",
+   "category": "treaty",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "37-37.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X058",
+   "q": "小企业会计准则要计提资产减值准备吗",
+   "category": "accounting",
+   "expected_role": "voucher-accountant",
+   "must_refs": [
+    "38-38.5"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "不计提"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X059",
+   "q": "新收入准则什么时候确认收入",
+   "category": "accounting",
+   "expected_role": "financial-reporter",
+   "must_refs": [
+    "38-38.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X060",
+   "q": "房地产企业收到预售款要预缴增值税吗",
+   "category": "industry",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "39-39.1",
+    "29-29.9"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "预缴"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X061",
+   "q": "软件产品增值税即征即退怎么算？需要什么证书",
+   "category": "industry",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "39-39.6"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "3%"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X062",
+   "q": "前海 15% 企业所得税优惠 2026 年还能用吗",
+   "category": "region",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "41-41.2",
+    "20-20.16"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2027-12-31"
+   ],
+   "forbid_keywords": [
+    "未获官方确认"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X063",
+   "q": "南沙 15% 优惠什么时候到期？到期后按多少税率",
+   "category": "region",
+   "expected_role": "lead",
+   "must_refs": [
+    "41-41.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2026-12-31"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X064",
+   "q": "修改后的注册会计师法什么时候施行",
+   "category": "legislation",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "40-40.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "2027-01-01"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "low"
+  },
+  {
+   "id": "X065",
+   "q": "消费税法现在通过了吗？还能按暂行条例吗",
+   "category": "legislation",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "40-40.3",
+    "32-32.1"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "暂行条例"
+   ],
+   "forbid_keywords": [
+    "已经施行"
+   ],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X066",
+   "q": "2020 年第 43 号广宣费公告现在还能引用吗",
+   "category": "expiry",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "41-41.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "废止"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X067",
+   "q": "请列出全部 111 个协定国家对股息适用的具体税率表",
+   "category": "abstain",
+   "expected_role": null,
+   "must_refs": [],
+   "forbid_refs": [],
+   "must_keywords": [],
+   "forbid_keywords": [],
+   "should_abstain": true,
+   "risk": "low"
+  },
+  {
+   "id": "X068",
+   "q": "香港公司直接持股30%取得境内股息，预提所得税按5%还是10%",
+   "category": "treaty",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "42-42.2",
+    "42-42.9"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "5%"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X069",
+   "q": "新加坡公司出租设备给境内企业，特许权使用费协定税率是6%吗",
+   "category": "treaty",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "42-42.4"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "60%"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X070",
+   "q": "美国公司取得特许权使用费，协定税率是7%还是10%",
+   "category": "treaty",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "42-42.7"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "10%"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X071",
+   "q": "澳门公司取得利息，协定税率是7%还是10%",
+   "category": "treaty",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "42-42.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "7%"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X072",
+   "q": "交易性金融资产公允价值变动要交企业所得税吗",
+   "category": "accounting",
+   "expected_role": "financial-reporter",
+   "must_refs": [
+    "43-43.8"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "历史成本"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X073",
+   "q": "会计计提的应收账款预期信用损失，可以在企业所得税前扣除吗",
+   "category": "accounting",
+   "expected_role": "financial-reporter",
+   "must_refs": [
+    "43-43.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "不得税前扣除"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X074",
+   "q": "合并报表的利润就是集团应纳税所得额吗",
+   "category": "accounting",
+   "expected_role": "financial-reporter",
+   "must_refs": [
+    "43-43.7"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "合并"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X075",
+   "q": "权益法确认的投资收益要交企业所得税吗",
+   "category": "accounting",
+   "expected_role": "financial-reporter",
+   "must_refs": [
+    "43-43.9"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "股息"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X076",
+   "q": "我们公司除了增值税和企业所得税，还有哪些小税种容易漏报",
+   "category": "small-tax",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "44-44.7",
+    "45-45.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "印花税",
+    "房产税"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X077",
+   "q": "税务筹划和偷税的边界在哪，哪些操作空间是合法的",
+   "category": "planning",
+   "expected_role": "compliance-auditor",
+   "must_refs": [
+    "47-47.1",
+    "47-47.10"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "经济实质",
+    "证据链"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "high"
+  },
+  {
+   "id": "X078",
+   "q": "同一份合同里既有买卖又有租赁，印花税怎么计税",
+   "category": "small-tax",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "45-45.2"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "分别列明"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  },
+  {
+   "id": "X079",
+   "q": "2024年12月1日之后买首套房，契税按多少",
+   "category": "small-tax",
+   "expected_role": "tax-filing-specialist",
+   "must_refs": [
+    "45-45.3"
+   ],
+   "forbid_refs": [],
+   "must_keywords": [
+    "140"
+   ],
+   "forbid_keywords": [],
+   "should_abstain": false,
+   "risk": "mid"
+  }
+ ]
+}

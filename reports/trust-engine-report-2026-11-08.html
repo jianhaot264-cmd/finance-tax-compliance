@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可信度引擎交付报告（trust-v1.0）</title>
+<style>
+:root { --ink:#102a43; --text:#1f3a56; --muted:#5b7288; --line:#dbe5f0; --bg:#f5f8fc; --surface:#fff; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,-apple-system,sans-serif; line-height:1.75; font-size:15px; }
+.page { max-width:1120px; margin:0 auto; padding:44px 30px 70px; }
+h1 { color:var(--ink); font-size:30px; line-height:1.35; margin:0 0 14px; letter-spacing:.5px; padding-bottom:14px; border-bottom:3px solid var(--ink); }
+h2 { color:var(--ink); font-size:21px; margin:38px 0 14px; padding-left:12px; border-left:5px solid var(--ink); }
+h3 { color:var(--ink); font-size:17px; margin:24px 0 10px; }
+p { margin:10px 0; }
+strong { color:var(--ink); }
+blockquote { margin:14px 0 22px; padding:12px 16px; background:#eaf1f9; border-left:4px solid #2f6fa8; color:#2c4a66; border-radius:0 8px 8px 0; font-size:13.6px; }
+blockquote br { line-height:1.9; }
+.table-wrap { overflow-x:auto; margin:12px 0 22px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+table { width:100%; border-collapse:collapse; font-size:13px; min-width:640px; }
+th { background:var(--ink); color:#fff; text-align:left; padding:10px 12px; font-weight:600; white-space:nowrap; }
+td { padding:9px 12px; border-top:1px solid var(--line); vertical-align:top; }
+tbody tr:nth-child(even) { background:#f7fafd; }
+tbody tr:hover { background:#eef5fc; }
+ul, ol { margin:10px 0 16px; padding-left:24px; }
+li { margin:6px 0; }
+code { background:#eef3f9; color:#0f4c81; padding:1px 5px; border-radius:4px; font-family:Consolas,monospace; font-size:12.6px; }
+hr { border:none; border-top:1px solid var(--line); margin:30px 0; }
+@media (max-width:700px) { .page { padding:26px 16px 50px; } h1 { font-size:23px; } h2 { font-size:19px; } table { font-size:12px; min-width:560px; } }
+@media print { body { background:#fff; } .page { max-width:none; padding:0; } .table-wrap { overflow:visible; } th { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body><div class="page">
+<h1>可信度引擎交付报告（trust-v1.0）</h1>
+<blockquote>日期：2026-11-08 ｜ 目标：解决<strong>法规时效性、幻觉、数据权威性、更新机制</strong>四大生产级难题<br>结论：四层防线全部建成并回归通过 —— trust 测试 <strong>24/24</strong>、冒烟 <strong>19/19</strong>、全量 e2e <strong>73/73</strong></blockquote>
+<hr>
+<h2>1. 问题诊断（动手前的真实缺口）</h2>
+<div class="table-wrap"><table><thead><tr><th>靶点</th><th>原有机制</th><th>缺口</th></tr></thead><tbody>
+<tr><td><strong>时效性</strong></td><td>到期雷达 <code>expiry_scan.py</code>（独立工具）</td><td>问答链路<strong>不感知</strong>到期日；<code>expiry_date</code> 误把「截至 YYYY-MM-DD」当到期；解释层元条目被误设硬闸</td></tr>
+<tr><td><strong>幻觉</strong></td><td>13 条 SYSTEM_PROMPT 约束 + 引用 ID 校验</td><td>只校验<strong>引用 ID 存在</strong>，不校验<strong>生成文本里的数字/文号是否真的出自出处</strong>——伪造 37.5% 可长驱直入</td></tr>
+<tr><td><strong>权威性</strong></td><td>A/B1/B2 三层徽章</td><td>无「法律&gt;行政法规&gt;部门规章&gt;规范性文件」效力层级；无新旧冲突（后法优于前法）提示</td></tr>
+<tr><td><strong>更新机制</strong></td><td>手动五步重建链</td><td>无官方信源变更巡检；无「时效+来源」双通道</td></tr>
+</tbody></table></div>
+<h2>2. 建成的四层防线（<code>app/trust.py</code>，纯函数、可单测）</h2>
+<h3>L1 时效性（Timeliness）</h3>
+<ul>
+<li><strong>到期硬闸</strong>：<code>expiry_state()</code> → expired/expiring/valid/unknown；expired + status「已废止」→ <strong>gate=block</strong>，不得作现行依据</li>
+<li><strong>核验衰减</strong>：<code>freshness_factor()</code> 30 天内 1.0 → 180 天 0.4 线性衰减，计入信任分</li>
+<li><strong>复核期限</strong>：&gt;180 天未核验强制提示回查原文</li>
+<li><strong>数据治理</strong>：<code>enrich_kb.py</code> 到期日改为只信「显式字段 + 时效性/核心条款语境」，并补「YYYY-MM-DD 到期/届满」模式；排除「截至」误匹配</li>
+</ul>
+<h3>L2 权威性（Authority）</h3>
+<ul>
+<li><strong>效力层级</strong>：<code>authority_rank()</code> 法律=1 → 行政法规/司法解释=2 → 部门规章=3 → 规范性文件=5 → 解释层=6</li>
+<li><strong>冲突裁决</strong>：<code>conflict_scan()</code> 检测同名不同文号（doc_no_conflict）、一废一现（status_conflict）、百分比口径分歧（rate_divergence），提示「后法优于前法、上位法优于下位法」</li>
+</ul>
+<h3>L3 幻觉检测（Grounding）—— 核心创新</h3>
+<ul>
+<li><strong>逐断言抽取</strong>：<code>extract_claims()</code> 抽出百分比/金额/文号/条号/法规名</li>
+<li><strong>三档溯源</strong>：</li>
+<li><code>grounded</code> 在被引条目中找到</li>
+<li><code>kb_grounded</code> 在知识库其他条目中找到（引用遗漏，可补引）</li>
+<li><strong><code>ungrounded</code> 全库找不到 = 疑似幻觉，gate=block，必须人工复核</strong></li>
+<li>实测：伪造「37.5%」「财税〔2019〕99 号」→ 精确捕获并触发硬闸 ✅</li>
+</ul>
+<h3>L4 聚合（Aggregate）</h3>
+<ul>
+<li><strong>信任分</strong> = 0.40×溯源覆盖率 + 0.25×新鲜度 + 0.20×权威级 + 0.15×无冲突</li>
+<li><strong>三级 gate</strong>：<code>allow</code>（可引用）/ <code>warn</code>（须附限制）/ <code>block</code>（硬闸，不得作申报或合同依据）</li>
+</ul>
+<h2>3. 接入点（端到端生效）</h2>
+<div class="table-wrap"><table><thead><tr><th>位置</th><th>机制</th></tr></thead><tbody>
+<tr><td><code>server.py ask_local</code></td><td>本地回答出口自动跑 trust_report；block 时<strong>置顶红条</strong>，warn 时并入「可信度与时效提示」</td></tr>
+<tr><td><code>POST /api/trust-check</code></td><td><strong>LLM 生成文本事后溯源</strong>：前端在流式输出完成后自动调用</td></tr>
+<tr><td><code>app.js</code></td><td>LLM 答案下方渲染<strong>溯源状态条</strong>（✅/⚠️/🛑 + 溯源率 + 信任分）+ 未溯源项警示</td></tr>
+<tr><td><code>update_watch.py</code></td><td>官方信源<strong>可达性+内容指纹</strong>巡检，报告 <code>reports/source-watch-YYYY-MM-DD.md</code></td></tr>
+</tbody></table></div>
+<h2>4. 验证结果</h2>
+<div class="table-wrap"><table><thead><tr><th>测试</th><th>结果</th></tr></thead><tbody>
+<tr><td><code>test_trust.py</code> 四层防线</td><td><strong>24/24 通过</strong>（废止硬闸、核验衰减、层级排序、冲突检测、幻觉捕获、gate 分级）</td></tr>
+<tr><td>冒烟 e2e</td><td><strong>19/19</strong></td></tr>
+<tr><td>全量 e2e</td><td><strong>73/73</strong></td></tr>
+<tr><td>来源巡检试运行</td><td>12 URL：11 可达 / 1 反爬 412 / <strong>0 误报变更</strong></td></tr>
+<tr><td>画像扫描</td><td>过期 0 误报、南沙 15% 临期识别正确、A 层无信源 0</td></tr>
+</tbody></table></div>
+<h3>实测样例</h3>
+<p><code>`</code><br>输入文本: &quot;一般纳税人适用 13% 税率，另有 37.5% 的特殊加计抵减，<br>依据财税〔2019〕99 号和《增值税法》第四十二条。&quot;<br>结果:     gate=block | coverage=0.0<br>ungrounded: [&#x27;37.5%&#x27;, &#x27;财税〔2019〕99号&#x27;]   ← 伪造项精确捕获<br>kb_grounded: [&#x27;13%&#x27;, &#x27;第四十二条&#x27;, &#x27;《增值税法》&#x27;]  ← 真实项给出补引建议<br><code>`</code></p>
+<h2>5. 边界（不承诺 100%）</h2>
+<ol>
+<li><strong>ungrounded ≠ 证伪</strong>：是「知识库中找不到」，须人工复核；新出台但未入库的真文号也会落入此档</li>
+<li><strong>来源变更 ≠ 法规变更</strong>：页面改版会触发指纹变化，须人工打开确认</li>
+<li><strong>覆盖率是启发式</strong>：年份等通用数字已停用过滤，但极短实体（「512」）可能漏检</li>
+<li><strong>冲突只提示不裁决</strong>：自动裁决涉及法律判断，保留给人（提示后法/上位法原则）</li>
+</ol>
+<h2>6. 文件清单</h2>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>作用</th></tr></thead><tbody>
+<tr><td><code>app/trust.py</code></td><td>四层可信度引擎（核心）</td></tr>
+<tr><td><code>app/test_trust.py</code></td><td>24 项回归测试</td></tr>
+<tr><td><code>app/update_watch.py</code></td><td>官方信源巡检</td></tr>
+<tr><td><code>app/enrich_kb.py</code></td><td>到期日解析收紧（排除「截至」误匹配）</td></tr>
+<tr><td><code>app/server.py</code></td><td>ask 出口接入 trust + <code>/api/trust-check</code> 端点</td></tr>
+<tr><td><code>app/static/app.js</code></td><td>LLM 流完成后自动溯源 + 状态条</td></tr>
+<tr><td><code>app/static/polish.css</code></td><td>溯源状态条样式（allow/warn/block 三色）</td></tr>
+<tr><td><code>reports/source-watch-2026-11-08.md</code></td><td>首期来源巡检报告</td></tr>
+</tbody></table></div>
+<h2>7. 更新闭环（机制沉淀）</h2>
+<p><code>`</code><br>每日：  问答链路自动跑 trust（时效闸 + 溯源）→ 即时告警<br>每月：  expiry_scan.py --monthly  到期雷达月报（已建自动化）<br>update_watch.py           来源巡检（内容指纹 diff）<br>触发式：法规出台/修订 → 手动重建五步链 → trust 自动重算新鲜度<br><code>`</code></p>
+</div></body></html>

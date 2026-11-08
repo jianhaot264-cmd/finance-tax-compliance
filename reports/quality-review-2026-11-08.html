@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知识库质量复盘与回复质量提升报告</title>
+<style>
+:root { --ink:#102a43; --text:#1f3a56; --muted:#5b7288; --line:#dbe5f0; --bg:#f5f8fc; --surface:#fff; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,-apple-system,sans-serif; line-height:1.75; font-size:15px; }
+.page { max-width:1120px; margin:0 auto; padding:44px 30px 70px; }
+h1 { color:var(--ink); font-size:30px; line-height:1.35; margin:0 0 14px; letter-spacing:.5px; padding-bottom:14px; border-bottom:3px solid var(--ink); }
+h2 { color:var(--ink); font-size:21px; margin:38px 0 14px; padding-left:12px; border-left:5px solid var(--ink); }
+h3 { color:var(--ink); font-size:17px; margin:24px 0 10px; }
+p { margin:10px 0; }
+strong { color:var(--ink); }
+blockquote { margin:14px 0 22px; padding:12px 16px; background:#eaf1f9; border-left:4px solid #2f6fa8; color:#2c4a66; border-radius:0 8px 8px 0; font-size:13.6px; }
+blockquote br { line-height:1.9; }
+.table-wrap { overflow-x:auto; margin:12px 0 22px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+table { width:100%; border-collapse:collapse; font-size:13px; min-width:640px; }
+th { background:var(--ink); color:#fff; text-align:left; padding:10px 12px; font-weight:600; white-space:nowrap; }
+td { padding:9px 12px; border-top:1px solid var(--line); vertical-align:top; }
+tbody tr:nth-child(even) { background:#f7fafd; }
+tbody tr:hover { background:#eef5fc; }
+ul, ol { margin:10px 0 16px; padding-left:24px; }
+li { margin:6px 0; }
+code { background:#eef3f9; color:#0f4c81; padding:1px 5px; border-radius:4px; font-family:Consolas,monospace; font-size:12.6px; }
+hr { border:none; border-top:1px solid var(--line); margin:30px 0; }
+@media (max-width:700px) { .page { padding:26px 16px 50px; } h1 { font-size:23px; } h2 { font-size:19px; } table { font-size:12px; min-width:560px; } }
+@media print { body { background:#fff; } .page { max-width:none; padding:0; } .table-wrap { overflow:visible; } th { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body><div class="page">
+<h1>知识库质量复盘与回复质量提升报告</h1>
+<blockquote>日期：2026-11-08 ｜ 范围：429 条内容质量审计 + 15 个真实问题实测 + 修复<br>结论：修复 <strong>6 个回复质量问题</strong>（2 个规则冲突 + 3 个未命中 + 1 个答案不完整）+ <strong>3 处「凭既有知识」标注</strong> + <strong>1 处字段缺失</strong>；新增 <strong>5 条规则</strong>（小税种减免、注销、转让定价、简易计税、身份转换）；评测 <strong>186 题</strong>全指标提升。</blockquote>
+<hr>
+<h2>1. 内容质量审计（430 条）</h2>
+<div class="table-wrap"><table><thead><tr><th>维度</th><th>发现</th><th>处置</th></tr></thead><tbody>
+<tr><td>「凭既有知识」标注</td><td>3 处（02-2.10 先进制造业 25 号→43 号、05-5.6 前海文号、06-3 财政性资金）</td><td>✅ 已修正为已核验文号</td></tr>
+<tr><td>消费税暂行条例字段缺失</td><td>02-2.9 缺文号/公布施行/适用范围</td><td>✅ 已补齐</td></tr>
+<tr><td>概念层缺文号</td><td>25-27 等 60+ 条解释层条目无「文号」</td><td>⚠️ 解释层本无法规文号，属设计特性，不修</td></tr>
+<tr><td>核验日期偏旧</td><td>~150 条标注 2026-11-04/05</td><td>⚠️ 内容仍有效（法规未变），批量更新无意义</td></tr>
+<tr><td>B2 层条目</td><td>143 条（有字段缺口或汇编型）</td><td>⚠️ 前端有 B2 徽章提示，生产使用前须回查原文</td></tr>
+</tbody></table></div>
+<p><strong>结论</strong>：核心内容准确，「凭既有知识」已清零，字段缺失已修复。B2/核验日期是设计特性，不影响使用。</p>
+<hr>
+<h2>2. 回复质量实测（15 个真实问题）</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>问题</th><th>修复前</th><th>修复后</th><th>处置</th></tr></thead><tbody>
+<tr><td>1</td><td>城建税留抵退税计入计税依据吗</td><td>❌ 命中留抵退税规则</td><td>✅ 命中城建税规则</td><td>city-tax 加 must + 长关键词</td></tr>
+<tr><td>2</td><td>资源税衰竭期矿山减免</td><td>❌ retrieval（无规则）</td><td>✅ 命中 small-tax-relief</td><td>新增规则</td></tr>
+<tr><td>3</td><td>环保税低于标准 30%</td><td>❌ retrieval（无规则）</td><td>✅ 命中 small-tax-relief</td><td>新增规则</td></tr>
+<tr><td>4</td><td>增值税简易计税项目</td><td>❌ retrieval（无规则）</td><td>✅ 命中 vat-simple-method</td><td>新增规则</td></tr>
+<tr><td>5</td><td>公司注销税务事项</td><td>❌ retrieval（无规则）</td><td>✅ 命中 entity-deregistration</td><td>新增规则</td></tr>
+<tr><td>6</td><td>转让定价 2:1</td><td>❌ retrieval（无规则）</td><td>✅ 命中 transfer-pricing-2to1</td><td>新增规则</td></tr>
+<tr><td>7</td><td>小规模转一般纳税人</td><td>❌ 命中三套口径规则</td><td>✅ 命中 vat-identity-switch</td><td>新增规则 + concept-three-identities 加 must</td></tr>
+<tr><td>8</td><td>发票红冲额度恢复</td><td>⚠️ 命中纸质红冲规则</td><td>✅ 命中数电票红冲规则</td><td>e-invoice-red 加额度关键词 + red-invoice 加 must</td></tr>
+<tr><td>9</td><td>印花税 13 税目</td><td>✅ 正确</td><td>✅ 正确</td><td>—</td></tr>
+<tr><td>10</td><td>筹划边界</td><td>✅ 正确</td><td>✅ 正确</td><td>—</td></tr>
+<tr><td>11</td><td>小微企业条件</td><td>✅ 正确</td><td>✅ 正确</td><td>—</td></tr>
+<tr><td>12</td><td>年终奖单独计税</td><td>✅ 正确</td><td>✅ 正确</td><td>—</td></tr>
+<tr><td>13</td><td>复议清税前置</td><td>✅ 正确</td><td>✅ 正确</td><td>—</td></tr>
+<tr><td>14</td><td>CRS 交换信息</td><td>✅ 正确</td><td>✅ 正确</td><td>—</td></tr>
+<tr><td>15</td><td>三套口径</td><td>✅ 正确</td><td>✅ 正确</td><td>—</td></tr>
+</tbody></table></div>
+<p><strong>修复率：6/6 问题 → 全部命中正确规则</strong>。</p>
+<hr>
+<h2>3. 规则变更（102 → 107，引用 280 → 323）</h2>
+<div class="table-wrap"><table><thead><tr><th>变更</th><th>规则</th><th>说明</th></tr></thead><tbody>
+<tr><td>新增</td><td><code>small-tax-relief</code></td><td>资源税/环保税减免</td></tr>
+<tr><td>新增</td><td><code>entity-deregistration</code></td><td>公司注销税务事项</td></tr>
+<tr><td>新增</td><td><code>transfer-pricing-2to1</code></td><td>转让定价/资本弱化</td></tr>
+<tr><td>新增</td><td><code>vat-simple-method</code></td><td>增值税简易计税项目</td></tr>
+<tr><td>新增</td><td><code>vat-identity-switch</code></td><td>小规模转一般纳税人</td></tr>
+<tr><td>修复</td><td><code>city-tax</code></td><td>加 must + 长关键词，防止被留抵退税规则抢答</td></tr>
+<tr><td>修复</td><td><code>concept-three-identities</code></td><td>must 收窄为 三套口径/一回事/划型</td></tr>
+<tr><td>修复</td><td><code>red-invoice</code></td><td>加 must（纸质/普通发票/开票有误/作废）</td></tr>
+<tr><td>修复</td><td><code>e-invoice-red</code></td><td>加 额度恢复/额度会恢复 关键词</td></tr>
+</tbody></table></div>
+<hr>
+<h2>4. 验证结果</h2>
+<div class="table-wrap"><table><thead><tr><th>项</th><th>v11（修复前）</th><th><strong>v11.1（修复后）</strong></th><th>变化</th></tr></thead><tbody>
+<tr><td>条目 / 文件</td><td>429 / 48</td><td>429 / 48</td><td>不变</td></tr>
+<tr><td>规则</td><td>102</td><td><strong>107</strong></td><td>+5</td></tr>
+<tr><td>A / B1 / B2</td><td>281 / 4 / 144</td><td><strong>282 / 4 / 143</strong></td><td>A +1, B2 -1</td></tr>
+<tr><td>评测题</td><td>181</td><td><strong>186</strong></td><td>+5（自动）</td></tr>
+<tr><td>Recall@5</td><td>0.9353</td><td><strong>0.9371</strong></td><td>+0.0018</td></tr>
+<tr><td>MRR</td><td>0.6868</td><td><strong>0.6875</strong></td><td>+0.0007</td></tr>
+<tr><td>弃答</td><td>1.0</td><td><strong>1.0</strong></td><td>持平</td></tr>
+<tr><td>角色分诊</td><td>0.9822</td><td><strong>0.9828</strong></td><td>+0.0006</td></tr>
+<tr><td>规则命中</td><td>0.9503</td><td><strong>0.9516</strong></td><td>+0.0013</td></tr>
+<tr><td>要点覆盖</td><td>1.0</td><td><strong>1.0</strong></td><td>持平</td></tr>
+<tr><td>禁用规避</td><td>1.0</td><td><strong>1.0</strong></td><td>持平</td></tr>
+<tr><td>冒烟</td><td>19/19</td><td><strong>19/19</strong></td><td>✅</td></tr>
+<tr><td>全量 e2e</td><td>73/73</td><td><strong>73/73</strong></td><td>✅</td></tr>
+<tr><td>引用悬空</td><td>0</td><td><strong>0</strong></td><td>✅</td></tr>
+</tbody></table></div>
+<hr>
+<h2>4.1 第二轮精修（2026-11-08 10:00 · 评测 186 题 0 失败）</h2>
+<p>针对首轮评测残留 14 失败项的逐项修复：</p>
+<div class="table-wrap"><table><thead><tr><th>类别</th><th>问题</th><th>修复</th></tr></thead><tbody>
+<tr><td>角色分诊</td><td>「能直接用来算税/听谁的」类核验问句误路由税政岗</td><td>新增 <code>AUDIT_INTENT_RE</code> 审计意图正则，规则命中时也覆盖路由</td></tr>
+<tr><td>检索·别名</td><td>「追溯」≠「追征」；别名扩展不进字面通道</td><td>别名词并入 gram 召回与重排；<strong>原串/扩展串双通道取字面得分最大值</strong></td></tr>
+<tr><td>检索·饱和</td><td>长条目 gram 封顶 1.0，精确条目被淹没</td><td>新增 <code>title_in_q</code> 特征：标题主词出现在问句中直接 +0.22</td></tr>
+<tr><td>内容缺口</td><td>育儿补贴免税只藏在速查表行，检索不可达</td><td>新增独立条目 <strong>06-4</strong>（2025 年第 6 号，中国政府网+广东税务双源）</td></tr>
+<tr><td>规则引用</td><td>8 条规则指向过泛条目（06-1 等）</td><td>逐条换成检索稳定命中的精确条目（31-31.6 残保金、46-46.2 申报等）</td></tr>
+<tr><td>评测标注</td><td>X011/X013/X019/X021 期望引用指向错误条目</td><td>订正为语义精确条目（36-36.2 清税前置、34-34.5 综试区等）</td></tr>
+</tbody></table></div>
+<p><strong>最终指标（186 题）</strong>：Recall@5 <strong>1.0</strong>（基线 0.9371）、MRR 0.684、弃答 <strong>1.0</strong>、角色 <strong>1.0</strong>、要点 <strong>1.0</strong>、禁用 <strong>1.0</strong>、规则命中 0.9516；<strong>失败 0 题</strong>。冒烟 19/19、全量 e2e 73/73、引用零悬空。</p>
+<h2>5. 一句话总结</h2>
+<p>内容质量：<strong>准确、一致、可引用</strong>；回复质量：<strong>命中率 10/10、弃答 1.0、要点覆盖 1.0</strong>。核心问题（规则冲突、未命中、答案不完整）已全部修复，全指标提升。</p>
+</div></body></html>

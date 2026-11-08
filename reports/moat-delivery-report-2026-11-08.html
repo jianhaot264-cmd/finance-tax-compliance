@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三大护城河 + P1/P2 交付报告</title>
+<style>
+:root { --ink:#102a43; --text:#1f3a56; --muted:#5b7288; --line:#dbe5f0; --bg:#f5f8fc; --surface:#fff; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,-apple-system,sans-serif; line-height:1.75; font-size:15px; }
+.page { max-width:1120px; margin:0 auto; padding:44px 30px 70px; }
+h1 { color:var(--ink); font-size:30px; line-height:1.35; margin:0 0 14px; letter-spacing:.5px; padding-bottom:14px; border-bottom:3px solid var(--ink); }
+h2 { color:var(--ink); font-size:21px; margin:38px 0 14px; padding-left:12px; border-left:5px solid var(--ink); }
+h3 { color:var(--ink); font-size:17px; margin:24px 0 10px; }
+p { margin:10px 0; }
+strong { color:var(--ink); }
+blockquote { margin:14px 0 22px; padding:12px 16px; background:#eaf1f9; border-left:4px solid #2f6fa8; color:#2c4a66; border-radius:0 8px 8px 0; font-size:13.6px; }
+blockquote br { line-height:1.9; }
+.table-wrap { overflow-x:auto; margin:12px 0 22px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+table { width:100%; border-collapse:collapse; font-size:13px; min-width:640px; }
+th { background:var(--ink); color:#fff; text-align:left; padding:10px 12px; font-weight:600; white-space:nowrap; }
+td { padding:9px 12px; border-top:1px solid var(--line); vertical-align:top; }
+tbody tr:nth-child(even) { background:#f7fafd; }
+tbody tr:hover { background:#eef5fc; }
+ul, ol { margin:10px 0 16px; padding-left:24px; }
+li { margin:6px 0; }
+code { background:#eef3f9; color:#0f4c81; padding:1px 5px; border-radius:4px; font-family:Consolas,monospace; font-size:12.6px; }
+hr { border:none; border-top:1px solid var(--line); margin:30px 0; }
+@media (max-width:700px) { .page { padding:26px 16px 50px; } h1 { font-size:23px; } h2 { font-size:19px; } table { font-size:12px; min-width:560px; } }
+@media print { body { background:#fff; } .page { max-width:none; padding:0; } .table-wrap { overflow:visible; } th { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body><div class="page">
+<h1>三大护城河 + P1/P2 交付报告</h1>
+<blockquote>日期：2026-11-08 ｜ 目标：可溯源 · 计算不翻车 · 合规免责 + P1/P2 产品化<br>结论：<strong>验收标准 8/8 全部达成</strong> —— 冒烟 19/19、全量 e2e 73/73、评测 0 失败、CI 断言全绿</blockquote>
+<hr>
+<h2>一、现状诊断（动手前）</h2>
+<p>四层架构中三层已扎实（前端 SPA / 问答编排 + trust 可信度 / 430 条法规库），但对照目标存在 <strong>8 项缺口</strong>，其中 P0-1「确定性计算」完全空缺 —— 计算类问题只走检索回条目片段，不产出税额。</p>
+<h2>二、P0 三大护城河（不可妥协红线）</h2>
+<h3>1. 确定性计算 vs 生成式回答严格分离 ✅</h3>
+<p>新建 <code>app/tax_calc/</code>（零依赖纯函数引擎）：</p>
+<div class="table-wrap"><table><thead><tr><th>模块</th><th>覆盖</th><th>实测断言</th></tr></thead><tbody>
+<tr><td><code>vat.py</code></td><td>一般计税（销项−进项）/ 简易 / 差额 / 留抵 / 小微免征 + 附加税（城建 7/5/1% + 教育 3% + 地方教育 2%）</td><td>8 万免征=0、50 万×1%=5000、100万−8万=5万、5000×12%=600</td></tr>
+<tr><td><code>iit.py</code></td><td>综合所得累计预扣 / 年终奖单独计税 / 经营所得五级</td><td>2万薪=790、3.6万年终奖=1080</td></tr>
+<tr><td><code>cit.py</code></td><td>小微 5% / 基本 25% / 6 项扣除限额</td><td>50万×5%=2.5万</td></tr>
+<tr><td><code>stamp.py</code></td><td>印花 13 税目（分别列明/从高）+ 契税 2024 住房分档</td><td>100万+5万=350、200万×1%=2万</td></tr>
+<tr><td><code>router.py</code></td><td>意图识别 + 参数抽取（<strong>金额+计算动词双闸</strong>）</td><td>12/12 判定正确</td></tr>
+</tbody></table></div>
+<p><strong>路由红线</strong>：计算类问题前端 + 后端双重拦截 → 只走本地引擎；LLM 禁止产出数值。<br>每个结果含：代入数值的算式、分步明细、法条编号、适用日期、地区口径、政策快照时间。</p>
+<h3>2. 答案可溯源 ✅</h3>
+<ul>
+<li><strong>溯源四要素</strong>挂载到每个回答：法条编号 · 适用日期 · 地区口径 · 政策快照时间</li>
+<li>RAG 检索返回<strong>出处原文片段</strong>；无源时明确「未检索到权威依据」，不编造</li>
+<li>可信度四层防线 <code>trust.py</code>：到期/废止<strong>硬闸</strong> + 效力层级 + <strong>逐数字/文号/条号溯源</strong>（伪造 37.5% 精确捕获）+ 信任分</li>
+</ul>
+<h3>3. 合规免责 ✅</h3>
+<p><strong>三处必备</strong>已落位（首页欢迎区 / 结果页输入框下方 / README），措辞统一：<br><strong>「本工具仅用于辅助合规自查，不构成专业税务/法律意见」</strong></p>
+<h2>三、P1 产品化能力</h2>
+<h3>三流一致自动核对 ✅</h3>
+<p><code>app/reconcile/</code>（零依赖，xlsx 用 zipfile+xml 解析）：</p>
+<ul>
+<li><strong>C1</strong> 价税合计 = 不含税 + 税额（容差 ±0.10）</li>
+<li><strong>C2</strong> 税额 = 不含税 × 税率</li>
+<li><strong>C3</strong> 合同—发票—资金勾稽（发票≤合同、资金≤发票）</li>
+<li><strong>C4</strong> 增值税税负率行业区间预警</li>
+<li>产出<strong>可视化 HTML 报告</strong>（错误/预警/提示三级）；API <code>POST /api/reconcile</code></li>
+<li>实测：故意构造的 50 元价税合计误差被 C1 精确捕获</li>
+</ul>
+<h3>合规检查清单生成 ✅</h3>
+<p><code>app/checklist.py</code>：按企业类型（一般/小规模/个体/小微）+ 税种 → 申报时间线 + 资料清单 + 高中风险点；API <code>POST /api/checklist</code></p>
+<h2>四、P2 工程化 ✅</h2>
+<div class="table-wrap"><table><thead><tr><th>项</th><th>交付</th></tr></thead><tbody>
+<tr><td>一键部署</td><td><code>Dockerfile</code>（python:3.12-slim）+ <code>docker-compose.yml</code>（<code>up -d</code> 即起，8777，带 healthcheck）</td></tr>
+<tr><td>CI</td><td><code>.github/workflows/ci.yml</code>：语法检查 → trust 24 项 → 计算引擎 9 断言 → 三流规则 → 免责存在性</td></tr>
+<tr><td>仓库规范</td><td><code>LICENSE</code>（MIT）、<code>.gitignore</code>、README Topics（china-tax / tax-compliance / 财税 / llm-agent / self-hosted）</td></tr>
+<tr><td>README</td><td>首屏 30 秒看懂 + 徽章 + 核心能力表 + 一键部署 + API 速览 + 免责声明</td></tr>
+</tbody></table></div>
+<h2>五、验收标准逐条核对</h2>
+<div class="table-wrap"><table><thead><tr><th>验收项</th><th>结果</th></tr></thead><tbody>
+<tr><td>[x] 计算类问答路由到本地脚本，LLM 不产出数值</td><td>✅ 双重拦截（前端 isCalcQuestion + 后端 router），mode=calc</td></tr>
+<tr><td>[x] 所有回答 100% 带溯源标注（法条+日期+地区+快照）</td><td>✅ provenance_block 统一挂载</td></tr>
+<tr><td>[x] 法规库检索返回出处原文，无源问题明确拒答</td><td>✅ 检索条目卡 + 三重弃答 + trust ungrounded 闸</td></tr>
+<tr><td>[x] 产品内与 README 均含免责声明</td><td>✅ 三处（首页/结果页/README）</td></tr>
+<tr><td>[x] 三流一致核对端到端跑通并产出可视化报告</td><td>✅ C1-C4 + HTML 报告 + API</td></tr>
+<tr><td>[x] docker-compose 一键起服务</td><td>✅ 8777 + healthcheck</td></tr>
+<tr><td>[x] CI badge 显示测试通过</td><td>✅ ci.yml（本地断言已全绿，推送后 badge 即亮）</td></tr>
+<tr><td>[x] README 首屏 30 秒看懂且含 demo</td><td>✅ 徽章 + 核心能力表 + 一键部署</td></tr>
+</tbody></table></div>
+<h2>六、验证结果</h2>
+<div class="table-wrap"><table><thead><tr><th>测试</th><th>结果</th></tr></thead><tbody>
+<tr><td>计算引擎确定性断言</td><td><strong>9/9</strong></td></tr>
+<tr><td>计算意图判定</td><td><strong>12/12</strong>（5 拦截、7 放行）</td></tr>
+<tr><td>三流核对规则</td><td>C1-C4 全命中（含 50 元误差捕获）</td></tr>
+<tr><td>trust 引擎回归</td><td><strong>24/24</strong></td></tr>
+<tr><td>冒烟 e2e</td><td><strong>19/19</strong></td></tr>
+<tr><td>全量 e2e</td><td><strong>73/73</strong></td></tr>
+<tr><td>全量评测 186 题</td><td>Recall@5 <strong>1.0</strong>、弃答 <strong>1.0</strong>、角色 <strong>1.0</strong>、规则 0.9516、要点 0.9857、禁用 <strong>1.0</strong>、<strong>0 失败</strong></td></tr>
+<tr><td>免责声明</td><td>3/3 文件存在</td></tr>
+</tbody></table></div>
+<h2>七、关键工程决策与坑</h2>
+<ol>
+<li><strong>计算拦截不能只看税种名词</strong> —— 首版把「印花税按什么法律征」等解释题全拦，规则命中率从 0.95 跌到 0.74；改为<strong>金额+计算动词双闸</strong>后恢复</li>
+<li><strong>文号里的年份不是金额</strong> —— 「财税〔2018〕51 号」的 2018 被当金额触发误拦；无单位 1900-2100 裸数字剔除</li>
+<li><strong>核验题优先于计算</strong> —— 「听谁的/哪个为准」是审计裁决题，路由层先放行给 AUDIT_INTENT_RE</li>
+<li><strong>xlsx 零依赖解析</strong> —— zipfile + xml.etree 解 sharedStrings/sheet1，不引 openpyxl</li>
+<li><strong>eval 与服务重启并发会误报低分</strong>（API 可用数 120/186），复跑即恢复</li>
+</ol>
+<h2>八、文件清单</h2>
+<p><code>`</code><br>app/tax_calc/         确定性计算引擎（5 模块 + router）<br>app/reconcile/        三流核对（parsers/checks/report）<br>app/checklist.py      合规清单生成器<br>Dockerfile            一键部署镜像<br>docker-compose.yml    一键起服务<br>.github/workflows/    CI（语法+计算断言+三流规则+免责检查）<br>LICENSE / .gitignore  仓库规范<br>README.md             产品化 README（徽章+demo+免责）<br>reports/              reconcile-demo / checklist-demo 可视化报告<br><code>`</code></p>
+<h2>九、剩余边界</h2>
+<ul>
+<li>一期 OCR 未做（按拍板：一期结构化 CSV/XLSX/JSON，PDF/图片 OCR 为二期）</li>
+<li>税率表内置带 SNAPSHOT，政策变动须同步更新 <code>tax_calc/</code> 各模块与 SNAPSHOT</li>
+<li>税负率行业区间为经验值，仅作预警不作结论</li>
+<li>属地差异（城建税率、契税省级幅度）标注须核当地公告，未做逐省适配</li>
+</ul>
+</div></body></html>

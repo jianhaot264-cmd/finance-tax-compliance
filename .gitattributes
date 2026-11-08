@@ -1,0 +1,33 @@
+# 跨平台换行规范化 —— 避免 Windows/Linux 协作时 CRLF/LF 混杂
+* text=auto eol=lf
+
+# 明确文本文件
+*.py      text eol=lf
+*.js      text eol=lf
+*.css     text eol=lf
+*.html    text eol=lf
+*.md      text eol=lf
+*.json    text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.csv     text eol=lf
+*.txt     text eol=lf
+*.sh      text eol=lf
+.gitignore  text eol=lf
+.gitattributes text eol=lf
+Dockerfile  text eol=lf
+LICENSE     text eol=lf
+
+# Windows 批处理保持 CRLF
+*.bat     text eol=crlf
+
+# 二进制文件（不做换行转换）
+*.db      binary
+*.sqlite  binary
+*.png     binary
+*.jpg     binary
+*.gif     binary
+*.ico     binary
+*.svg     text eol=lf
+*.pdf     binary
+*.zip     binary

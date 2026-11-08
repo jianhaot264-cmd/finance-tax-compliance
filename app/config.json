@@ -1,0 +1,9 @@
+{
+  "llm": {
+    "enabled": false,
+    "base_url": "https://api.deepseek.com",
+    "api_key": "",
+    "model": "deepseek-chat"
+  },
+  "_说明": "将 enabled 改为 true 并填入 api_key 后重启 server.py，问答将切换为 LLM 驱动（OpenAI 兼容接口），知识库检索结果自动作为上下文注入。api_key 属敏感凭据，请勿提交到任何公开仓库。"
+}

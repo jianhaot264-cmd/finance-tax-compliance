@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>财税合规智能体 · P3 升级报告（v9.0 → v10.0）</title>
+<style>
+:root { --ink:#102a43; --text:#1f3a56; --muted:#5b7288; --line:#dbe5f0; --bg:#f5f8fc; --surface:#fff; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,-apple-system,sans-serif; line-height:1.75; font-size:15px; }
+.page { max-width:1120px; margin:0 auto; padding:44px 30px 70px; }
+h1 { color:var(--ink); font-size:30px; line-height:1.35; margin:0 0 14px; letter-spacing:.5px; padding-bottom:14px; border-bottom:3px solid var(--ink); }
+h2 { color:var(--ink); font-size:21px; margin:38px 0 14px; padding-left:12px; border-left:5px solid var(--ink); }
+h3 { color:var(--ink); font-size:17px; margin:24px 0 10px; }
+p { margin:10px 0; }
+strong { color:var(--ink); }
+blockquote { margin:14px 0 22px; padding:12px 16px; background:#eaf1f9; border-left:4px solid #2f6fa8; color:#2c4a66; border-radius:0 8px 8px 0; font-size:13.6px; }
+blockquote br { line-height:1.9; }
+.table-wrap { overflow-x:auto; margin:12px 0 22px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+table { width:100%; border-collapse:collapse; font-size:13px; min-width:640px; }
+th { background:var(--ink); color:#fff; text-align:left; padding:10px 12px; font-weight:600; white-space:nowrap; }
+td { padding:9px 12px; border-top:1px solid var(--line); vertical-align:top; }
+tbody tr:nth-child(even) { background:#f7fafd; }
+tbody tr:hover { background:#eef5fc; }
+ul, ol { margin:10px 0 16px; padding-left:24px; }
+li { margin:6px 0; }
+code { background:#eef3f9; color:#0f4c81; padding:1px 5px; border-radius:4px; font-family:Consolas,monospace; font-size:12.6px; }
+hr { border:none; border-top:1px solid var(--line); margin:30px 0; }
+@media (max-width:700px) { .page { padding:26px 16px 50px; } h1 { font-size:23px; } h2 { font-size:19px; } table { font-size:12px; min-width:560px; } }
+@media print { body { background:#fff; } .page { max-width:none; padding:0; } .table-wrap { overflow:visible; } th { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body><div class="page">
+<h1>财税合规智能体 · P3 升级报告（v9.0 → v10.0）</h1>
+<blockquote>日期：2026-11-07 ｜ 范围：逐国协定税率、会计准则进阶、月度政策雷达、立法改写作战图<br>结论：<strong>4 项 P3 交付全部落地</strong>；知识库 363 → <strong>383 条</strong>、41 → <strong>43 文件</strong>、规则 98 → <strong>100 条</strong>；回归 <strong>19/19 + 73/73</strong>；评测 <strong>175 题</strong>，Recall@5 <strong>0.9024</strong>（基线 0.8961）、MRR <strong>0.6734</strong>（基线 0.6614）、弃答 <strong>1.0</strong>。</blockquote>
+<hr>
+<h2>1. 改动清单（按交付物）</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>交付物</th><th>文件</th><th>内容</th><th>优先级</th></tr></thead><tbody>
+<tr><td>1</td><td>逐国协定税率表</td><td><code>knowledge-base/42-treaty-rates-by-country.md</code>（10 条）</td><td>港澳、新、日、德、美、越 7 地的股息/利息/特许权限制税率、分档条件、60% 税基特殊条款、生效日期、横向对比、查表三步法</td><td>P3-高</td></tr>
+<tr><td>2</td><td>会计准则进阶</td><td><code>knowledge-base/43-accounting-standards-advanced.md</code>（10 条）</td><td>CAS22 三分类/SPPI、ECL 三阶段、CAS23 终止确认、CAS24 套期、CAS2 成本法/权益法、CAS33 控制三要素、四组税会差异、五个误区</td><td>P3-高</td></tr>
+<tr><td>3</td><td>月度政策雷达</td><td><code>app/expiry_scan.py</code>（+<code>--monthly</code>）、<code>reports/policy-radar/policy-radar-2026-11.md</code>、自动化 <code>5395e3e9</code></td><td>月报生成、去重、上月对比、90/60/30 动作建议、汇编型与施行日分离；每月 1 日 09:00 自动运行</td><td>P3-中</td></tr>
+<tr><td>4</td><td>立法改写作战图</td><td><code>reports/legislative-rewrite-plan-2026-11-07.md</code></td><td>征管法 11 个改写点位、消费税法 9 个点位、通用 SOP、验收硬指标、回滚方案</td><td>P3-中</td></tr>
+<tr><td>5</td><td>规则扩容</td><td><code>app/server.py</code></td><td>新增 <code>treaty-rate</code>、<code>cas22-tax-diff</code> 两条规则；修复 <code>incentive-expiry</code> 关键词与过时提示；扩充会计角色关键词</td><td>P3-高</td></tr>
+<tr><td>6</td><td>检索微调</td><td><code>app/retrieval.py</code></td><td>单一法域问句加分（仅当问句只出现一个法域且命中标题），解决「澳门利息」被「读表口径」抢位</td><td>P3-中</td></tr>
+<tr><td>7</td><td>评测补题</td><td><code>app/golden_extra.json</code></td><td>手工题 67 → <strong>75</strong>（协定 4 + 会计 4）；修正 X007/X008/X009/X047 的过期断言</td><td>P3-中</td></tr>
+</tbody></table></div>
+<p><strong>同步更新</strong>：<code>build_kb.py</code>（FILES + A 层 + kb_version）、<code>enrich_kb.py</code>（隔离项状态 + change_log）、<code>00-index.md</code>（版本/文件地图/统计）、<code>static/index.html</code>（383/43/v10.0）、<code>e2e-test.py</code>（断言 383）、<code>README.md</code>（版本与条目数）、<code>PENDING-VERIFICATION.md</code>（P-25/P-26，P-23 降级）。</p>
+<hr>
+<h2>2. 影响范围</h2>
+<div class="table-wrap"><table><thead><tr><th>维度</th><th>v9.0</th><th>v10.0</th><th>变化</th></tr></thead><tbody>
+<tr><td>知识库条目</td><td>363</td><td><strong>383</strong></td><td>+20</td></tr>
+<tr><td>主题文件</td><td>41</td><td><strong>43</strong></td><td>+2</td></tr>
+<tr><td>精编规则</td><td>98</td><td><strong>100</strong></td><td>+2</td></tr>
+<tr><td>A / B1 / B2</td><td>222 / 2 / 139</td><td><strong>241 / 3 / 139</strong></td><td>A +19，B1 +1</td></tr>
+<tr><td>条目类型</td><td>regulation 273 / digest 25 / table_row 3 / concept 30 / relation 8 / scenario 14 / verification 10</td><td>regulation <strong>293</strong> / digest 25 / table_row 3 / concept 30 / relation 8 / scenario 14 / verification 10</td><td>regulation +20</td></tr>
+<tr><td>状态</td><td>315 现行 / 40 汇编 / 6 草案 / 2 废止</td><td><strong>334 / 41 / 6 / 2</strong></td><td>现行 +19，汇编 +1</td></tr>
+<tr><td>双源条目</td><td>252</td><td><strong>272</strong></td><td>+20</td></tr>
+<tr><td>规则引用</td><td>约 250</td><td><strong>263</strong></td><td>+13</td></tr>
+<tr><td>评测题</td><td>165</td><td><strong>175</strong></td><td>+10（自动 100 + 手工 75）</td></tr>
+<tr><td>阻断项</td><td>1（P-06b）+ P-05b</td><td><strong>1（P-06b）</strong></td><td>P-05b → RESOLVED</td></tr>
+</tbody></table></div>
+<p><strong>不影响</strong>：既有 363 条内容未删除、未改写结论；<code>kb.json</code>/<code>.db</code>/CSV 全部由 md 重建；前端口径与交互未变。</p>
+<hr>
+<h2>3. 验收标准与验证结果</h2>
+<div class="table-wrap"><table><thead><tr><th>验收项</th><th>标准</th><th>实际</th><th>结果</th></tr></thead><tbody>
+<tr><td>条目数一致</td><td><code>/api/meta</code> = kb.json = 383</td><td>383 / 383</td><td>✅</td></tr>
+<tr><td>文件数</td><td>43</td><td>43</td><td>✅</td></tr>
+<tr><td>规则数</td><td>100</td><td>100</td><td>✅</td></tr>
+<tr><td>引用零悬空</td><td>全部 refs/basis 可解析</td><td>0 悬空（<code>comprehensive</code> 的 1 条空 ref 为既有兜底，非悬空）</td><td>✅</td></tr>
+<tr><td>冒烟</td><td>19/19</td><td><strong>19/19</strong></td><td>✅</td></tr>
+<tr><td>全量 e2e</td><td>≥73/73</td><td><strong>73/73</strong></td><td>✅</td></tr>
+<tr><td>弃答正确率</td><td>1.0</td><td><strong>1.0</strong></td><td>✅</td></tr>
+<tr><td>Recall@5(v5)</td><td>≥ 0.8961（不低于基线）</td><td><strong>0.9024</strong>（+0.0063）</td><td>✅</td></tr>
+<tr><td>MRR(v5)</td><td>≥ 0.6614</td><td><strong>0.6734</strong>（+0.012）</td><td>✅</td></tr>
+<tr><td>角色分诊</td><td>≥ 0.97</td><td><strong>0.9816</strong></td><td>✅</td></tr>
+<tr><td>规则命中</td><td>≥ 0.94</td><td><strong>0.9486</strong></td><td>✅</td></tr>
+<tr><td>要点覆盖</td><td>不下降</td><td><strong>1.0</strong>（口径已修正，见 §4）</td><td>✅</td></tr>
+<tr><td>禁用表述规避</td><td>不下降</td><td><strong>1.0</strong></td><td>✅</td></tr>
+<tr><td>到期雷达</td><td>可复现</td><td>95 条原始命中 / 60 条去重 / 90 天内 5 条</td><td>✅</td></tr>
+<tr><td>月度自动化</td><td>已创建且 ACTIVE</td><td><code>5395e3e9</code>，每月 1 日 09:00</td><td>✅</td></tr>
+</tbody></table></div>
+<p><strong>关键新增规则验证</strong>（逐条实问）：</p>
+<div class="table-wrap"><table><thead><tr><th>问法</th><th>命中规则</th><th>结论要点</th></tr></thead><tbody>
+<tr><td>香港公司取得股息，预提所得税按多少税率</td><td><code>treaty-rate</code></td><td>5%（直接持股 ≥25%）/10%，利息 7%，特许权 7%</td></tr>
+<tr><td>新加坡公司取得设备租金，协定税率是多少</td><td><code>treaty-rate</code></td><td>10% × 60% 税基，<strong>有效 6%</strong></td></tr>
+<tr><td>美国公司取得特许权使用费按多少扣缴</td><td><code>treaty-rate</code></td><td><strong>10%</strong>（订正「7%」流传说法）</td></tr>
+<tr><td>澳门公司取得利息，协定税率多少</td><td><code>treaty-rate</code></td><td><strong>7%</strong>（2009 议定书后统一，非 2003 年原文的 7%/10%）</td></tr>
+<tr><td>日本公司取得股息，协定税率是多少</td><td><code>treaty-rate</code></td><td>10%，<strong>无 5% 档</strong></td></tr>
+<tr><td>交易性金融资产公允价值变动要交企业所得税吗</td><td><code>cas22-tax-diff</code></td><td>历史成本计税，公允价值变动不计入应纳税所得额</td></tr>
+<tr><td>应收账款预期信用损失能税前扣除吗</td><td><code>cas22-tax-diff</code></td><td>未经核定准备金不得扣除，实际损失专项申报</td></tr>
+</tbody></table></div>
+<hr>
+<h2>4. 口径说明（避免误读指标）</h2>
+<ol>
+<li><strong>要点覆盖率 1.0 不是「突然变好」</strong>：原评测在 <code>retrieval</code> 模式下只抓 <code>text</code> 字段，检索条目卡（title+snippet）未计入，导致该模式关键词恒缺；本轮把条目卡纳入评分文本，并把 X007/X008/X009/X047 的过期断言改为与现行事实一致（前海已延续、稳岗已延续、消费税表述、汇编口径）。<strong>口径变更与内容修正同时发生，不能与 v9 的 0.931 直接横比。</strong></li>
+<li><strong>规则命中率 0.9486 略低于 v9 的 0.9515</strong>：新增 8 道手工题中有 3 道设计为检索题（合并报表、权益法、实施条例版本），不以规则命中为目标；绝对命中数未下降。</li>
+<li><strong>「6%」的三种含义</strong>必须区分：协定写的税率、按 60% 税基计算的有效税负、国内法优惠税率。42 文件已在 42.1、42.9 两处显式提示。</li>
+<li><strong>美国特许权使用费 7% 是流传错误</strong>：税务总局协定原文与《中国税务报》均为 10%，本轮已订正并在 42.7 标注。</li>
+</ol>
+<hr>
+<h2>5. 剩余边界与下一步</h2>
+<div class="table-wrap"><table><thead><tr><th>项</th><th>状态</th><th>建议</th></tr></thead><tbody>
+<tr><td>港澳新日德美越以外 100 余个协定</td><td>范围边界（P-23 降级）</td><td>按 <code>42-42.10</code> 三步法逐国补；优先英国、法国、荷兰、韩国、俄罗斯、印尼、泰国、澳大利亚</td></tr>
+<tr><td>广东工伤条例修订 / 省级非税 / 地市办法</td><td>阻断（P-06b）</td><td>属地确认；不进入结论</td></tr>
+<tr><td>南沙 15% 2026-12-31 到期</td><td>到期预警（P-24）</td><td>2026Q4 月度雷达持续跟踪；未确认前按 25% 保守测算</td></tr>
+<tr><td>征管法 / 消费税法</td><td>未通过</td><td>按 <code>legislative-rewrite-plan-2026-11-07.md</code> 施工，未通过不动正文</td></tr>
+<tr><td>会计文件覆盖</td><td>已补 CAS22–24/2/33</td><td>可继续补 CAS14 收入（已有）、CAS21 租赁（已有）、CAS37 列报、CAS41 披露</td></tr>
+</tbody></table></div>
+<hr>
+<h2>6. 回滚</h2>
+<ul>
+<li>基线备份：<code>backups/baseline-v10-2026-11-07.zip</code>（含知识库 43 文件、源码、静态、DB、报告、评测集；96 文件 / 3.57 MB）。</li>
+<li>备份脚本已常驻：<code>app/backup_baseline.py</code>，下轮执行 <code>python app/backup_baseline.py v11 2026-11-15</code> 即可（写 .tmp → testzip → 原子改名 + 逐文件 SHA256）。</li>
+<li>仅回滚内容：删 42/43 两个文件 → <code>build_kb.py</code> FILES 去掉两行 → 重跑五步链；规则回滚删 <code>treaty-rate</code>、<code>cas22-tax-diff</code> 两段。</li>
+<li>评测集回滚：<code>app/golden-extra-v9-backup-2026-11-07.json</code>（P3 前，67 题）。</li>
+</ul>
+</div></body></html>

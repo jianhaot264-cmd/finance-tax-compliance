@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 运行时产物
+app/qa-screenshots/
+reports/reconcile-last.html
+reports/source-watch-state.json
+*.log
+*.tmp
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 本地备份（体积大，不入库）
+backups/
+*.zip
+
+# 敏感/私有
+.env
+*.key
+*.pem

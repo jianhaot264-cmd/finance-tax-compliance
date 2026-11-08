@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>立法落地「改写作战图」：征管法修订 / 消费税法</title>
+<style>
+:root { --ink:#102a43; --text:#1f3a56; --muted:#5b7288; --line:#dbe5f0; --bg:#f5f8fc; --surface:#fff; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,-apple-system,sans-serif; line-height:1.75; font-size:15px; }
+.page { max-width:1120px; margin:0 auto; padding:44px 30px 70px; }
+h1 { color:var(--ink); font-size:30px; line-height:1.35; margin:0 0 14px; letter-spacing:.5px; padding-bottom:14px; border-bottom:3px solid var(--ink); }
+h2 { color:var(--ink); font-size:21px; margin:38px 0 14px; padding-left:12px; border-left:5px solid var(--ink); }
+h3 { color:var(--ink); font-size:17px; margin:24px 0 10px; }
+p { margin:10px 0; }
+strong { color:var(--ink); }
+blockquote { margin:14px 0 22px; padding:12px 16px; background:#eaf1f9; border-left:4px solid #2f6fa8; color:#2c4a66; border-radius:0 8px 8px 0; font-size:13.6px; }
+blockquote br { line-height:1.9; }
+.table-wrap { overflow-x:auto; margin:12px 0 22px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+table { width:100%; border-collapse:collapse; font-size:13px; min-width:640px; }
+th { background:var(--ink); color:#fff; text-align:left; padding:10px 12px; font-weight:600; white-space:nowrap; }
+td { padding:9px 12px; border-top:1px solid var(--line); vertical-align:top; }
+tbody tr:nth-child(even) { background:#f7fafd; }
+tbody tr:hover { background:#eef5fc; }
+ul, ol { margin:10px 0 16px; padding-left:24px; }
+li { margin:6px 0; }
+code { background:#eef3f9; color:#0f4c81; padding:1px 5px; border-radius:4px; font-family:Consolas,monospace; font-size:12.6px; }
+hr { border:none; border-top:1px solid var(--line); margin:30px 0; }
+@media (max-width:700px) { .page { padding:26px 16px 50px; } h1 { font-size:23px; } h2 { font-size:19px; } table { font-size:12px; min-width:560px; } }
+@media print { body { background:#fff; } .page { max-width:none; padding:0; } .table-wrap { overflow:visible; } th { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body><div class="page">
+<h1>立法落地「改写作战图」：征管法修订 / 消费税法</h1>
+<blockquote>生成：2026-11-07 ｜ 用途：<strong>新法通过当天按图施工</strong>，避免遗漏点位、避免误改未生效内容。<br>适用对象：知识库 43 个 Markdown、<code>server.py</code> 100 条精编规则、前端文案、评测集、交接单。<br>原则：<strong>未通过不动正文</strong>；通过后按「发布 → 定位 → 改写 → 重建 → 回归」五步执行，所有改动留痕。</blockquote>
+<hr>
+<h2>0. 当前状态（2026-11-07）</h2>
+<div class="table-wrap"><table><thead><tr><th>法律</th><th>状态</th><th>关键事实</th><th>影响面</th></tr></thead><tbody>
+<tr><td>《税收征收管理法》修订</td><td><strong>一审未通过</strong>（2026-11-06 一审）</td><td>现行仍为 2015 修正版；第八十八条清税前置、复议前置仍有效</td><td>36、09、23、26、01、20 六个文件 + 3 条规则</td></tr>
+<tr><td>《消费税法》</td><td><strong>预备审议</strong>（国务院/全国人大 2026 立法计划）</td><td>尚未出台，现行仍按《消费税暂行条例》（国务院令第 539 号）</td><td>32、18、02、06、40、41 六个文件 + 1 条规则</td></tr>
+<tr><td>《注册会计师法》</td><td><strong>已通过</strong>（2026-06-26），2027-01-01 施行</td><td>2026-12-31 前仍适用现行法</td><td>40、12 两个文件（非本图重点）</td></tr>
+</tbody></table></div>
+<blockquote><strong>触发信号</strong>：全国人大网/中国政府网发布<strong>主席令</strong>并公布法律全文；或国家税务总局发布配套公告。仅看到「草案二审」「征求意见」不触发改写。</blockquote>
+<hr>
+<h2>1. 触发后的 24 小时动作清单</h2>
+<ol>
+<li><strong>锁定文本</strong>：下载主席令 + 法律全文 + 总局配套公告，存 <code>knowledge-base/</code> 之外的 <code>sources/</code> 目录（不入库，仅留证）。</li>
+<li><strong>比对差异</strong>：按本图逐条比对「现行表述 vs 新法条文」，标出<strong>实质变化 / 文字调整 / 无变化</strong>三类。</li>
+<li><strong>先改「依据」再改「结论」</strong>：文号、施行日、条款号优先；结论段落最后改，避免半成品。</li>
+<li><strong>同步 6 处</strong>：<code>build_kb.py</code> FILES（若新增文件）→ <code>00-index.md</code> → <code>static/index.html</code> → <code>e2e-test.py</code> → <code>README.md</code> → <code>server.py</code> 规则 refs。</li>
+<li><strong>重建五步链</strong>：<code>build_kb.py → enrich_kb.py → build_concepts.py → build_v5.py → audit_kb.py</code>。</li>
+<li><strong>单进程重启 + 五件套验证</strong>：<code>/api/meta</code> → 引用零悬空 → <code>--smoke</code> → 全量 e2e → <code>eval_kb.py</code> 对比基线。</li>
+</ol>
+<hr>
+<h2>2. 征管法修订：改写点位表（<strong>通过后</strong>执行）</h2>
+<blockquote>说明：「改为」列写的是<strong>改写方向与必须核对的要素</strong>，具体文字以最终法条为准，不得预先编造条文序号。</blockquote>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>位置</th><th>现行表述（要点）</th><th>通过后改为</th><th>验收</th></tr></thead><tbody>
+<tr><td>R1</td><td><code>36-36.2</code> 清税前置</td><td>纳税争议须先缴清税款滞纳金或提供担保，方可申请复议（第八十八条）</td><td>若新法取消/限制清税前置：改为「按新法第 X 条，纳税争议可直接申请复议」；保留「处罚/强制措施可直接复议或诉讼」</td><td>条目 <code>36-36.2</code> 的「文号」「核心条款」「合规要点」三处一致；<code>review-appeal</code> 规则 conclusion 同步</td></tr>
+<tr><td>R2</td><td><code>36-36.5</code> 起诉期限</td><td>不服复议决定，收到之日起 <strong>15 日</strong>内起诉；复议机关逾期不作决定，<strong>6 个月</strong>内起诉</td><td>若延长（如 60 日）：改「15 日」为「新期限」，并同步「起算点」；6 个月条款核对是否保留</td><td>全库搜「15 日」不再出现于税务诉讼语境；<code>23-23.9</code>、<code>26-C27</code> 同步</td></tr>
+<tr><td>R3</td><td><code>36-36.8</code> 草案条目</td><td>标题含「<strong>未生效，仅跟踪</strong>」</td><td>改写为「<strong>已生效</strong>：主席令第 X 号，YYYY-MM-DD 施行」，并入 36.2/36.5，删除「草案」字样</td><td>条目状态从「草案阶段」改为「现行有效」；<code>audit_kb.py</code> 状态统计同步</td></tr>
+<tr><td>R4</td><td><code>09-9.2</code> 复议规则</td><td>引《税务行政复议规则》第三十三条 + 征管法第八十八条</td><td>核对总局是否修订 21 号令；有修订则更新令号与条款</td><td><code>09-9.2</code> 文号与 <code>20-20.9</code> 令号一致</td></tr>
+<tr><td>R5</td><td><code>23-23.9</code> 逐字法条</td><td>第八十八条原文 + 「草案拟取消但尚未通过」</td><td>换为新法对应条文逐字；删除「尚未通过」</td><td>逐字条文与官方文本逐字比对（含标点）</td></tr>
+<tr><td>R6</td><td><code>26-C27</code> / 26 边界表</td><td>「清税前置 + 复议前置 vs 可直接复议」</td><td>按新法重画边界；若取消前置，改为「纳税争议与处罚争议均选择制」</td><td>关系卡与边界矩阵两处一致；<code>26-26.2</code> 不冲突</td></tr>
+<tr><td>R7</td><td><code>01-1.1</code> 征管法总览</td><td>「复议前置：纳税争议须先缴税或提供担保再复议（现行规定）」</td><td>改为新法表述；保留「现行规定」标注至新法施行日</td><td>与 <code>36-36.1</code> 路径图一致</td></tr>
+<tr><td>R8</td><td><code>40-40.2</code> 立法跟踪</td><td>「2026-11-06 一审未通过」</td><td>改为「YYYY-MM-DD 通过，YYYY-MM-DD 施行」；移出「在途」</td><td><code>40-40.2</code> 状态改「现行有效」；<code>legislation-status</code> 规则同步</td></tr>
+<tr><td>R9</td><td><code>server.py</code> 规则</td><td><code>review-appeal</code>、<code>legislation-status</code> 的 conclusion/tips</td><td>改 conclusion 与 tips；<code>basis</code> 指向新条目</td><td>两条规则命中率不下降；<code>eval_kb.py</code> 规则命中率 ≥ 0.94</td></tr>
+<tr><td>R10</td><td><code>20-20.9</code> / 20 文件留痕</td><td>「39 号令是修改决定」+ 清税前置说明</td><td>追加一行「YYYY-MM-DD 新法通过，本条前置规则失效」；<strong>不删除历史</strong></td><td>历史留痕保留，新增「沿革」段</td></tr>
+<tr><td>R11</td><td>前端 <code>index.html</code> / <code>README.md</code></td><td>「清税前置、15 日」文案</td><td>改为新表述；版本号 +1</td><td>e2e 断言与页面文案一致</td></tr>
+</tbody></table></div>
+<p><strong>特别注意</strong>：</p>
+<ul>
+<li>「清税前置」在 <strong>9 处</strong>出现（36.2、36.5、36.8、09.2、23.9、26-C27、26 表、01.1、20 留痕），<strong>必须全改</strong>，不能只改 36。</li>
+<li><code>reports/sme-tax-compliance-incentives-2026-11-05.md</code> 属<strong>历史交付物</strong>，不随法改；如需对外，另起 v2。</li>
+<li><code>PENDING-VERIFICATION.md</code> 若因此闭环，按「已清零」移入 20 文件并留痕。</li>
+</ul>
+<hr>
+<h2>3. 消费税法：改写点位表（<strong>通过后</strong>执行）</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>位置</th><th>现行表述（要点）</th><th>通过后改为</th><th>验收</th></tr></thead><tbody>
+<tr><td>C1</td><td><code>32-32.1</code>–<code>32-32.7</code> 全部 7 条</td><td>依据《消费税暂行条例》（国务院令第 539 号）+ 各财税公告</td><td>依据改为《消费税法》第 X 条 + 实施条例/配套公告；税率表逐项比对</td><td>7 条「文号」全部更新；税率与官方税目表逐项一致</td></tr>
+<tr><td>C2</td><td><code>32-32.1</code> 税目税率总表</td><td>15 税目现行税率</td><td>按新法税目税率表重排；有调整的标注「新法调整」</td><td><code>06-6.x</code> 速查表同步</td></tr>
+<tr><td>C3</td><td>征收环节</td><td>生产/进口/委托加工（卷烟另有批发、超豪华小汽车另有零售）</td><td>若后移批发/零售：逐税目写清「纳税环节 + 纳税人」；未后移的保持不变</td><td><code>32-32.2</code> 与 <code>39-39.x</code> 行业条目一致</td></tr>
+<tr><td>C4</td><td><code>18-18.1</code> 消费税综述</td><td>条例框架</td><td>改为法律框架；保留「条例同时废止」沿革说明</td><td>状态从「现行有效」改「已废止」仅限条例本身</td></tr>
+<tr><td>C5</td><td><code>02-2.x</code> 实体税种</td><td>消费税按条例</td><td>改为按法律</td><td>与 32 文件不冲突</td></tr>
+<tr><td>C6</td><td><code>40-40.3</code> 立法跟踪</td><td>「预备审议，尚未出台」</td><td>改为「YYYY-MM-DD 通过、YYYY-MM-DD 施行」</td><td><code>legislation-status</code> 规则同步</td></tr>
+<tr><td>C7</td><td><code>41-41.x</code> 到期预警</td><td>无（消费税为长期税种）</td><td>若新法设过渡期，新增「过渡条款到期日」</td><td><code>expiry_scan.py</code> 能扫到</td></tr>
+<tr><td>C8</td><td><code>server.py</code> <code>consumption-tax</code> 规则</td><td>引条例 539 号 + 财税公告</td><td>换引新法条文；税率数字逐项复核</td><td>规则命中率不降；评测 X007 通过</td></tr>
+<tr><td>C9</td><td>报关/进口环节</td><td>进口消费税按条例</td><td>核对新法是否改变进口环节纳税人/计税依据</td><td>与 <code>34</code> 出口退税条目交叉核对</td></tr>
+</tbody></table></div>
+<p><strong>禁止事项</strong>：</p>
+<ul>
+<li>不得在法通过前把「条例」改成「法」，也不得预填征收环节后移。</li>
+<li>不得只改标题不改正文；不得只改 32 文件而漏掉 02/06/18/39/40。</li>
+<li>税率数字必须<strong>逐项</strong>与官方税目税率表比对，禁止整表替换后不核对。</li>
+</ul>
+<hr>
+<h2>4. 通用改写 SOP（两条法律共用）</h2>
+<p><code>`</code><br>① 取文本 → ② 差异表（实质/文字/无变化）→ ③ 改依据 → ④ 改结论 → ⑤ 改规则 →<br>⑥ 重建五步链 → ⑦ 单进程重启 → ⑧ 引用校验 → ⑨ smoke 19 → ⑩ 全量 e2e 73 →<br>⑪ eval 175 题对比基线 → ⑫ 更新交接单/报告/备份<br><code>`</code></p>
+<p><strong>验收硬指标</strong>（任一不达标即回滚）：</p>
+<ol>
+<li><code>/api/meta</code> 条目数、文件数、规则数与 <code>kb.json</code> 一致；</li>
+<li>引用 ID <strong>零悬空</strong>（<code>server.RULES</code> 的 refs/basis 全部能在 <code>ENTRY_MAP</code> 找到）；</li>
+<li><code>e2e-test.py --smoke</code> 19/19；</li>
+<li><code>e2e-test.py</code> 全量 ≥ 73/73；</li>
+<li><code>eval_kb.py</code>：Recall@5(v5) ≥ 0.90、弃答 1.0、角色 ≥ 0.97、规则命中 ≥ 0.94；</li>
+<li>状态统计：新增/变更条目的「时效性」不再出现「草案阶段」；</li>
+<li>全库搜旧表述（「15 日」「清税前置」「暂行条例」）无残留（历史留痕段除外）。</li>
+</ol>
+<hr>
+<h2>5. 回滚方案</h2>
+<div class="table-wrap"><table><thead><tr><th>场景</th><th>回滚动作</th></tr></thead><tbody>
+<tr><td>改写后发现法条理解错误</td><td>从 <code>backups/baseline-v10-2026-11-07.zip</code> 恢复对应 md，重跑五步链</td></tr>
+<tr><td>评测退化</td><td><code>git</code> 无版本控制，按备份 zip 恢复 <code>server.py</code> / <code>retrieval.py</code> / <code>golden_extra.json</code></td></tr>
+<tr><td>只改了部分文件</td><td>以 <code>00-index.md</code> 为清单逐项核对；缺项补改，不回滚已正确部分</td></tr>
+</tbody></table></div>
+<hr>
+<h2>6. 下次检查</h2>
+<ul>
+<li>每月 1 日：<code>expiry_scan.py --monthly</code> 月报 + 本图状态复核；</li>
+<li>每次人大常委会会议闭幕后 3 日内：查全国人大网法律库是否新增主席令；</li>
+<li>消费税法/征管法任一进入「二审」：更新 <code>40-legislative-tracker.md</code>，但<strong>不改正文</strong>。</li>
+</ul>
+</div></body></html>

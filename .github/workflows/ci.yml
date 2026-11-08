@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: 测试套件（trust + 冒烟）
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 语法检查（零依赖模块）
+        run: |
+          python -m py_compile app/server.py app/trust.py app/tax_calc/__init__.py \
+            app/tax_calc/router.py app/tax_calc/vat.py app/tax_calc/iit.py \
+            app/tax_calc/cit.py app/tax_calc/stamp.py \
+            app/reconcile/__init__.py app/reconcile/parsers.py \
+            app/reconcile/checks.py app/reconcile/report.py app/checklist.py
+
+      - name: 可信度引擎回归测试
+        working-directory: app
+        run: python test_trust.py
+
+      - name: 计算引擎确定性测试
+        working-directory: app
+        run: |
+          python - <<'PY'
+          from tax_calc.vat import vat_small_scale, vat_general, surcharge
+          from tax_calc.iit import iit_comprehensive, iit_annual_bonus
+          from tax_calc.cit import cit_quarterly
+          from tax_calc.stamp import stamp_duty, deed_tax
+          assert vat_small_scale(80000, "month")["value"] == "0.00"
+          assert vat_small_scale(500000, "month")["value"] == "5000.00"
+          assert vat_general(1000000, 80000, "13")["value"] == "50000.00"
+          assert surcharge(5000)["value"] == "600.00"
+          assert iit_comprehensive(20000, 1, 3000, 2000)["value"] == "790.00"
+          assert iit_annual_bonus(36000)["value"] == "1080.00"
+          assert cit_quarterly(500000, True, 50, 10000000)["value"] == "25000.00"
+          assert stamp_duty([("买卖合同", 1000000), ("租赁合同", 50000)])["value"] == "350.00"
+          assert deed_tax(2000000, True, 120)["value"] == "20000.00"
+          print("calc deterministic: 9/9 PASS")
+          PY
+
+      - name: 三流核对规则测试
+        working-directory: app
+        run: |
+          python - <<'PY'
+          from reconcile import reconcile
+          inv = [{"发票号":"001","不含税金额":"10000","税额":"1300","价税合计":"11300","税率":"13%"},
+                 {"发票号":"002","不含税金额":"5000","税额":"650","价税合计":"5700","税率":"13%"}]
+          r = reconcile(inv, [{"金额":"20000"}], [{"合同编号":"X","合同金额":"16000"}])
+          assert r["ok"] is False
+          assert any(i["code"] == "C1" for i in r["issues"])
+          print("reconcile rules: PASS")
+          PY
+
+      - name: 免责声明存在性检查
+        run: |
+          grep -q "不构成专业税务/法律意见" app/static/index.html
+          grep -q "不构成专业税务/法律意见" app/static/app.js
+          grep -q "不构成" app/README.md
+          echo "disclaimer: PASS"
