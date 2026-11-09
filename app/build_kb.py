@@ -195,7 +195,7 @@ def build():
     data = {
         "generated_at": "2026-11-09",
         "verified_at": "2026-11-09",
-        "kb_version": "v13.0",
+        "kb_version": "v14.0",
         "files": files_meta,
         "entries": entries,
     }

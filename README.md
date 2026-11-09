@@ -75,6 +75,8 @@ cd app && python server.py 8777
 
 **技术栈**：Python 3.12 **纯标准库**（零第三方依赖）+ 原生前端（零框架）。离线可部署，无供应链风险。
 
+**L0 逐字原文层**：`knowledge-base/corpus/` 存放逐字条文与 `manifest.json`（含双源链接、时效、SHA256），由 `app/import_corpus.py` 校验后生成 `app/corpus-articles.json`，再由 `app/build_v5.py` 写入 `article_text`（当前 40 条）。L0 **不进 `build_kb.py` 的 FILES、不参与主检索索引**，只作溯源与引用；重建链须在 `build_v5.py` 前跑 `import_corpus.py`。
+
 **可选能力 · 自适应外部核验（默认关闭）**：把 `app/config.json` 的 `external_lookup.enabled` 设为 `true` 后，Agent 会在时效 / 覆盖 / 冲突信号成立，且问题非精编规则、非计算、非澄清、非高风险、非超范围时，按 `SOURCES-CHANNELS.md` 白名单官方渠道核验四类硬事实，并把 `[外部核验·双源]` 证据作为更新 / 补充 / 冲突提示注入上下文；检索失败立即回落知识库。**离线部署保持默认关闭即可，行为与未开启时完全一致**。策略、可替换提示词条款与回归门禁见 `reports/adaptive-retrieval-reply-policy-2026-11-09.md`。
 
 **本机启用方式**：在 `app/` 下新建 `config.local.json`（已加入 `.gitignore`，不入库）写入 `{"external_lookup":{"enabled":true}}` 后重启服务；仓库 `config.json` 保持 `false`，因此克隆/离线部署默认仍关闭，本机实例可单独开启。
@@ -89,7 +91,7 @@ cd app && python server.py 8777
 | `/api/trust-check` | POST | LLM 生成文本事后溯源 |
 | `/api/reconcile` | POST | 三流一致核对 |
 | `/api/checklist` | POST | 合规检查清单生成 |
-| `/api/business-cases` | GET | 业务事项结构化条目独立检索（?q=...，30 条：收入/资产/费用/税费/往来/期末结转） |
+| `/api/business-cases` | GET | 业务事项结构化条目独立检索（?q=...；q 为空时列出全部 30 条并带 11 字段，供前端「业务事项」视图使用） |
 | `/api/health` | GET | 健康检查 |
 | `/api/kb` | GET | 知识库全量（472 条） |
 
@@ -105,7 +107,7 @@ curl -X POST http://localhost:8777/api/ask \
 
 **430 条**结构化条目 / **48 个主题文件** / 107 条精编问答规则 / 30 张概念卡，覆盖 18 税种 + 征管稽查 + 发票 + 社保非税 + 跨境 + 广东/大湾区 + 计税方法 + 复议诉讼 + 税收协定 + 会计准则 + 行业专项 + 立法跟踪 + 到期预警。
 
-- **三层质量分级**：A 层 307（双官方信源，可直接引用）/ B1 4 / B2 161（回查原文）
+- **三层质量分级**：A 层 317（双官方信源，可直接引用）/ B1 4 / B2 151（回查原文）
 - **权威性与更新**：效力层级标注 + 到期雷达（月度）+ 官方信源指纹巡检 + 五步重建链
 
 ---

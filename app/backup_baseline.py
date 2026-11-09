@@ -26,7 +26,8 @@ INCLUDE_DIRS = [
     ("reports/policy-radar", (".md", ".json")),
 ]
 ROOT_FILES = ["context-handoff-v9-2026-11-08.md", "context-handoff-v10-2026-11-09.md",
-              "context-handoff-v11-2026-11-09.md"]
+              "context-handoff-v11-2026-11-09.md",
+              "context-handoff-v12-2026-11-09.md"]
 
 
 def sha16(path):

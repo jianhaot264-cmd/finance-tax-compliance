@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-11-09",
+  "verified_at": "2026-11-09",
+  "layer": "L0 逐字原文层：不进 build_kb.py 的 FILES，不参与主检索索引；只供 import_corpus.py 校验与 build_v5.py 写入 article_text",
+  "policy_ref": "context-handoff-v10-2026-11-09.md §5 三态分层（L0 原文 / L1 摘要 / L2 引用）",
+  "format": "每个 md 以 '## 《法规全称》第X条' 分块，块内为逐字原文；' > 官方信源' 行不进入原文",
+  "sha256_policy": "由 app/import_corpus.py 对每个 md 计算并回写本文件，同时写入 app/corpus-articles.json",
+  "documents": [
+    {
+      "doc_id": "authoritative-articles-v5",
+      "file": "authoritative-articles-v5.md",
+      "name": "权威逐字法条库（23 文件回库批次）",
+      "doc_no": "",
+      "level": "法律 / 行政法规 / 部门规章（按各条实际层级）",
+      "status": "现行有效",
+      "effective_date": "",
+      "expiry_date": "",
+      "sources": [
+        "https://www.gov.cn/",
+        "https://fgk.chinatax.gov.cn/"
+      ],
+      "source_count": 2,
+      "article_count": 37,
+      "verified_at": "2026-11-09",
+      "sha256": "06db3483067acd74bebb5593d52590dc58cd586ea6a86a953e33f36ad0b07518",
+      "note": "由 23-authoritative-articles.md 经三家权威法律数据库回库核验 + 官网双源交叉的逐字法条；本文件为从 article_text 表导出的结构化副本，与 23 文件解析结果重叠，build_v5.py 按 (法规名, 条号) 去重。"
+    },
+    {
+      "doc_id": "company-law-2023",
+      "file": "company-law-2023.md",
+      "name": "中华人民共和国公司法（2023年修订）",
+      "doc_no": "",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2024-07-01",
+      "expiry_date": "",
+      "sources": [
+        "https://www.gov.cn/yaowen/liebiao/202312/content_6923395.htm",
+        "https://cicc.court.gov.cn/html/1/380/385/12910.html"
+      ],
+      "source_count": 2,
+      "article_count": 1,
+      "verified_at": "2026-11-09",
+      "sha256": "c3f90eaf7c366978ea52a95a9869c60950c482b646e1a0c538873bfaf99b7da7",
+      "note": "第二百一十条（法定公积金提取顺序与比例）；文号不臆测，以官方发布为准。"
+    },
+    {
+      "doc_id": "announcement-2023-12",
+      "file": "announcement-2023-12.md",
+      "name": "财政部 税务总局公告 2023 年第 12 号",
+      "doc_no": "财政部 税务总局公告 2023 年第 12 号",
+      "level": "部门规范性文件（公告）",
+      "status": "现行有效",
+      "effective_date": "2023-01-01",
+      "expiry_date": "2027-12-31",
+      "sources": [
+        "https://www.gov.cn/zhengce/zhengceku/202308/content_6896379.htm",
+        "https://fgk.chinatax.gov.cn/zcfgk/c100024/c5236938/content.html"
+      ],
+      "source_count": 2,
+      "article_count": 2,
+      "verified_at": "2026-11-09",
+      "sha256": "bbc56af48109dfd99a288652dabc6583da17ad8bf83baa29d3f0f2d24d8f84ac",
+      "note": "收录第一条（个体工商户减半）与第二条（六税两费减半主体与范围）；第五条定义小型微利企业，作为边界依据写入知识条目，未在此逐字收录以免截断。"
+    }
+  ]
+}

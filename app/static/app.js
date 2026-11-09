@@ -15,6 +15,7 @@ const TAB_META = {
   kb: ["法规库", "结构化法规条目 · 分类检索与出处留痕"],
   incentives: ["优惠速查", "有效期 + 适用条件双字段核对"],
   about: ["关于与帮助", "运行架构、准确性机制与免责声明"],
+  business: ["业务事项", "按业务场景组织的确认计量 · 分录流程 · 税会差异 · 依据边界"],
 };
 const esc = (v) => String(v == null ? "" : v)
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -1388,10 +1389,11 @@ function bindEvents() {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openCmd(); return; }
     if (e.key === "Escape") { closeOverlays(); return; }
     if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (["1", "2", "3", "4"].includes(e.key)) { e.preventDefault(); switchTab(["chat", "kb", "incentives", "about"][Number(e.key) - 1]); }
+    if (["1", "2", "3", "4", "5"].includes(e.key)) { e.preventDefault(); switchTab(["chat", "kb", "incentives", "about", "business"][Number(e.key) - 1]); }
     else if (e.key === "/") {
       e.preventDefault();
-      const target = S.tab === "kb" ? $("#kb-search") : S.tab === "incentives" ? $("#inc-search") : $("#chat-input");
+      const target = S.tab === "kb" ? $("#kb-search") : S.tab === "incentives" ? $("#inc-search")
+        : S.tab === "business" ? $("#bc-search") : $("#chat-input");
       target.focus();
     }
   });

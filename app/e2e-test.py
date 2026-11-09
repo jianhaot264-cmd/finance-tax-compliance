@@ -169,6 +169,24 @@ async def main():
         check("同分类相关条目", await page.locator(".related-box .ref-chip").count() > 0)
         await page.screenshot(path=os.path.join(SHOT_DIR, "04-kb-detail.png"), full_page=False)
 
+        # ---- 业务事项浏览（v13.1） ----
+        print("\n[5.5] 业务事项结构化指引", flush=True)
+        await page.click('.nav-item[data-tab="business"]')
+        await page.wait_for_timeout(350)
+        check("业务事项视图可见", await page.is_visible("#view-business"))
+        n_bc = await page.locator(".bc-item").count()
+        check("业务事项列表渲染", n_bc >= 30, f"{n_bc} 条")
+        check("业务事项分类筛选 7 个", await page.locator("#bc-filters .filter-chip").count() == 7)
+        await page.fill("#bc-search", "赊销")
+        await page.wait_for_timeout(450)
+        check("业务事项搜索有结果", await page.locator(".bc-item").count() > 0)
+        await page.click("#bc-search-clear")
+        await page.wait_for_timeout(400)
+        if await page.locator(".bc-item").count():
+            await page.click(".bc-item")
+            check("业务事项详情 11 字段", await page.locator("#bc-detail .bc-fields tr").count() == 11)
+        await page.screenshot(path=os.path.join(SHOT_DIR, "05-bc-detail.png"), full_page=False)
+
         # ---- 优惠速查 ----
         print("\n[5] 优惠速查结构化", flush=True)
         await page.click('.nav-item[data-tab="incentives"]')

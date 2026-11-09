@@ -2292,7 +2292,7 @@ class Handler(BaseHTTPRequestHandler):
             self._json(KB)
         elif path == "/api/business-cases":
             q = (parse_qs(parsed.query).get("q", [""])[0] or "").strip()
-            self._json(RETRIEVER.retrieve_business_cases(q, topk=12))
+            self._json(RETRIEVER.retrieve_business_cases(q, topk=50))
         elif path == "/api/llm-context":
             qs = parse_qs(parsed.query)
             q = (qs.get("q", [""])[0] or "").strip()

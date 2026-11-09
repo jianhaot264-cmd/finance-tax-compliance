@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#102a43">
-<meta name="description" content="财税合规智能体 · 472 条法规条目 + 30 张概念解读卡 + 30 条业务事项卡，覆盖计税方法、社保、非税、消费税、财产税、出口退税、数电票、复议诉讼、税收协定、会计准则、行业专项、立法跟踪与到期预警（生产级 v13.0）">
+<meta name="description" content="财税合规智能体 · 472 条法规条目 + 30 张概念解读卡 + 30 条业务事项卡，覆盖计税方法、社保、非税、消费税、财产税、出口退税、数电票、复议诉讼、税收协定、会计准则、行业专项、立法跟踪与到期预警（生产级 v14.0）">
 <title>财税合规智能体 · 专家团工作台</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/style.css">
@@ -72,6 +72,7 @@
       <button class="nav-item" data-tab="kb" title="法规库（快捷键 2）"><svg class="ico"><use href="#i-book"/></svg><span>法规库</span><kbd>2</kbd></button>
       <button class="nav-item" data-tab="incentives" title="优惠速查（快捷键 3）"><svg class="ico"><use href="#i-gift"/></svg><span>优惠速查</span><kbd>3</kbd></button>
       <button class="nav-item" data-tab="about" title="关于（快捷键 4）"><svg class="ico"><use href="#i-info"/></svg><span>关于与帮助</span><kbd>4</kbd></button>
+      <button class="nav-item" data-tab="business" title="业务事项（快捷键 5）"><svg class="ico"><use href="#i-layers"/></svg><span>业务事项</span><kbd>5</kbd></button>
     </nav>
 
     <div class="side-section">
@@ -203,6 +204,31 @@
         <div id="incentives-body" class="inc-body"></div>
       </section>
 
+      <!-- ---------- 业务事项 ---------- -->
+      <section class="view" id="view-business" aria-label="业务事项">
+        <div class="bc-intro">
+          <div>
+            <h3>业务事项结构化指引</h3>
+            <p>按收入 / 资产 / 费用 / 税费 / 往来 / 期末结转组织，每条含适用范围、确认计量、会计分录与流程、税务处理、税会差异、参照依据与边界。<b>本层不是法规原文</b>，作申报或对外依据前须回查官方原文。</p>
+          </div>
+          <div class="bc-stats" id="bc-stats"></div>
+        </div>
+        <div class="bc-toolbar">
+          <div class="search-field">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input id="bc-search" type="search" placeholder="搜索业务事项、准则或税种（如：赊销 / 折旧 / 进项转出）" aria-label="搜索业务事项">
+            <button id="bc-search-clear" class="clear-btn" hidden aria-label="清空搜索">×</button>
+          </div>
+          <div class="filter-chips" id="bc-filters"></div>
+        </div>
+        <div class="bc-body">
+          <div class="bc-list" id="bc-list" role="listbox" aria-label="业务事项列表"></div>
+          <article class="bc-detail" id="bc-detail" aria-live="polite" aria-label="业务事项详情">
+            <div class="detail-empty"><b>选择左侧业务事项查看完整指引</b><span>含 11 项结构化字段与官方依据边界</span></div>
+          </article>
+        </div>
+      </section>
+
       <!-- ---------- 关于 ---------- -->
       <section class="view" id="view-about" aria-label="关于与帮助">
         <div class="about-grid">
@@ -274,6 +300,7 @@
   <button class="mobile-nav-item" data-tab="kb"><svg class="ico"><use href="#i-book"/></svg><span>法规库</span></button>
   <button class="mobile-nav-item" data-tab="incentives"><svg class="ico"><use href="#i-gift"/></svg><span>优惠</span></button>
   <button class="mobile-nav-item" data-tab="about"><svg class="ico"><use href="#i-info"/></svg><span>关于</span></button>
+  <button class="mobile-nav-item" data-tab="business"><svg class="ico"><use href="#i-layers"/></svg><span>事项</span></button>
 </nav>
 
 <!-- 命令面板 -->
@@ -356,5 +383,6 @@
 <script src="/copy.js"></script>
 <script src="/app.js"></script>
 <script src="/ux.js"></script>
+<script src="/business.js"></script>
 </body>
 </html>

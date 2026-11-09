@@ -2,7 +2,7 @@
 """build_v5.py — v5 生产级数据层（在 build_kb.py → enrich_kb.py 之后运行）。
 
 新增：
-  article_text          逐字法条（从 23 文件解析，供检索与引用）
+  article_text          逐字法条（从 23 文件 + L0 corpus-articles.json 解析，供检索与引用）
   citation_verification 权威库回库核验记录
   query_log             每次问答留痕（运行时由 server.py 写入，本脚本只建表）
   golden_case           Golden 评测集（手工边界题）
@@ -72,7 +72,8 @@ def main():
     cur.execute("DELETE FROM citation_verification")
     cur.execute("DELETE FROM golden_case")
 
-    n_art, n_ver = 0, 0
+    n_art, n_ver, n_corpus = 0, 0, 0
+    inserted_articles = set()
     for e in entries:
         if e.get("file") != "23":
             continue
@@ -90,6 +91,7 @@ def main():
                  e.get("level", ""), e.get("status", ""),
                  "企查查法律/华宇元典/同花顺法律", urls[0] if urls else "",
                  verified_at))
+            inserted_articles.add((law_name[:80], "第" + art_no + "条"))
             n_art += 1
         cur.execute("""INSERT OR REPLACE INTO citation_verification VALUES (?,?,?,?,?,?,?,?,?)""",
                     (e["id"], law_name[:80], len(pairs), e.get("status", ""),
@@ -99,6 +101,28 @@ def main():
                      verified_at,
                      "回库确认现行有效；逐字原文见 article_text 表"))
         n_ver += 1
+
+    # ---- L0 逐字原文层（corpus-articles.json）：多来源增量，按 (法规名, 条号) 去重 ----
+    corpus_path = os.path.join(BASE, "corpus-articles.json")
+    if os.path.exists(corpus_path):
+        try:
+            with open(corpus_path, "r", encoding="utf-8") as f:
+                cdata = json.load(f)
+            for a in cdata.get("articles", []):
+                key = (str(a.get("law_name", ""))[:80], str(a.get("article_no", "")))
+                if key in inserted_articles or not a.get("verbatim"):
+                    continue
+                cur.execute("""INSERT INTO article_text
+                    (entry_id,law_name,article_no,verbatim,effect_level,validity,
+                     source_db,source_url,verified_at) VALUES (?,?,?,?,?,?,?,?,?)""",
+                    (a.get("doc_id", "L0"), key[0], key[1], a["verbatim"],
+                     a.get("effect_level", ""), a.get("validity", ""),
+                     a.get("source_db", "官方原文层 L0"),
+                     a.get("source_url", ""), a.get("verified_at", "")))
+                inserted_articles.add(key)
+                n_corpus += 1
+        except (OSError, ValueError, KeyError) as ex:
+            print("  [warn] L0 原文层导入跳过:", ex)
 
     with open(EXTRA, "r", encoding="utf-8") as f:
         extras = json.load(f)["cases"]
@@ -114,11 +138,12 @@ def main():
 
     cur.execute("""INSERT OR REPLACE INTO kb_meta(key,value) VALUES
         ('v5_layer','1.0'),('verified_at',?),
-        ('authoritative_articles',?)""", (verified_at, str(n_art)))
+        ('authoritative_articles',?)""", (verified_at, str(n_art + n_corpus)))
     con.commit()
 
     print("=== v5 数据层 ===")
-    print("  article_text 逐字法条:", n_art)
+    print("  article_text 逐字法条:", n_art + n_corpus,
+          f"（23 文件 {n_art} + L0 原文层新增 {n_corpus}）")
     print("  citation_verification 核验记录:", n_ver)
     print("  golden_case 手工边界题:", len(extras))
     print("  query_log / eval_run / eval_result: 已建表（留痕历史保留）")

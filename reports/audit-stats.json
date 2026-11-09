@@ -1,24 +1,24 @@
 {
  "summary": {
-  "kb_version": "v13.0",
+  "kb_version": "v14.0",
   "verified_at": "2026-11-09",
   "entries": 472,
   "files": 56,
   "complete_metadata": 281,
   "valid_status": 472,
-  "flagged_entries": 17,
+  "flagged_entries": 7,
   "dual_source_entries": 354,
   "regulation_total": 345,
   "regulation_compliant": 219,
   "assembly_total": 127,
-  "assembly_compliant": 103,
+  "assembly_compliant": 113,
   "na_field_entries": 127,
-  "pending_field_entries": 17,
-  "enriched_at": "2026-11-09 14:12:17",
+  "pending_field_entries": 7,
+  "enriched_at": "2026-11-09 18:04:41",
   "tiers": {
-   "A": 307,
+   "A": 317,
    "B1": 4,
-   "B2": 161
+   "B2": 151
   },
   "by_entry_type": {
    "regulation": {
@@ -51,7 +51,7 @@
    },
    "business_case": {
     "total": 30,
-    "compliant": 20
+    "compliant": 30
    }
   },
   "explain_types": {
@@ -73,13 +73,13 @@
    },
    "business_case": {
     "total": 30,
-    "compliant": 20
+    "compliant": 30
    }
   },
   "explain_total": 92,
-  "explain_compliant": 82,
+  "explain_compliant": 92,
   "concept_complete": 30,
-  "compliant_total": 322,
+  "compliant_total": 332,
   "status_breakdown": {
    "现行有效": 414,
    "草案阶段": 6,
@@ -94,7 +94,7 @@
    "missing_source": 19,
    "missing_issuer": 39,
    "missing_level": 41,
-   "pending_field": 17,
+   "pending_field": 7,
    "single_source": 5
   },
   "blocked_items": [
@@ -6998,16 +6998,14 @@
    "file": "51",
    "title": "预收款/合同负债与先收款后交付",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "51-51.3",
@@ -7126,32 +7124,28 @@
    "file": "53",
    "title": "职工薪酬（工资、社保、福利费、工会经费、职工教育经费）",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "53-53.2",
    "file": "53",
    "title": "业务招待费与广告费和业务宣传费",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "53-53.3",
@@ -7214,16 +7208,14 @@
    "file": "54",
    "title": "小规模纳税人简易计税与小微免征",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "54-54.3",
@@ -7244,32 +7236,28 @@
    "file": "54",
    "title": "企业所得税预缴、汇算与递延所得税",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "54-54.5",
    "file": "54",
    "title": "个人所得税代扣代缴与六税两费/小微优惠",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "55-55.1",
@@ -7290,32 +7278,28 @@
    "file": "55",
    "title": "应付账款与确实无法偿付的应付款项",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "55-55.3",
    "file": "55",
    "title": "股东借款与关联方资金往来",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "55-55.4",
@@ -7378,32 +7362,28 @@
    "file": "56",
    "title": "所得税费用与递延所得税确认",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "汇编·动态",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "56-56.4",
    "file": "56",
    "title": "利润分配与盈余公积",
    "entry_type": "business_case",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "pending_field"
-   ],
+   "flags": [],
    "url_count": 2,
    "dual_source": true,
-   "compliant": false
+   "compliant": true
   },
   {
    "id": "56-56.5",

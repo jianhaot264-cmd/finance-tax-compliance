@@ -504,3 +504,41 @@
 .clarify-opt:active { transform: scale(.97); }
 .clarify-free { border-style: dashed; opacity: .85; }
 .clarify-free:hover { opacity: 1; }
+
+/* ---------------- 业务事项视图（v13.1） ---------------- */
+.bc-intro { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+.bc-intro h3 { margin: 0 0 6px; font-size: 18px; }
+.bc-intro p { margin: 0; max-width: 760px; font-size: 13px; line-height: 1.65; color: var(--muted, #627d98); }
+.bc-stats { display: flex; gap: 8px; flex-shrink: 0; }
+.bc-stat { min-width: 78px; padding: 8px 12px; border: 1px solid var(--border, #e2e8f0); border-radius: 10px; background: var(--surface, #fff); text-align: center; }
+.bc-stat b { display: block; font-size: 18px; color: var(--brand, #5b7cfa); }
+.bc-stat span { font-size: 11px; color: var(--muted, #627d98); }
+.bc-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
+.bc-toolbar .search-field { flex: 1 1 320px; }
+.bc-body { display: grid; grid-template-columns: minmax(260px, 34%) 1fr; gap: 14px; min-height: 420px; }
+.bc-list { display: flex; flex-direction: column; gap: 6px; max-height: 620px; overflow-y: auto; padding-right: 4px; }
+.bc-item { display: grid; grid-template-columns: 42px 1fr auto auto; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; border: 1px solid var(--border, #e2e8f0); border-radius: 10px; background: var(--surface, #fff); color: var(--text, #102a43); text-align: left; cursor: pointer; transition: border-color .15s, background .15s, transform .12s; }
+.bc-item:hover { border-color: var(--brand, #5b7cfa); transform: translateY(-1px); }
+.bc-item.active { border-color: var(--brand, #5b7cfa); background: var(--brand-soft, rgba(80,120,255,.10)); }
+.bc-no { font-size: 12px; font-weight: 700; color: var(--brand, #5b7cfa); }
+.bc-title { font-size: 13px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bc-cat, .bc-tier { font-size: 11px; padding: 2px 6px; border-radius: 6px; background: var(--surface-2, #f0f4f8); color: var(--muted, #627d98); white-space: nowrap; }
+.bc-detail { border: 1px solid var(--border, #e2e8f0); border-radius: 12px; background: var(--surface, #fff); padding: 18px; max-height: 620px; overflow-y: auto; }
+.bc-detail-head { margin-bottom: 14px; }
+.bc-detail-head h2 { margin: 8px 0 4px; font-size: 17px; line-height: 1.4; }
+.bc-id { margin: 0; font-size: 12px; color: var(--muted, #627d98); }
+.bc-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.bc-badge { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: var(--brand-soft, rgba(80,120,255,.12)); color: var(--brand, #5b7cfa); }
+.bc-fields { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bc-fields tr { border-bottom: 1px solid var(--border, #e2e8f0); }
+.bc-fields th { width: 132px; padding: 9px 10px; text-align: left; vertical-align: top; font-weight: 600; color: var(--muted, #627d98); white-space: nowrap; }
+.bc-fields td { padding: 9px 10px; line-height: 1.7; word-break: break-word; }
+.bc-fields a { color: var(--brand, #5b7cfa); text-decoration: underline; }
+.bc-foot { margin-top: 14px; padding: 10px 12px; border-radius: 8px; background: var(--surface-2, #f0f4f8); font-size: 12px; line-height: 1.6; color: var(--muted, #627d98); }
+@media (max-width: 860px) {
+  .bc-intro { flex-direction: column; }
+  .bc-body { grid-template-columns: 1fr; }
+  .bc-list { max-height: 260px; }
+  .bc-detail { max-height: none; }
+  .bc-fields th { width: 96px; }
+}

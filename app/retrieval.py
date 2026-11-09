@@ -342,16 +342,36 @@ class Retriever:
         return {"hits": hits, "confidence": conf, "abstain": abstain,
                 "trace": trace, "expanded": ex, "mode": "v5"}
 
-    # ---------------- 业务事项层独立检索（v13.0） ----------------
+    # ---------------- 业务事项层独立检索（v13.0 / v13.1 列表模式） ----------------
+    def _bc_item(self, e, sc=0.0):
+        """单条业务事项的轻量 + 完整字段（前端详情直接用 fields 渲染 11 字段）。"""
+        f = e.get("fields", {}) or {}
+        return {
+            "id": e.get("id", ""), "no": e.get("no", ""),
+            "title": e.get("title", ""), "category": e.get("category", ""),
+            "score": round(sc, 4), "tier": e.get("tier", ""),
+            "status": e.get("status", ""),
+            "scope": f.get("适用范围", ""),
+            "basis": f.get("参照依据与关键条款", ""),
+            "diff": f.get("税会差异提示", ""),
+            "boundary": f.get("适用边界", ""),
+            "fields": dict(f),
+        }
+
     def retrieve_business_cases(self, q, topk=8):
         """业务事项层独立检索：不参与法规主检索，供 /api/business-cases 使用。
 
         既保证 51-56 的 30 条结构化条目可检索、可维护，又不改变法规主检索的
         BM25 IDF / RRF 排序，避免扰动既有 Golden QA 评测基线。
+        q 为空时按编号列出全部（列表模式），供前端初始浏览。
         """
         q = str(q or "").strip()
-        if not q or not self.business_entries:
-            return {"results": [], "total": len(self.business_entries), "q": q}
+        if not self.business_entries:
+            return {"results": [], "total": 0, "q": q, "mode": "list"}
+        if not q:
+            items = sorted(self.business_entries, key=lambda e: str(e.get("id", "")))
+            return {"results": [self._bc_item(e) for e in items[:topk]],
+                    "total": len(items), "q": q, "mode": "list"}
         ex = self.expand_query(q)
         q_exp = " ".join(ex["terms"])
         s1 = dict(self.bm25_business.search(tokenize(q_exp), limit=40))
@@ -361,20 +381,10 @@ class Retriever:
         scored = [(i, s1.get(i, 0.0) + s2.get(i, 0.0))
                   for i in set(s1) | set(s2)]
         scored.sort(key=lambda x: -x[1])
-        out = []
-        for i, sc in scored[:topk]:
-            e = self.by_id.get(i, {})
-            f = e.get("fields", {})
-            out.append({
-                "id": i, "no": e.get("no", ""), "title": e.get("title", ""),
-                "category": e.get("category", ""), "score": round(sc, 4),
-                "tier": e.get("tier", ""), "status": e.get("status", ""),
-                "scope": f.get("适用范围", ""),
-                "basis": f.get("参照依据与关键条款", ""),
-                "diff": f.get("税会差异提示", ""),
-                "boundary": f.get("适用边界", ""),
-            })
-        return {"results": out, "total": len(self.business_entries), "q": q}
+        out = [self._bc_item(self.by_id[i], sc)
+               for i, sc in scored[:topk] if i in self.by_id]
+        return {"results": out, "total": len(self.business_entries),
+                "q": q, "mode": "search"}
 
     # ---------------- legacy 基线（复刻 server.score_entry） ----------------
     def _legacy_gram_score(self, q, e):
