@@ -198,7 +198,7 @@
    "id": "X013",
    "q": "跨境电商没有进项发票怎么交税",
    "category": "routing",
-   "expected_role": "tax-filing-specialist",
+   "expected_role": "lead",
    "must_refs": [
     "34-34.5"
    ],
@@ -389,7 +389,8 @@
    "category": "timeliness",
    "expected_role": null,
    "must_refs": [
-    "06-1"
+    "41-41.2",
+    "49-49.3"
    ],
    "forbid_refs": [],
    "must_keywords": [

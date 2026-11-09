@@ -145,6 +145,13 @@ class Retriever:
     # ---------------- Query 理解 ----------------
     def expand_query(self, q):
         terms = [q]
+        # 中文日期归一化：「2027 年 12 月 31 日」→「2027-12-31」，与条目内的 ISO 日期对齐
+        def _norm_date(m):
+            y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+            return f"{y:04d}-{mo:02d}-{d:02d}"
+        q_norm = re.sub(r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日", _norm_date, q)
+        if q_norm != q:
+            terms.append(q_norm)
         for short, full in self.alias.items():
             if short in q and full not in q:
                 terms.append(full)

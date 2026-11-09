@@ -345,6 +345,21 @@ function pushMessage(m, render = true) {
   saveSessions(); renderSessions();
   return render ? appendMessage(m) : null;
 }
+document.addEventListener("click", (ev) => {
+  const free = ev.target.closest("[data-clarify-free]");
+  if (free) {
+    ev.preventDefault();
+    const inp = document.getElementById("chat-input") || document.querySelector("textarea");
+    if (inp) { inp.focus(); inp.scrollIntoView({ block: "center" }); }
+    return;
+  }
+  const btn = ev.target.closest("[data-clarify]");
+  if (!btn) return;
+  ev.preventDefault();
+  const q = btn.getAttribute("data-clarify");
+  if (q) ask(q);
+});
+
 function pushError(text) {
   pushMessage({ role: "assistant", payload: { kind: "error", text } });
   if (window.UX) window.UX.decorateLastMessage({ q: S.lastAnswerFor || "" });
@@ -367,6 +382,14 @@ function renderStructured(a, disclaimer, container) {
       html += `<div class="sec-title">${esc(sec.title || "检索结果")}</div><ul class="sec-retrieval">`;
       (sec.items || []).forEach(it => html += `<li><b>${esc(it.title)}</b>｜${esc(it.status)}｜${esc(it.category)}${it.id ? ` <span class="ref-chip" data-ref="${esc(it.id)}">详情 ↗</span>` : ""}<br><span style="color:var(--text-3);font-size:12.4px">${esc(it.snippet || it.preview || "")}</span></li>`);
       html += `</ul>`;
+    } else if (sec.type === "clarify") {
+      html += `<div class="sec-title">${esc(sec.title || "请先选择方向")}</div><div class="sec-conclusion">${esc(sec.text || "")}</div>`;
+      html += `<div class="clarify-row">`;
+      (sec.options || []).forEach((op, i) => {
+        html += `<button class="clarify-opt" data-clarify="${esc(op.q || op.label)}" data-idx="${i}">${esc(op.label || op.q)}</button>`;
+      });
+      html += `<button class="clarify-opt clarify-free" data-clarify-free="1">都不匹配，我直接描述</button>`;
+      html += `</div>`;
     } else if (sec.type === "escalate") html += `<div class="sec-escalate">${esc(sec.text)}</div>`;
   });
   if (a.refs && a.refs.length) {
@@ -492,6 +515,25 @@ function renderMD(md) {
 }
 
 /* ---------------- 问答主流程 ---------------- */
+/* 意图对齐：缺关键要素的问题走本地澄清通道（与后端 analyze_intent 同规则镜像） */
+function isVagueQuestion(q) {
+  const text = String(q || "").trim();
+  if (!text || text.length > 60) return false;
+  const SPECIFIC = /增值税|企业所得税|个人所得税|个税|印花税|契税|消费|社保|公积金|残保|发票|年终奖|工资|小微|小规模|一般纳税人|个体|汇算|申报|退税|滞纳金|复议|注销/;
+  const VAGUE = /^(怎么|如何|怎样|咋)(缴|交|报|弄|搞|做|办)|^(有什么|有哪些)(优惠|政策|补贴|好处)|^(要交多少|多少钱|合规吗|合法吗|怎么办|注意什么|需要注意什么)|^(我是|我是做).{0,8}(要交|怎么交|有什么)|^交(什么|哪些)税$/;
+  if (text.length <= 24 && !SPECIFIC.test(text) && VAGUE.test(text)) return true;
+  const ENTITY = /小规模|一般纳税人|小微企业|小型微利|个体工商户|个体户|个人独资|合伙企业|灵活就业|自由职业|员工|个人(?!所得税)/;
+  const COMPUTE = /要交多少|缴多少|交多少|怎么算|怎么缴|怎么交|税率(是)?多少|按多少|应纳税额|税负/;
+  const TAX = /增值税|企业所得税|个人所得税|个税|印花税|契税|消费税|附加税|社保|公积金|残保|发票|年终奖|工资|经营所得/;
+  const INCENTIVE = /优惠|减免|补贴|退税|加计|免征|减征|即征即退/;
+  const REGION = /广东|广州|深圳|大湾区|横琴|前海|南沙|全国|北京|上海|浙江|江苏/;
+  const GATE_A = /需要什么|需要哪些|什么条件|什么材料|什么证书|什么手续|哪些条件|哪些资料/;
+  const GATE_B = /首套|二套|买房|购房|房贷|房租|工资|月薪|年薪|年终奖|劳务报酬|离职|跳槽|公积金贷款/;
+  if (text.length <= 30 && COMPUTE.test(text) && TAX.test(text) && !ENTITY.test(text) && !GATE_A.test(text) && !GATE_B.test(text)) return true;
+  if (text.length <= 30 && INCENTIVE.test(text) && TAX.test(text) && !REGION.test(text)) return true;
+  return false;
+}
+
 /* P0 红线：计算类问题只走本地确定性引擎，禁止 LLM 出数值 */
 function isCalcQuestion(q) {
   const INTENTS = [
@@ -525,7 +567,7 @@ async function ask(q, opts = {}) {
   scrollChat(true);
   try {
     const mode = (window.UX && window.UX.mode) || opts.mode || "standard";
-    if (isCalcQuestion(q)) await sendLocal(q, { mode });          /* 计算类强制本地 */
+    if (isCalcQuestion(q) || isVagueQuestion(q)) await sendLocal(q, { mode });  /* 计算/模糊意图强制本地 */
     else if (S.cloud.ready && S.cloud.current) await sendViaCloud(q, { mode });
     else await sendLocal(q, { mode });
   } catch (err) {
@@ -584,6 +626,7 @@ async function sendLocal(q, opts = {}) {
       payload: { kind: "structured", answer: data.answer, disclaimer: data.disclaimer,
         role: data.answer.role, routed: data.answer.routed, risk: data.answer.risk,
         mode: data.answer.mode === "calc" ? "确定性计算引擎"
+             : data.answer.mode === "clarify" ? "意图澄清"
              : data.answer.mode === "rule" ? "精编答案库" : "知识库检索" },
     });
     if (window.UX) window.UX.decorateLastMessage({

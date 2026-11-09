@@ -1,33 +1,33 @@
 {
  "summary": {
-  "kb_version": "v11.0",
-  "verified_at": "2026-11-08",
-  "entries": 430,
-  "files": 48,
-  "complete_metadata": 270,
-  "valid_status": 430,
+  "kb_version": "v12.0",
+  "verified_at": "2026-11-09",
+  "entries": 442,
+  "files": 50,
+  "complete_metadata": 281,
+  "valid_status": 442,
   "flagged_entries": 7,
-  "dual_source_entries": 319,
-  "regulation_total": 334,
-  "regulation_compliant": 214,
-  "assembly_total": 96,
-  "assembly_compliant": 82,
-  "na_field_entries": 96,
+  "dual_source_entries": 324,
+  "regulation_total": 345,
+  "regulation_compliant": 219,
+  "assembly_total": 97,
+  "assembly_compliant": 83,
+  "na_field_entries": 97,
   "pending_field_entries": 7,
   "enriched_at": "2026-11-07",
   "tiers": {
-   "A": 282,
+   "A": 287,
    "B1": 4,
-   "B2": 144
+   "B2": 151
   },
   "by_entry_type": {
    "regulation": {
-    "total": 334,
-    "compliant": 214
+    "total": 345,
+    "compliant": 219
    },
    "digest": {
-    "total": 30,
-    "compliant": 19
+    "total": 31,
+    "compliant": 20
    },
    "table_row": {
     "total": 4,
@@ -71,23 +71,23 @@
   "explain_total": 62,
   "explain_compliant": 62,
   "concept_complete": 30,
-  "compliant_total": 296,
+  "compliant_total": 302,
   "status_breakdown": {
-   "现行有效": 378,
+   "现行有效": 387,
    "草案阶段": 6,
-   "汇编·动态": 44,
+   "汇编·动态": 47,
    "已废止": 2
   },
   "flag_breakdown": {
    "missing_doc_no": 38,
-   "missing_source_url": 90,
+   "missing_source_url": 94,
    "missing_dates": 31,
    "missing_scope": 38,
    "missing_source": 19,
    "missing_issuer": 39,
    "missing_level": 41,
    "pending_field": 7,
-   "single_source": 2
+   "single_source": 5
   },
   "blocked_items": [
    {
@@ -118,7 +118,7 @@
    }
   ],
   "alias_count": 89,
-  "rule_reference_count": 309,
+  "rule_reference_count": 329,
   "change_log_count": 16,
   "database": "finance-tax-compliance.db"
  },
@@ -6787,6 +6787,188 @@
    "flags": [],
    "url_count": 3,
    "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "49-49.1",
+   "file": "49",
+   "title": "个人所得税专项附加扣除七项标准（2023 年提标后现行）",
+   "entry_type": "regulation",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "49-49.2",
+   "file": "49",
+   "title": "综合所得汇算清缴（工资薪金 / 劳务 / 稿酬 / 特许权使用费）",
+   "entry_type": "regulation",
+   "tier": "B2",
+   "status": "汇编·动态",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "single_source"
+   ],
+   "url_count": 1,
+   "dual_source": false,
+   "compliant": false
+  },
+  {
+   "id": "49-49.3",
+   "file": "49",
+   "title": "全年一次性奖金单独计税（延续至 2027-12-31）",
+   "entry_type": "regulation",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "single_source"
+   ],
+   "url_count": 1,
+   "dual_source": false,
+   "compliant": false
+  },
+  {
+   "id": "49-49.4",
+   "file": "49",
+   "title": "经营所得五级超额累进税率与汇算",
+   "entry_type": "regulation",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "missing_source_url"
+   ],
+   "url_count": 0,
+   "dual_source": false,
+   "compliant": false
+  },
+  {
+   "id": "49-49.5",
+   "file": "49",
+   "title": "个体工商户征收方式：查账征收与核定征收",
+   "entry_type": "regulation",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "missing_source_url"
+   ],
+   "url_count": 0,
+   "dual_source": false,
+   "compliant": false
+  },
+  {
+   "id": "49-49.6",
+   "file": "49",
+   "title": "灵活就业人员与自由职业者的社保与个税要点",
+   "entry_type": "regulation",
+   "tier": "B2",
+   "status": "汇编·动态",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "missing_source_url"
+   ],
+   "url_count": 0,
+   "dual_source": false,
+   "compliant": false
+  },
+  {
+   "id": "50-50.1",
+   "file": "50",
+   "title": "住房公积金管理条例",
+   "entry_type": "regulation",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "50-50.2",
+   "file": "50",
+   "title": "公积金缴存实务：比例、基数与企业列支",
+   "entry_type": "regulation",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "single_source"
+   ],
+   "url_count": 1,
+   "dual_source": false,
+   "compliant": false
+  },
+  {
+   "id": "50-50.3",
+   "file": "50",
+   "title": "公积金提取六种法定情形与办理",
+   "entry_type": "regulation",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "50-50.4",
+   "file": "50",
+   "title": "住房公积金贷款利率（2024-05-18 起执行）",
+   "entry_type": "regulation",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "50-50.5",
+   "file": "50",
+   "title": "会计法",
+   "entry_type": "regulation",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "50-50.6",
+   "file": "50",
+   "title": "财务基础法规速查（会计档案 · 现金管理 · 代理记账 · 小企业准则）",
+   "entry_type": "digest",
+   "tier": "B2",
+   "status": "汇编·动态",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "missing_source_url"
+   ],
+   "url_count": 0,
+   "dual_source": false,
    "compliant": true
   }
  ],

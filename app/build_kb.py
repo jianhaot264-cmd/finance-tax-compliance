@@ -66,6 +66,8 @@ FILES = [
     ("46-collection-procedure.md", "46", "全国 · 征管程序与纳税人权利"),
     ("47-planning-space-boundaries.md", "47", "全国 · 合法操作空间与风险边界"),
     ("48-guidance-documents.md", "48", "全国 · 指导文件体系与引用规则"),
+    ("49-personal-tax-finance.md", "49", "全国 · 个人与个体工商户财税"),
+    ("50-housing-fund-finance-rules.md", "50", "全国 · 住房公积金与财务基础法规"),
 ]
 
 H2_RE = re.compile(r"^##\s+(.+?)\s*$")
@@ -177,16 +179,16 @@ def build():
             e["tier"] = "A" if prefix in {"16", "17", "18", "19", "20", "21", "22", "23", "24",
                                           "25", "26", "27", "28", "29", "30", "31", "32",
                                           "33", "34", "35", "36", "37", "38", "39",
-                                          "40", "41", "42", "43", "44", "45", "46", "47", "48"} else "B"  # A/A+=双源与权威库回库；enrich_kb.py 按元数据实证重算
+                                          "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50"} else "B"  # A/A+=双源与权威库回库；enrich_kb.py 按元数据实证重算
             e["source_file"] = fname
             entries.append(e)
             count += 1
         files_meta.append({"file": prefix, "name": fname, "category": category, "entries": count})
 
     data = {
-        "generated_at": "2026-11-08",
-        "verified_at": "2026-11-08",
-        "kb_version": "v11.0",
+        "generated_at": "2026-11-09",
+        "verified_at": "2026-11-09",
+        "kb_version": "v12.0",
         "files": files_meta,
         "entries": entries,
     }

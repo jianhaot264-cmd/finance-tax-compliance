@@ -1599,6 +1599,36 @@ RULES = [
                  "2026 年起追溯登记不早于 2026-01-01，跨期票据与收入归属要提前梳理"],
         "refs": ["47-47.2", "29-29.1", "15-15.4"],
     },
+    {
+        "id": "special-deduction",
+        "q": "个税专项附加扣除有哪七项？每月各扣多少？",
+        "role": "tax-filing-specialist", "risk": "low",
+        "kw": ["专项附加扣除", "子女教育", "婴幼儿照护", "赡养老人", "住房贷款利息", "住房租金",
+               "继续教育", "大病医疗", "扣多少", "扣除标准"],
+        "must": ["专项附加", "扣除"],
+        "conclusion": "现行 7 项：子女教育 2000 元/月/孩、3 岁以下婴幼儿照护 2000 元/月/孩、赡养老人 3000 元/月（独生子女全额，非独生每人≤1500）、住房贷款利息 1000 元/月（首套）、住房租金 1500/1100/800 元/月三档、继续教育（学历 400 元/月或职业资格 3600 元/年）、大病医疗（每年 8 万限额内据实）。前两项父母可选一方 100% 或双方各 50%。",
+        "basis": [("国发〔2023〕13 号（2023 年提标，自 2023-01-01 实施）", "49-49.1"),
+                  ("《个人所得税专项附加扣除暂行办法》国发〔2018〕41 号", "49-49.1")],
+        "tips": ["住房贷款利息与住房租金不可同时享受",
+                 "大病医疗只能在年度汇算时扣除，预扣预缴不扣",
+                 "留存备查资料自汇算期结束起保存 5 年"],
+        "refs": ["49-49.1", "49-49.2"],
+    },
+    {
+        "id": "housing-fund",
+        "q": "住房公积金怎么缴？能提出来吗？贷款利率多少？",
+        "role": "tax-filing-specialist", "risk": "low",
+        "kw": ["公积金", "住房公积金", "缴存比例", "公积金提取", "公积金贷款", "公积金利率",
+               "公积金基数", "开户", "封存"],
+        "must": ["公积金"],
+        "conclusion": "缴存：单位与个人各 5%–12%（同比例），基数为上年度月平均工资（上限一般为社平工资 3 倍）；单位应于入职 30 日内办缴存登记。提取：购建翻修自住住房、退休、完全丧失劳动能力、出境定居、还房贷、房租超比例六种情形（3 日内审批）。贷款利率（2024-05-18 起）：首套 5 年以下 2.35%、5 年以上 2.85%；二套不低于 2.775%/3.325%。",
+        "basis": [("《住房公积金管理条例》（国务院令第 262 号，2019 年 710 号令修订）第十六至二十四条", "50-50.1"),
+                  ("中国人民银行《关于下调个人住房公积金贷款利率的通知》（2024-05-17）", "50-50.4")],
+        "tips": ["不办缴存登记罚 1 万–5 万元；少缴逾期可被法院强制执行",
+                 "单位缴存部分在企业成本列支，可税前扣除",
+                 "缴存基数上下限与贷款额度上限由属地公积金中心逐年公布"],
+        "refs": ["50-50.1", "50-50.2", "50-50.3", "50-50.4"],
+    },
 ]
 
 # ---------------------------------------------------------------- retrieval
@@ -1627,6 +1657,135 @@ def retrieve(q, top=3):
     scored = [x for x in scored if x[0] > 0]
     scored.sort(key=lambda x: -x[0])
     return [e for _, e in scored[:top]]
+
+
+# ============ 意图对齐引擎（v2）：四要素槽位 + 选项式主动追问 ============
+# 四要素：事项/税种(tax) · 主体(entity) · 场景(action) · 地区(region)
+# 原则：缺「会改变答案」的关键槽位时主动追问；每个选项把槽位值直接写进续问句，
+#       用户点选后问题自动变完整，通常 1 轮即对齐，最多 2 轮；槽位齐备才作答。
+
+ENTITY_RE = re.compile(
+    r"小规模|一般纳税人|小微企业|小型微利|个体工商户|个体户|个人独资|合伙企业|"
+    r"灵活就业|自由职业|员工|个人(?!所得税)")
+ACTION_COMPUTE_RE = re.compile(r"要交多少|缴多少|交多少|怎么算|怎么缴|怎么交|税率(是)?多少|按多少|应纳税额|税负")
+ACTION_INCENTIVE_RE = re.compile(r"优惠|减免|补贴|加计|免征|减征|即征即退|减半")
+ACTION_COMPLIANCE_RE = re.compile(r"合规|风险|稽查|虚开|红线|处罚|滞纳金|注意什么")
+TAX_DOMAIN_RE = re.compile(r"增值税|企业所得税|个人所得税|个税|印花税|契税|消费税|附加税|社保|公积金|残保|发票|年终奖|工资|经营所得")
+REGION_RE = re.compile(r"广东|广州|深圳|大湾区|横琴|前海|南沙|全国|北京|上海|浙江|江苏")
+
+# 税种槽位选项（用于「要交多少税」类全模糊问句的第 1 轮）
+TAX_SLOT_OPTIONS = [
+    {"label": "增值税", "q": "企业增值税要交多少？怎么算？", "slot": "tax", "value": "增值税"},
+    {"label": "企业所得税", "q": "企业所得税要交多少？怎么算？", "slot": "tax", "value": "企业所得税"},
+    {"label": "个人所得税", "q": "工资个税要交多少？怎么算？", "slot": "tax", "value": "个人所得税"},
+    {"label": "社保公积金", "q": "社保和住房公积金要交多少？", "slot": "tax", "value": "社保公积金"},
+]
+# 主体槽位选项（用于「XX税要交多少」但主体缺失的问句——小规模/一般/个体答案完全不同）
+ENTITY_SLOT_OPTIONS = [
+    {"label": "小规模纳税人", "q_tpl": "小规模纳税人{tail}", "slot": "entity", "value": "小规模纳税人"},
+    {"label": "一般纳税人", "q_tpl": "一般纳税人{tail}", "slot": "entity", "value": "一般纳税人"},
+    {"label": "小微企业", "q_tpl": "小微企业{tail}", "slot": "entity", "value": "小微企业"},
+    {"label": "个体工商户/个人", "q_tpl": "个体工商户{tail}", "slot": "entity", "value": "个体工商户"},
+]
+# 地区槽位选项（用于优惠类问题缺地区——属地口径差异大）
+REGION_SLOT_OPTIONS = [
+    {"label": "广东（含大湾区）", "q_tpl": "在广东（含大湾区），{head}？", "slot": "region", "value": "广东"},
+    {"label": "全国通用", "q_tpl": "按全国口径，{head}？", "slot": "region", "value": "全国"},
+    {"label": "其他地区", "q_tpl": "在广东以外地区，{head}？", "slot": "region", "value": "其他地区"},
+]
+# 全模糊问句的三类方向（沿用 v1 分组，选项 q 自带完整上下文）
+FUZZY_GROUPS = {
+    "tax": TAX_SLOT_OPTIONS,
+    "incentive": [
+        {"label": "小微企业优惠", "q": "小微企业有哪些税收优惠？", "slot": "tax", "value": "小微企业优惠"},
+        {"label": "行业/区域优惠", "q": "广东或大湾区的企业有什么税收优惠？", "slot": "region", "value": "广东"},
+        {"label": "个人优惠", "q": "个人所得税有哪些专项扣除和优惠？", "slot": "tax", "value": "个人优惠"},
+    ],
+    "compliance": [
+        {"label": "发票合规", "q": "发票管理要注意什么？虚开红线是什么？", "slot": "action", "value": "发票合规"},
+        {"label": "申报与账务", "q": "每月/每季度的申报和做账要注意什么？", "slot": "action", "value": "申报账务"},
+        {"label": "风险与稽查", "q": "常见的税务风险点和稽查应对有哪些？", "slot": "action", "value": "风险稽查"},
+    ],
+}
+VAGUE_Q_RE = re.compile(
+    r"^(怎么|如何|怎样|咋)(缴|交|报|弄|搞|做|办)|"
+    r"^(有什么|有哪些)(优惠|政策|补贴|好处)|"
+    r"^(要交多少|多少钱|合规吗|合法吗|怎么办|注意什么|需要注意什么)|"
+    r"^(我是|我是做).{0,8}(要交|怎么交|有什么)|"
+    r"^交(什么|哪些)税$")
+
+
+def analyze_intent(q):
+    """抽取意图四要素槽位（纯函数）：tax / entity / action / region。"""
+    text = (q or "").strip()
+    return {
+        "tax": bool(TAX_DOMAIN_RE.search(text)),
+        "entity": bool(ENTITY_RE.search(text)),
+        "action": ("compute" if ACTION_COMPUTE_RE.search(text)
+                   else "incentive" if ACTION_INCENTIVE_RE.search(text)
+                   else "compliance" if ACTION_COMPLIANCE_RE.search(text)
+                   else None),
+        "region": bool(REGION_RE.search(text)),
+    }
+
+
+def detect_clarify(q):
+    """意图对齐：缺「会改变答案」的关键槽位时返回选项式追问，齐备则返回 None。
+    优先级：① 全模糊 → 事项方向选项；② 算税意图+有税域+缺主体 → 主体选项；
+    ③ 优惠意图+缺地区 → 地区选项。选项续问句自带槽位值，通常 1 轮对齐。"""
+    text = (q or "").strip()
+    if not text or len(text) > 60:
+        return None
+    slots = analyze_intent(text)
+
+    # ① 全模糊：短问句 + 模糊意图 + 无任何具体税种/主体词
+    if len(text) <= 24:
+        SPECIFIC = re.compile(
+            r"增值税|企业所得税|个人所得税|个税|印花税|契税|消费|社保|公积金|残保|发票|"
+            r"年终奖|工资|小微|小规模|一般纳税人|个体|汇算|申报|退税|滞纳金|复议|注销")
+        if not SPECIFIC.search(text) and VAGUE_Q_RE.search(text):
+            kind = "incentive" if ACTION_INCENTIVE_RE.search(text) else (
+                "compliance" if ACTION_COMPLIANCE_RE.search(text) else "tax")
+            return {
+                "mode": "clarify", "kind": kind, "slot": "action",
+                "options": FUZZY_GROUPS[kind],
+                "question": "你的问题还不够具体，为了给出准确答案，请先选择你关心的方向：",
+            }
+
+    # ② 算税意图 + 有税域 + 缺主体 → 主体决定税率与算法，必须追问
+    #    负闸门A：混合意图（还问需要什么证书/条件/材料）→ 用户要完整方案，直接作答
+    #    负闸门B：个人语境（首套/买房/工资/年终奖…）→ 主体即个人，不追问企业身份
+    if slots["action"] == "compute" and slots["tax"] and not slots["entity"] and len(text) <= 30:
+        GATE_A = re.compile(r"需要什么|需要哪些|什么条件|什么材料|什么证书|什么手续|哪些条件|哪些资料")
+        GATE_B = re.compile(r"首套|二套|买房|购房|房贷|房租|工资|月薪|年薪|年终奖|劳务报酬|离职|跳槽|公积金贷款")
+        if GATE_A.search(text) or GATE_B.search(text):
+            return None
+        tail = text[0:1] if False else text  # 保留原句嵌入选项
+        opts = []
+        for o in ENTITY_SLOT_OPTIONS:
+            opts.append({"label": o["label"], "q": o["q_tpl"].format(tail=text), "slot": o["slot"], "value": o["value"]})
+        return {
+            "mode": "clarify", "kind": "entity", "slot": "entity",
+            "options": opts,
+            "question": "不同主体的计税方式差别很大，请先选择你的身份：",
+        }
+
+    # ③ 优惠意图 + 缺地区 → 属地口径差异大，主动追问
+    #    负闸门：程序性（怎么申请/办理）与存在性（有…吗）问句不追问——答案不随地区改变主结论
+    if (slots["action"] == "incentive" and (slots["tax"] or slots["entity"])
+            and not slots["region"] and len(text) <= 30):
+        SKIP = re.compile(r"怎么申请|怎么操作|怎么办理|办理流程|申请流程|怎么填|怎么报|"
+                          r"有没有|是否有|是不是|有.{0,10}吗|有.{0,10}么$")
+        if not SKIP.search(text):
+            opts = []
+            for o in REGION_SLOT_OPTIONS:
+                opts.append({"label": o["label"], "q": o["q_tpl"].format(head=text.rstrip("？?。.")), "slot": o["slot"], "value": o["value"]})
+            return {
+                "mode": "clarify", "kind": "region", "slot": "region",
+                "options": opts,
+                "question": "各地执行口径有差异，请先确认适用地区：",
+            }
+    return None
 
 
 AUDIT_INTENT_RE = re.compile(
@@ -1682,13 +1841,17 @@ SYSTEM_PROMPT = (
     "①《企业所得税法实施条例》现行为 512 号令经 2019、2024 两次修订版；② 个税专项附加扣除现行 **7 项**（法条第六条只列 6 项，第 7 项由国发〔2022〕8 号设立，国发〔2023〕13 号提标）；"
     "③ 职工教育经费按财税〔2018〕51 号 **8%**（条例第四十二条原文 2.5% 因但书被覆盖）；④ 消费税暂行条例附表税率已多次调整，禁止硬编码；"
     "6) 剩余阻断项不得作为确定结论：广东省工伤条例修订与省级非税/地市办法（前海 15% 已由财税〔2026〕3 号延至 2027-12-31，P-05b 已解除）；南沙 15% 执行至 2026-12-31，不得按 15% 测算 2027 年度；"
-    "7) 回答结构：先给「结论」，再列「依据」（写明法规名称与条号/文号），最后给「风险与合规提示」；引用须来自本轮上下文，不得引用未出现在上下文中的条目；"
+    "7) 回答结构与文风（硬约束）：**先结论后依据**——开头 1~3 句直接给出用户意图的明确结论与可操作建议（用户能照做的动作），再以「依据」简要引用法规名称与文号/条号（每条一行以内、只保留与结论直接相关的词句），**禁止大段复述法规原文**、禁止堆砌与问题无关的条款；最后给必要的风险与合规提示；引用须来自本轮上下文，不得引用未出现在上下文中的条目；"
     "8) 涉及虚开、偷税、骗税、重大补税等高风险事项必须提示转介执业税务师或律师；"
     "9) 最近核验日期 2026-11-07；涉及时效性（草案、有效期、2026-12-31 与 2027-12-31 到期组）必须如实说明；稳岗返还已于 2026 年延续（人社部发〔2026〕39 号），不得沿用 2025 年的旧口径；"
     "10) 知识库 v6.0 新增概念解读层（25–28 文件）：概念卡属解释层，不是单一法规；回答「定义/辨析/因果/适用条件/易混淆/局限」类问题时，优先给出两层依据（法条原文 + 现行公告口径），并明确边界条件与局限；"
     "11) 已知易混淆点必须写全发文机关与年份：财政部 税务总局公告 2025 年第 16 号（广宣费 30%）与国家税务总局公告 2025 年第 16 号（平台扣缴）是两个不同文件；2020 年第 43 号公告（广宣费）已于 2026-01-01 废止，2023 年第 43 号（先进制造业加计抵减）现行；"
     "12) 小额零星经营业务按增值税起征点判断，不得硬编码 500 元，2026 年起部分省份按次标准变化，须提示属地确认；"
     "13) 全程简体中文，简洁专业；不承诺 100% 准确，正式用途以官方发布原文为准，输出不构成税务师或律师专业意见。"
+    "14) **主动意图对齐（四要素）**：作答前自查「事项/税种·主体·场景·地区」四要素——"
+    "任一会改变答案的关键要素缺失时（如只问「要交多少税」缺税种与主体），不要泛泛作答、更不得臆测用户身份与业务场景，"
+    "必须先给选项式追问（2~4 个选项，各选项即一种具体理解）让用户点选，最多追问 2 轮，要素齐备后再作答；"
+    "选项续问句要把选定要素直接写进问句。若要素已齐或答案不随要素变化，直接作答不追问。"
 )
 
 
@@ -1856,6 +2019,20 @@ def ask_local(q, mode="standard"):
         cr = None
     if cr is not None and getattr(cr, "get", lambda k, d=None: d)("ok", True):
         return build_calc_answer(cr)
+    # ---- 意图不明 → 选项式澄清追问（不泛泛作答）；精确命中精编问句的直接走规则 ----
+    clarify = None if any(r.get("q") == q for r in RULES) else detect_clarify(q)
+    if clarify:
+        return {
+            "role": ROLES["lead"], "routed": "lead", "risk": "low",
+            "mode": "clarify", "matched_q": "", "refs": [],
+            "clarify": clarify, "confidence": 0.0, "abstain": False,
+            "sections": [{
+                "type": "clarify",
+                "title": "先确认你的问题方向",
+                "text": clarify["question"],
+                "options": clarify["options"],
+            }],
+        }
     role = route_role(q)
     risk = assess_risk(q)
     v5 = RETRIEVER.retrieve(q, mode="v5", topk=8)

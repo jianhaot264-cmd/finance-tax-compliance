@@ -327,7 +327,7 @@ def main():
         enriched.append(out)
 
     data["entries"] = enriched
-    data["enriched_at"] = "2026-11-07"
+    data["enriched_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data["enrichment_version"] = "1.0"
     data["entry_types"] = sorted({e["entry_type"] for e in enriched})
     data["tiers"] = {t: sum(1 for e in enriched if e["tier"] == t)

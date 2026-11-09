@@ -4,7 +4,7 @@
 >
 > **本工具仅用于辅助合规自查，不构成专业税务/法律意见。**
 
-[![CI](https://github.com/YOUR_ORG/finance-tax-compliance/actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
+[![CI](https://github.com/jianhaot264-cmd/finance-tax-compliance/actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue)
 ![Zero Deps](https://img.shields.io/badge/dependencies-0%20(纯标准库)-green)
@@ -86,7 +86,7 @@ cd app && python server.py 8777
 | `/api/reconcile` | POST | 三流一致核对 |
 | `/api/checklist` | POST | 合规检查清单生成 |
 | `/api/health` | GET | 健康检查 |
-| `/api/kb` | GET | 知识库全量（430 条） |
+| `/api/kb` | GET | 知识库全量（442 条） |
 
 ```bash
 curl -X POST http://localhost:8777/api/ask \
@@ -100,7 +100,7 @@ curl -X POST http://localhost:8777/api/ask \
 
 **430 条**结构化条目 / **48 个主题文件** / 107 条精编问答规则 / 30 张概念卡，覆盖 18 税种 + 征管稽查 + 发票 + 社保非税 + 跨境 + 广东/大湾区 + 计税方法 + 复议诉讼 + 税收协定 + 会计准则 + 行业专项 + 立法跟踪 + 到期预警。
 
-- **三层质量分级**：A 层 282（双官方信源，可直接引用）/ B1 4 / B2 144（回查原文）
+- **三层质量分级**：A 层 287（双官方信源，可直接引用）/ B1 4 / B2 151（回查原文）
 - **权威性与更新**：效力层级标注 + 到期雷达（月度）+ 官方信源指纹巡检 + 五步重建链
 
 ---

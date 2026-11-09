@@ -487,3 +487,20 @@
   .overlay { padding: 8vh 10px 10px; align-items: flex-start; }
   .toast { box-shadow: var(--elev-3); }
 }
+
+/* ---------------- 22. 意图澄清选项 ---------------- */
+.clarify-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
+.clarify-opt {
+  border: 0.5px solid var(--border-2, rgba(130, 130, 140, .35));
+  background: var(--surface-2, rgba(130, 130, 140, .12));
+  color: var(--text-1);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform .12s, background .15s, border-color .15s;
+}
+.clarify-opt:hover { background: var(--brand-soft, rgba(80, 120, 255, .16)); border-color: var(--brand, #5b7cfa); transform: translateY(-1px); }
+.clarify-opt:active { transform: scale(.97); }
+.clarify-free { border-style: dashed; opacity: .85; }
+.clarify-free:hover { opacity: 1; }

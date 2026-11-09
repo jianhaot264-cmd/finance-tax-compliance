@@ -30,7 +30,9 @@ URL_RE = re.compile(r"https?://[^\s|)>）\]\"']+")
 
 def main():
     with open(KB, "r", encoding="utf-8") as f:
-        entries = json.load(f)["entries"]
+        data = json.load(f)
+    entries = data["entries"]
+    verified_at = data.get("verified_at", "")
     con = sqlite3.connect(DB)
     cur = con.cursor()
 
@@ -83,14 +85,14 @@ def main():
                 (e["id"], law_name[:80], "第" + art_no + "条", verbatim.strip(),
                  e.get("level", ""), e.get("status", ""),
                  "企查查法律/华宇元典/同花顺法律", urls[0] if urls else "",
-                 "2026-11-07"))
+                 verified_at))
             n_art += 1
         cur.execute("""INSERT OR REPLACE INTO citation_verification VALUES (?,?,?,?,?,?,?,?,?)""",
                     (e["id"], law_name[:80], len(pairs), e.get("status", ""),
                      "企查查法律 get_legal_citation_verify + 华宇元典语义检索",
                      urls[0] if urls else "",
                      "中国政府网/司法部行政法规库/财政部/税务总局官网双源",
-                     "2026-11-07",
+                     verified_at,
                      "回库确认现行有效；逐字原文见 article_text 表"))
         n_ver += 1
 
@@ -107,8 +109,8 @@ def main():
                      c.get("risk", "low"), "manual"))
 
     cur.execute("""INSERT OR REPLACE INTO kb_meta(key,value) VALUES
-        ('v5_layer','1.0'),('verified_at','2026-11-07'),
-        ('authoritative_articles',?)""", (str(n_art),))
+        ('v5_layer','1.0'),('verified_at',?),
+        ('authoritative_articles',?)""", (verified_at, str(n_art)))
     con.commit()
 
     print("=== v5 数据层 ===")
