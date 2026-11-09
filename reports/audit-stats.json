@@ -1,24 +1,24 @@
 {
  "summary": {
-  "kb_version": "v12.0",
+  "kb_version": "v13.0",
   "verified_at": "2026-11-09",
-  "entries": 442,
-  "files": 50,
+  "entries": 472,
+  "files": 56,
   "complete_metadata": 281,
-  "valid_status": 442,
-  "flagged_entries": 7,
-  "dual_source_entries": 324,
+  "valid_status": 472,
+  "flagged_entries": 17,
+  "dual_source_entries": 354,
   "regulation_total": 345,
   "regulation_compliant": 219,
-  "assembly_total": 97,
-  "assembly_compliant": 83,
-  "na_field_entries": 97,
-  "pending_field_entries": 7,
-  "enriched_at": "2026-11-07",
+  "assembly_total": 127,
+  "assembly_compliant": 103,
+  "na_field_entries": 127,
+  "pending_field_entries": 17,
+  "enriched_at": "2026-11-09 14:12:17",
   "tiers": {
-   "A": 287,
+   "A": 307,
    "B1": 4,
-   "B2": 151
+   "B2": 161
   },
   "by_entry_type": {
    "regulation": {
@@ -48,6 +48,10 @@
    "verification": {
     "total": 10,
     "compliant": 10
+   },
+   "business_case": {
+    "total": 30,
+    "compliant": 20
    }
   },
   "explain_types": {
@@ -66,16 +70,20 @@
    "verification": {
     "total": 10,
     "compliant": 10
+   },
+   "business_case": {
+    "total": 30,
+    "compliant": 20
    }
   },
-  "explain_total": 62,
-  "explain_compliant": 62,
+  "explain_total": 92,
+  "explain_compliant": 82,
   "concept_complete": 30,
-  "compliant_total": 302,
+  "compliant_total": 322,
   "status_breakdown": {
-   "现行有效": 387,
+   "现行有效": 414,
    "草案阶段": 6,
-   "汇编·动态": 47,
+   "汇编·动态": 50,
    "已废止": 2
   },
   "flag_breakdown": {
@@ -86,7 +94,7 @@
    "missing_source": 19,
    "missing_issuer": 39,
    "missing_level": 41,
-   "pending_field": 7,
+   "pending_field": 17,
    "single_source": 5
   },
   "blocked_items": [
@@ -6969,6 +6977,446 @@
    ],
    "url_count": 0,
    "dual_source": false,
+   "compliant": true
+  },
+  {
+   "id": "51-51.1",
+   "file": "51",
+   "title": "赊销商品与应收账款确认（控制权转移）",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "51-51.2",
+   "file": "51",
+   "title": "预收款/合同负债与先收款后交付",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "51-51.3",
+   "file": "51",
+   "title": "附有销售退回条款的销售",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "51-51.4",
+   "file": "51",
+   "title": "时段法履约（劳务/建造，按履约进度）",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "51-51.5",
+   "file": "51",
+   "title": "销售折让、退回与红字发票",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "52-52.1",
+   "file": "52",
+   "title": "固定资产购建与折旧",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "52-52.2",
+   "file": "52",
+   "title": "后续支出资本化与费用化",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "52-52.3",
+   "file": "52",
+   "title": "无形资产与内部研究开发支出",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "52-52.4",
+   "file": "52",
+   "title": "存货采购、发出计价与跌价准备",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "52-52.5",
+   "file": "52",
+   "title": "资产减值与处置报废",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "53-53.1",
+   "file": "53",
+   "title": "职工薪酬（工资、社保、福利费、工会经费、职工教育经费）",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "53-53.2",
+   "file": "53",
+   "title": "业务招待费与广告费和业务宣传费",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "53-53.3",
+   "file": "53",
+   "title": "研发费用（费用化/资本化）",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "53-53.4",
+   "file": "53",
+   "title": "借款费用与利息支出",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "53-53.5",
+   "file": "53",
+   "title": "差旅办公费、进项抵扣与捐赠支出",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "54-54.1",
+   "file": "54",
+   "title": "增值税一般计税、进项抵扣与进项转出",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "54-54.2",
+   "file": "54",
+   "title": "小规模纳税人简易计税与小微免征",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "54-54.3",
+   "file": "54",
+   "title": "税金及附加（城建税、教育费附加、印花税等）",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "54-54.4",
+   "file": "54",
+   "title": "企业所得税预缴、汇算与递延所得税",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "54-54.5",
+   "file": "54",
+   "title": "个人所得税代扣代缴与六税两费/小微优惠",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "55-55.1",
+   "file": "55",
+   "title": "应收账款坏账计提及核销",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "55-55.2",
+   "file": "55",
+   "title": "应付账款与确实无法偿付的应付款项",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "55-55.3",
+   "file": "55",
+   "title": "股东借款与关联方资金往来",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "55-55.4",
+   "file": "55",
+   "title": "预收预付、押金与保证金",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "55-55.5",
+   "file": "55",
+   "title": "往来对账、函证与三流一致",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "56-56.1",
+   "file": "56",
+   "title": "期末计提、摊销与待摊预提",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "56-56.2",
+   "file": "56",
+   "title": "收入成本费用结转本年利润",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "汇编·动态",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
+  },
+  {
+   "id": "56-56.3",
+   "file": "56",
+   "title": "所得税费用与递延所得税确认",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "汇编·动态",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "56-56.4",
+   "file": "56",
+   "title": "利润分配与盈余公积",
+   "entry_type": "business_case",
+   "tier": "B2",
+   "status": "现行有效",
+   "valid_status": true,
+   "missing": [],
+   "flags": [
+    "pending_field"
+   ],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": false
+  },
+  {
+   "id": "56-56.5",
+   "file": "56",
+   "title": "资产负债表日后事项、会计差错更正与列报披露",
+   "entry_type": "business_case",
+   "tier": "A",
+   "status": "汇编·动态",
+   "valid_status": true,
+   "missing": [],
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
    "compliant": true
   }
  ],

@@ -108,6 +108,11 @@ class Retriever:
             with open(KB_PATH, "r", encoding="utf-8") as f:
                 entries = json.load(f)["entries"]
         self.entries = entries
+        # v13.0：业务事项层走独立检索通道，不参与法规主检索的 IDF / RRF，
+        # 避免新增语料扰动既有评测基线（扩容后排序漂移已实测）。
+        self.main_entries = [e for e in entries if e.get("entry_type") != "business_case"]
+        self.business_entries = [e for e in entries if e.get("entry_type") == "business_case"]
+        self.main_ids = {e["id"] for e in self.main_entries}
         self.by_id = {e["id"]: e for e in entries}
         self.alias = self._load_alias(db_path)
         self.db_path = db_path
@@ -139,8 +144,11 @@ class Retriever:
         ])
 
     def _build_index(self):
-        self.bm25_all = BM25([(e["id"], tokenize(self._doc_text(e))) for e in self.entries])
-        self.bm25_title = BM25([(e["id"], tokenize(self._doc_text(e, True))) for e in self.entries])
+        m = self.main_entries
+        self.bm25_all = BM25([(e["id"], tokenize(self._doc_text(e))) for e in m])
+        self.bm25_title = BM25([(e["id"], tokenize(self._doc_text(e, True))) for e in m])
+        self.bm25_business = BM25([(e["id"], tokenize(self._doc_text(e)))
+                                   for e in self.business_entries])
 
     # ---------------- Query 理解 ----------------
     def expand_query(self, q):
@@ -162,7 +170,7 @@ class Retriever:
     # ---------------- 四路召回 ----------------
     def _recall_exact(self, q, ex, limit=40):
         out = []
-        for e in self.entries:
+        for e in self.main_entries:
             blob = " ".join([e.get("title", ""), e.get("doc_no", ""),
                              e.get("core_clauses", ""), e.get("search_text", "")[:500]])
             s = 0.0
@@ -178,7 +186,7 @@ class Retriever:
 
     def _recall_gram(self, q, limit=40):
         """第五路：字面 bigram/trigram 信号（legacy 强项，作为 RRF 一路并入）。"""
-        out = [(e["id"], float(self._legacy_gram_score(q, e))) for e in self.entries]
+        out = [(e["id"], float(self._legacy_gram_score(q, e))) for e in self.main_entries]
         out = [x for x in out if x[1] > 0]
         return sorted(out, key=lambda x: -x[1])[:limit]
 
@@ -192,7 +200,8 @@ class Retriever:
                 "SELECT id FROM regulation_fts WHERE regulation_fts MATCH ? LIMIT ?",
                 ('"' + q.replace('"', '""') + '"', limit)).fetchall()
             con.close()
-            return [(r[0], 1.0 - i * 0.005) for i, r in enumerate(rows)]
+            return [(r[0], 1.0 - i * 0.005) for i, r in enumerate(rows)
+                    if r[0] in self.main_ids]
         except sqlite3.Error:
             return []
 
@@ -333,6 +342,40 @@ class Retriever:
         return {"hits": hits, "confidence": conf, "abstain": abstain,
                 "trace": trace, "expanded": ex, "mode": "v5"}
 
+    # ---------------- 业务事项层独立检索（v13.0） ----------------
+    def retrieve_business_cases(self, q, topk=8):
+        """业务事项层独立检索：不参与法规主检索，供 /api/business-cases 使用。
+
+        既保证 51-56 的 30 条结构化条目可检索、可维护，又不改变法规主检索的
+        BM25 IDF / RRF 排序，避免扰动既有 Golden QA 评测基线。
+        """
+        q = str(q or "").strip()
+        if not q or not self.business_entries:
+            return {"results": [], "total": len(self.business_entries), "q": q}
+        ex = self.expand_query(q)
+        q_exp = " ".join(ex["terms"])
+        s1 = dict(self.bm25_business.search(tokenize(q_exp), limit=40))
+        s2 = {e["id"]: float(self._legacy_gram_score(q_exp, e))
+              for e in self.business_entries}
+        s2 = {k: v for k, v in s2.items() if v > 0}
+        scored = [(i, s1.get(i, 0.0) + s2.get(i, 0.0))
+                  for i in set(s1) | set(s2)]
+        scored.sort(key=lambda x: -x[1])
+        out = []
+        for i, sc in scored[:topk]:
+            e = self.by_id.get(i, {})
+            f = e.get("fields", {})
+            out.append({
+                "id": i, "no": e.get("no", ""), "title": e.get("title", ""),
+                "category": e.get("category", ""), "score": round(sc, 4),
+                "tier": e.get("tier", ""), "status": e.get("status", ""),
+                "scope": f.get("适用范围", ""),
+                "basis": f.get("参照依据与关键条款", ""),
+                "diff": f.get("税会差异提示", ""),
+                "boundary": f.get("适用边界", ""),
+            })
+        return {"results": out, "total": len(self.business_entries), "q": q}
+
     # ---------------- legacy 基线（复刻 server.score_entry） ----------------
     def _legacy_gram_score(self, q, e):
         grams = set()
@@ -351,7 +394,7 @@ class Retriever:
         return s
 
     def _legacy(self, q, topk=8):
-        scored = [(self._legacy_gram_score(q, e), e) for e in self.entries]
+        scored = [(self._legacy_gram_score(q, e), e) for e in self.main_entries]
         scored = [x for x in scored if x[0] > 0]
         scored.sort(key=lambda x: -x[0])
         hits = [{"id": e["id"], "title": e["title"], "score": float(s),

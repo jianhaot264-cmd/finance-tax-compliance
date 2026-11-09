@@ -58,7 +58,7 @@ async def main():
         check("欢迎空状态渲染", await page.locator(".welcome").count() == 1)
         check("热门示例 6 条", await page.locator(".welcome-chip").count() == 6)
         check("示例分组 8 组（含概念辨析）", await page.locator(".quick-tab").count() == 8)
-        check("法规库侧栏统计", "442 条法规" in (await page.text_content("#kb-summary")))
+        check("法规库侧栏统计", "472 条法规" in (await page.text_content("#kb-summary")))
         check("关于页角色卡 6 个", await page.locator("#about-roles .role-card").count() == 6)
         # v6 基础组件（冒烟也覆盖，便于快速发现初始化故障）
         check("统一文案字典已加载", await page.evaluate("() => !!(window.COPY && window.COPY.mode && window.COPY.stages)"))

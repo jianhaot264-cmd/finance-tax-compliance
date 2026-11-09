@@ -29,7 +29,7 @@ ALL_STATUS = VALID_STATUS | {ASSEMBLY_STATUS}
 REG_FIELDS = ["doc_no", "issuer", "level", "publish_date", "scope",
               "core_clauses", "compliance_points", "verified_at"]
 # v6 解释层：按自身模板校验，不套用单一法规元数据
-EXPLAIN_TYPES = {"concept", "relation", "scenario", "verification"}
+EXPLAIN_TYPES = {"concept", "relation", "scenario", "verification", "business_case"}
 
 
 def main():

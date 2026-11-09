@@ -68,6 +68,12 @@ FILES = [
     ("48-guidance-documents.md", "48", "全国 · 指导文件体系与引用规则"),
     ("49-personal-tax-finance.md", "49", "全国 · 个人与个体工商户财税"),
     ("50-housing-fund-finance-rules.md", "50", "全国 · 住房公积金与财务基础法规"),
+    ("51-revenue-business-cases.md", "51", "业务事项 · 收入类（11 字段）"),
+    ("52-asset-business-cases.md", "52", "业务事项 · 资产类（11 字段）"),
+    ("53-expense-business-cases.md", "53", "业务事项 · 费用类（11 字段）"),
+    ("54-tax-business-cases.md", "54", "业务事项 · 税费类（11 字段）"),
+    ("55-intercompany-business-cases.md", "55", "业务事项 · 往来类（11 字段）"),
+    ("56-closing-business-cases.md", "56", "业务事项 · 期末结转类（11 字段）"),
 ]
 
 H2_RE = re.compile(r"^##\s+(.+?)\s*$")
@@ -179,7 +185,8 @@ def build():
             e["tier"] = "A" if prefix in {"16", "17", "18", "19", "20", "21", "22", "23", "24",
                                           "25", "26", "27", "28", "29", "30", "31", "32",
                                           "33", "34", "35", "36", "37", "38", "39",
-                                          "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50"} else "B"  # A/A+=双源与权威库回库；enrich_kb.py 按元数据实证重算
+                                          "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
+                                          "51", "52", "53", "54", "55", "56"} else "B"  # A/A+=双源与权威库回库；enrich_kb.py 按元数据实证重算
             e["source_file"] = fname
             entries.append(e)
             count += 1
@@ -188,7 +195,7 @@ def build():
     data = {
         "generated_at": "2026-11-09",
         "verified_at": "2026-11-09",
-        "kb_version": "v12.0",
+        "kb_version": "v13.0",
         "files": files_meta,
         "entries": entries,
     }

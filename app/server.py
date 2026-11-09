@@ -9,6 +9,7 @@ API:
   GET  /api/meta          元信息（版本/核验日期/条目数/规则数/分类分布/角色/LLM 状态）
   GET  /api/examples      示例问题（兼容 examples[] + 分组 groups[]）
   GET  /api/kb            全量知识库条目
+  GET  /api/business-cases  业务事项结构化条目独立检索（q=...）
   GET  /api/search?q=     法规检索
   GET  /api/llm-context?q= 云端 LLM 的 system 上下文（分诊 + 知识库摘录 + 本地兜底）
   POST /api/ask           合规问答（专家团分诊 + 规则答案库 + 检索兜底）
@@ -2251,6 +2252,9 @@ class Handler(BaseHTTPRequestHandler):
             self._json(examples_payload())
         elif path == "/api/kb":
             self._json(KB)
+        elif path == "/api/business-cases":
+            q = (parse_qs(parsed.query).get("q", [""])[0] or "").strip()
+            self._json(RETRIEVER.retrieve_business_cases(q, topk=12))
         elif path == "/api/llm-context":
             qs = parse_qs(parsed.query)
             q = (qs.get("q", [""])[0] or "").strip()
