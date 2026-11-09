@@ -374,12 +374,11 @@ def main():
                 "PRIMARY KEY(alias, target))")
     for a, t in SYNONYMS.items():
         cur.execute("INSERT OR IGNORE INTO alias VALUES (?,?,?)", (a, t, "synonym"))
-    # 从标题自动生成简称（去掉书引号与前缀）
-    for e in enriched:
-        t = e["title"].strip()
-        short = re.sub(r"^《|》$", "", t)
-        if short and short != t:
-            cur.execute("INSERT OR IGNORE INTO alias VALUES (?,?,?)", (short, t, "short_title"))
+    # 别名来源（v13.1 核实）：SYNONYMS 29 条 + build_concepts.py 写入的
+    # concept_code 30 条 + concept_name 30 条 = 合计 89 条。
+    # build_kb.py 解析标题时已去掉《》，因此「从 title 去书名号生成 short_title」
+    # 的旧逻辑从未产出任何记录（库中也无 short_title 类型），已移除该死代码。
+    # 全链重建时仍需从备份导回 query_log / eval_run / eval_result 等运行时留痕。
 
     cur.execute("CREATE TABLE rule_reference (rule_id TEXT NOT NULL, regulation_id TEXT NOT NULL, "
                 "PRIMARY KEY(rule_id, regulation_id))")

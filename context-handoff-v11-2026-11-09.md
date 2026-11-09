@@ -20,7 +20,7 @@
 | SQLite | regulation 472、fts 472、article_text 37、alias 89（含 60 条历史 short_title）、rule_reference 329、query_log 663、eval_run 4 / eval_result 40（后三者重建后由备份导回） |
 | 评测 | 188 题 = 自动 109（RULES）+ 手工 79；Recall@5 1.0、MRR 0.6836、引用 0.6451、弃答/角色/禁用 1.0、规则 0.9468、要点 0.9714 |
 | 服务 | `http://localhost:8777`，`/api/meta` = v13.0 / 472 / 109 / 2026-11-09；桌面快捷方式指向 `start-qa.bat`，无需更新 |
-| Git | `git@github.com:jianhaot264-cmd/finance-tax-compliance.git`（SSH，Public）；`ae9c6d5`（A 线）+ 待提交 B 线；**未 push** |
+| Git | `git@github.com:jianhaot264-cmd/finance-tax-compliance.git`（SSH，Public）；已推送至 `b1fb073`，B 线 `2339437` 与收尾提交见最新 log |
 | 基线包 | `backups/baseline-v12-2026-11-09.zip`（120 文件）、`backups/baseline-v13-2026-11-09.zip`；DB 备份 `backups/pre-v13-rebuild-2026-11-09.db` |
 
 ## 2. 本轮交付
@@ -41,7 +41,7 @@
 3. **同步 6+2 处**：`build_kb.py`（FILES + A 层集合 + 版本）→ `00-index.md` → `static/index.html` → `e2e-test.py`（「N 条法规」断言）→ 根 `README.md` → `app/README.md` → `server.py`（RULES refs / 端点）→ `PENDING-VERIFICATION.md` / `change_log`。
 4. **不要新增 RULES 规则来暴露新条目**：评测集自动题由 `len(RULES)` 生成，加规则会改变 188 题口径；新条目走 `/api/business-cases` 独立通道。
 5. **业务事项层不得回到主检索**：扩容语料会改变 BM25 IDF，实测会让 `A-vat-simple-method` 掉出 Top5（Recall@5 1.0→0.9944）。任何检索内核改动都必须跑 `eval_kb.py` 与基线 `reports/eval-report-v12-baseline-2026-11-09.json` 对比。
-6. **重建副作用**：`enrich_kb.py` 会 `os.remove(DB)`；重建后必须从备份导回 `alias`(short_title) / `query_log` / `eval_run` / `eval_result`。先备份再重建。
+6. **重建副作用**：`enrich_kb.py` 会 `os.remove(DB)`；重建后必须从备份导回 `query_log` / `eval_run` / `eval_result`（alias 由 SYNONYMS 与 build_concepts 自动重建，无需导回）。先备份再重建。
 
 ## 4. 剩余不确定性（不许猜）
 
@@ -49,7 +49,7 @@
 2. 信源是**官方入口级渠道**（按文号/准则号检索），逐条全文直达链接待回库核验。
 3. 白名单外具体准则只写名称 + 条款要旨，文号标「以财政部会计司现行目录为准」；条号不确定写「以原文为准」。
 4. `build_v5.py` 的 `article_text` 仍只从 `file=="23"` 提取 37 条逐字法条，多来源 L0 原文层尚未建（方案见 v10 §5）。
-5. `enrich_kb.py` 短标题别名自动生成对当前 `title` 格式已失效，历史 60 条靠备份保全；下次重建会掉到 29，需修根因或导回。
+5. **已更正（15:30）**：alias 89 = synonym 29 + concept_code 30 + concept_name 30，库中无 `short_title`；此前「历史 60 条短标题别名、重建掉到 29」为误判，死代码已移除，重建后 alias 仍 89 条、无需导回。
 6. 隔离项不变：P-06b（BLOCKED）、P-24 南沙 15% 2026-12-31（EXPIRING）、P-10b / P-23（SCOPE）。
 
 ## 5. 下一步建议（按优先级）

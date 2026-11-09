@@ -112,6 +112,17 @@ def metrics_payload():
 
 with open(os.path.join(BASE, "config.json"), "r", encoding="utf-8") as f:
     CFG = json.load(f)
+# 本机覆盖（不入库）：config.local.json 只覆盖本机运行参数；
+# 仓库 config.json 保持 external_lookup.enabled=false，保证离线部署不被意外开启。
+_LOCAL_CFG = os.path.join(BASE, "config.local.json")
+if os.path.exists(_LOCAL_CFG):
+    try:
+        with open(_LOCAL_CFG, "r", encoding="utf-8") as f:
+            for _k, _v in json.load(f).items():
+                CFG[_k] = ({**CFG.get(_k, {}), **_v}
+                           if isinstance(_v, dict) and isinstance(CFG.get(_k), dict) else _v)
+    except (OSError, ValueError):
+        pass
 LLM = CFG.get("llm", {"enabled": False})
 EXTERNAL_CFG = CFG.get("external_lookup", {"enabled": False})
 

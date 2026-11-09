@@ -93,6 +93,39 @@
 **新增**：`app/external_lookup.py`、`app/test_external_lookup.py`、本报告。
 **修改**：`app/server.py`、`app/orchestrator.py`、`app/trust.py`、`app/build_v5.py`、`app/config.json`、`README.md`、`knowledge-base/00-index.md`、`knowledge-base/SOURCES-CHANNELS.md`；生成物 `app/finance-tax-compliance.db`（新增日志表）、`reports/eval-report-v5.json`（评测快照）。
 
+## 九、收尾：本机启用 + 别名误判更正（2026-11-09 15:30）
+
+### 9.1 本机启用（不改变仓库默认）
+
+用户要求「全做了」后，采用**本机覆盖**方案，兼顾启用与离线安全：
+
+- `app/config.json` 保持 `external_lookup.enabled = false`（仓库默认，克隆/离线部署不受影响）；
+- 新增 `app/config.local.json`（内容 `{"external_lookup":{"enabled":true}}`），已加入 `.gitignore`，**不入库**；
+- `server.py` 启动时若发现 `config.local.json` 则按键合并覆盖 `CFG`（仅 dict 做浅合并，解析失败静默忽略）。
+
+这样本机实例（含桌面 `start-qa.bat` 启动的服务）已启用自适应外部核验，而仓库默认值仍是关闭，策略 §6.2「默认关闭」继续成立。README 已写明本机启用方式。
+
+### 9.2 别名构成更正（此前报告有误）
+
+复核 SQLite `alias` 表：`synonym` 29 条（`enrich_kb.py` SYNONYMS）+ `concept_code` 30 条 + `concept_name` 30 条（`build_concepts.py` 写入）= **89 条**，**库中不存在 `short_title` 类型**。
+
+此前 v13 升级报告与交接单 v11 中「历史 60 条短标题别名靠备份保全、重建会掉到 29」的判断有误——那 60 条其实是概念卡别名。`enrich_kb.py` 里「从 title 去书名号生成 short_title」的循环因 `build_kb.py` 早已去掉《》而从未产出记录，属死代码，现已移除并加注释说明。三份文档（v13 升级报告 §八.5、交接单 v11 §4.5/§3.6）已更正；全链重建后 alias 仍为 89 条、无需导回，需导回的只有 `query_log` / `eval_run` / `eval_result` 等运行时留痕。
+
+### 9.3 启用状态下回归（门禁再次全过）
+
+| 验证 | 结果 |
+|---|---|
+| 188 题 Golden QA（启用状态） | **Recall@5 1.0 / MRR 0.6836 / 引用 0.6451 / 弃答 1.0 / 角色 1.0 / 规则 0.9468 / 要点 0.9714 / 禁用 1.0 / 未达标 0 题** —— 与基线逐项一致 |
+| 冒烟 / 全量 e2e | 19/19、73/73 |
+| trust / 新单测 | 24/24、37/37 |
+| `/api/llm-context` | `enabled=true`；时效问句 `need=True` 并生成兜底块；精编规则与超范围 `need=False / skipped` |
+| alias / 引用 | 89 条、零悬空 |
+| `/api/meta` | v13.0 / 472 条 / 109 规则 |
+
+### 9.4 上线状态
+
+本地提交 `2339437`（B 落地）与本次收尾提交一并推送到 `origin/main`；推送后工作区干净、`origin/main..main = 0`。`config.local.json` 不入库，因此 GitHub 上的默认配置仍是关闭。
+
 ---
 
 *本报告只报验证结果与剩余不确定性；不承诺 100% 准确，法规立改废释频繁，以官方发布原文为准。*
