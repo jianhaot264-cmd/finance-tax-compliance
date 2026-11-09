@@ -190,3 +190,9 @@
 4. 概念层条目不套用「单一法规 10 字段」标准：以 16 字段概念模板 / 关系模板 / 场景模板 / 核验模板分别审计，避免把「不适用」误报为「缺失」。
 
 **维护动作**：概念卡与关系表由 `build_concepts.py` 从 md 提取；新增或修改概念卡后必须重跑 `enrich_kb.py → build_concepts.py → build_v5.py → audit_kb.py`，再执行 `eval_kb.py`（要点覆盖率、禁用表述规避率）与 `e2e-test.py`（深度解读、概念面板）。
+
+---
+
+## 附：自适应外部核验策略（v1）
+
+本文件的 A–E 级渠道分级与八步核验 SOP 是 `reports/adaptive-retrieval-reply-policy-2026-11-09.md` 的准入依据。外部核验能力默认关闭（`app/config.json` → `external_lookup.enabled`），开启后只按白名单核验现行性 / 文号与施行到期日 / 门槛比例税率 / 最新公告衔接四类硬事实，失败即回落知识库；任何外部信息不得静默改写本库条目。

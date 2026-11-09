@@ -61,6 +61,10 @@ def main():
     CREATE TABLE IF NOT EXISTS eval_result (
         run_id INTEGER, metric TEXT, value REAL,
         PRIMARY KEY(run_id, metric));
+    CREATE TABLE IF NOT EXISTS external_lookup_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts TEXT, q TEXT, need INTEGER, signals TEXT, status TEXT,
+        sources TEXT, evidence_count INTEGER, note TEXT);
     """)
 
     # 可重建表清空

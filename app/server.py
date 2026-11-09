@@ -11,7 +11,7 @@ API:
   GET  /api/kb            全量知识库条目
   GET  /api/business-cases  业务事项结构化条目独立检索（q=...）
   GET  /api/search?q=     法规检索
-  GET  /api/llm-context?q= 云端 LLM 的 system 上下文（分诊 + 知识库摘录 + 本地兜底）
+  GET  /api/llm-context?q= 云端 LLM 的 system 上下文（分诊 + 知识库摘录 + 可选外部核验 + 本地兜底）
   POST /api/ask           合规问答（专家团分诊 + 规则答案库 + 检索兜底）
 
 LLM 接口（默认关闭）: 同目录 config.json -> {"llm":{"enabled":true,"base_url":"https://api.deepseek.com","api_key":"sk-..","model":"deepseek-chat"}}
@@ -44,6 +44,7 @@ import orchestrator  # noqa: E402
 # ---- v6：知识深度解读引擎（概念卡 / 关系 / 边界 / 场景） ----
 import deep_dive  # noqa: E402
 import trust  # noqa: E402
+import external_lookup  # noqa: E402
 from tax_calc import calc as tax_calc_run  # noqa: E402
 
 RETRIEVER = Retriever(entries=KB["entries"])
@@ -112,6 +113,7 @@ def metrics_payload():
 with open(os.path.join(BASE, "config.json"), "r", encoding="utf-8") as f:
     CFG = json.load(f)
 LLM = CFG.get("llm", {"enabled": False})
+EXTERNAL_CFG = CFG.get("external_lookup", {"enabled": False})
 
 # ---------------------------------------------------------------- roles（对齐专家团路由表）
 ROLES = {
@@ -1834,17 +1836,17 @@ SYSTEM_PROMPT = (
     "知识库覆盖 18 个税种、征管稽查、发票、社保与非税、中小企业专项、程序救济、跨境与平台经济、广东省及大湾区政策，"
     "并含 2026 年增值税法配套、2025–2026 新规，以及**权威数据库回库核验的逐字法条库（23 文件）与判定规则（24 文件）**。"
     "你必须遵守以下规则："
-    "1) 只依据对话中给定的知识库上下文回答，禁止编造法规名称、文号、数字门槛与日期；"
-    "2) 上下文未覆盖或检索置信度不足时，明确回答「知识库暂无收录」，建议咨询 12366 或主管税务机关，不得猜测补全；"
+    "1) 以对话中给定的知识库上下文为默认结论源；仅当本轮出现「外部核验」区块时，可按其中标注补充经 A 级官方渠道双源核验的四类硬事实（现行性、文号与施行到期日、门槛比例税率、最新公告衔接），并逐条标注来源、链接与核验时间。禁止编造法规名称、文号、数字门槛与日期；"
+    "2) 知识库未覆盖或检索置信度不足时，若本轮已有 [外部核验·双源] 证据可给出带标注的补充结论；若无外部证据或核验失败，明确回答「知识库暂无收录 / 本次无法确认」并给出可核对的检索路径，建议咨询 12366 或主管税务机关，不得猜测补全；"
     "3) 上下文中标注「待核验」「凭既有知识」「已到期」「草案」「汇编·动态」的字段必须如实提示限制；「汇编·动态」不是单一法规，不得据此判断现行有效；"
     "4) 知识库分三层：A/A+ 层为双官方信源与权威库回库核验的生产级条目可优先引用；B1 单源、B2 含缺口或汇编型，引用其数字/文号时必须提示「建议回查官方原文」；"
     "5) **法条原文 ≠ 现行执行口径**：引用逐字法条前必须检查 24 文件的判定 SOP。已知四处："
     "①《企业所得税法实施条例》现行为 512 号令经 2019、2024 两次修订版；② 个税专项附加扣除现行 **7 项**（法条第六条只列 6 项，第 7 项由国发〔2022〕8 号设立，国发〔2023〕13 号提标）；"
     "③ 职工教育经费按财税〔2018〕51 号 **8%**（条例第四十二条原文 2.5% 因但书被覆盖）；④ 消费税暂行条例附表税率已多次调整，禁止硬编码；"
     "6) 剩余阻断项不得作为确定结论：广东省工伤条例修订与省级非税/地市办法（前海 15% 已由财税〔2026〕3 号延至 2027-12-31，P-05b 已解除）；南沙 15% 执行至 2026-12-31，不得按 15% 测算 2027 年度；"
-    "7) 回答结构与文风（硬约束）：**先结论后依据**——开头 1~3 句直接给出用户意图的明确结论与可操作建议（用户能照做的动作），再以「依据」简要引用法规名称与文号/条号（每条一行以内、只保留与结论直接相关的词句），**禁止大段复述法规原文**、禁止堆砌与问题无关的条款；最后给必要的风险与合规提示；引用须来自本轮上下文，不得引用未出现在上下文中的条目；"
+    "7) 回答结构与文风（硬约束）：**先结论后依据**——开头 1~3 句直接给出用户意图的明确结论与可操作建议（用户能照做的动作），再以「依据」简要引用法规名称与文号/条号（每条一行以内、只保留与结论直接相关的词句），**禁止大段复述法规原文**、禁止堆砌与问题无关的条款；最后给必要的风险与合规提示；知识库引用须来自本轮上下文；外部引用须带 [外部核验·双源] 标记并附来源、链接、核验时间，两类引用分区展示，知识库结论不因外部信息静默改写；"
     "8) 涉及虚开、偷税、骗税、重大补税等高风险事项必须提示转介执业税务师或律师；"
-    "9) 最近核验日期 2026-11-07；涉及时效性（草案、有效期、2026-12-31 与 2027-12-31 到期组）必须如实说明；稳岗返还已于 2026 年延续（人社部发〔2026〕39 号），不得沿用 2025 年的旧口径；"
+    "9) 最近核验日期以本轮上下文标注的知识库快照时间为准（当前 2026-11-09）；涉及时效性（草案、有效期、2026-12-31 与 2027-12-31 到期组）必须如实说明；稳岗返还已于 2026 年延续（人社部发〔2026〕39 号），不得沿用 2025 年的旧口径；"
     "10) 知识库 v6.0 新增概念解读层（25–28 文件）：概念卡属解释层，不是单一法规；回答「定义/辨析/因果/适用条件/易混淆/局限」类问题时，优先给出两层依据（法条原文 + 现行公告口径），并明确边界条件与局限；"
     "11) 已知易混淆点必须写全发文机关与年份：财政部 税务总局公告 2025 年第 16 号（广宣费 30%）与国家税务总局公告 2025 年第 16 号（平台扣缴）是两个不同文件；2020 年第 43 号公告（广宣费）已于 2026-01-01 废止，2023 年第 43 号（先进制造业加计抵减）现行；"
     "12) 小额零星经营业务按增值税起征点判断，不得硬编码 500 元，2026 年起部分省份按次标准变化，须提示属地确认；"
@@ -1853,6 +1855,7 @@ SYSTEM_PROMPT = (
     "任一会改变答案的关键要素缺失时（如只问「要交多少税」缺税种与主体），不要泛泛作答、更不得臆测用户身份与业务场景，"
     "必须先给选项式追问（2~4 个选项，各选项即一种具体理解）让用户点选，最多追问 2 轮，要素齐备后再作答；"
     "选项续问句要把选定要素直接写进问句。若要素已齐或答案不随要素变化，直接作答不追问。"
+    "15) **自适应外部核验（可选，默认关闭）**：仅当上下文出现「外部核验」区块时，按 [外部核验·双源] 标记补充或提示时效变化并保留知识库原结论；单源仅作线索并标 [外部核验·单源]；外部检索只作更新/补充/冲突提示三种动作，不得据其生成会计分录、税务筹划、个案裁定或税额；检索失败立即回落知识库并说明未能核验现行性；信息冲突并列展示并提示回查原文，不静默改写知识库。任何情况下不得降低弃答阈值、绕过超范围弃答、跳过意图对齐、引用校验或可信度四层闸门。"
 )
 
 
@@ -1865,6 +1868,21 @@ def build_llm_context(q, mode="standard"):
     local = ask_local(q, mode=mode)
     v5 = RETRIEVER.retrieve(q, mode="v5", topk=6)
     ids = list(dict.fromkeys(list(local["refs"])[:4] + [h["id"] for h in v5["hits"]]))[:6]
+    # ---- 自适应外部核验（策略 v1）：默认关闭；仅触发条件成立时访问白名单官方渠道 ----
+    hit_entries = [ENTRY_MAP[i] for i in ids if i in ENTRY_MAP]
+    decision = orchestrator.decide_external(q, local, v5, hit_entries, EXTERNAL_CFG)
+    ext = {"status": "skipped", "evidence": [], "tried": [], "note": decision["reason"]}
+    ext_block = ""
+    if decision["need"]:
+        ext = external_lookup.lookup(
+            q, decision,
+            timeout=float(EXTERNAL_CFG.get("timeout", 3.0)),
+            retries=int(EXTERNAL_CFG.get("max_retries", 2)))
+        snapshot = KB.get("verified_at", "") or ""
+        ext_block = (external_lookup.build_evidence_block(ext, snapshot)
+                     if ext.get("status") == "hit" and ext.get("evidence")
+                     else external_lookup.fallback_note(snapshot, ext))
+        external_lookup.log_external(DB_PATH, q, decision, ext)
     blocks = []
     for eid in ids:
         e = ENTRY_MAP.get(eid)
@@ -1907,9 +1925,11 @@ def build_llm_context(q, mode="standard"):
             blocks.append(f"【边界门槛】{t.get('value','')}｜{t.get('scope','')}｜"
                           f"生效 {t.get('effective','')}｜例外 {t.get('edge','')}")
     context_text = "\n\n".join(blocks)
+    if ext_block:
+        context_text += "\n\n" + ext_block
     sys_prompt = orchestrator.stage_system_prompt(
         SYSTEM_PROMPT, local["routed"],
-        "先按结论→依据→风险与合规提示输出；引用须来自上下文；"
+        "先按结论→依据→风险与合规提示输出；知识库引用须来自上下文，外部引用须带 [外部核验] 标注；"
         "若上下文中出现「法条原文」与「后续公告口径」不一致，以现行执行口径为准并说明依据。")
     if deep:
         sys_prompt = deep_dive.deep_system_prompt(sys_prompt, dp)
@@ -1925,10 +1945,17 @@ def build_llm_context(q, mode="standard"):
                       "abstain": v5["abstain"], "top": [h["id"] for h in v5["hits"]]},
         "stage_trace": local.get("stage_trace", []),
         "verification": local.get("verification", {}),
-        "system_prompt": sys_prompt + "\n\n=== 知识库上下文（核验日期 2026-11-07，回答只能依据以下内容） ===\n" + context_text,
+        "system_prompt": sys_prompt + "\n\n=== 知识库上下文（快照 " + (KB.get("verified_at", "") or "") +
+                         "，回答默认依据以下内容；若含「外部核验」区块须按其中标注处理） ===\n" + context_text,
+        "external": {"enabled": bool(EXTERNAL_CFG.get("enabled")),
+                     "decision": decision, "status": ext.get("status", ""),
+                     "sources": ext.get("tried", []), "note": ext.get("note", ""),
+                     "evidence_count": len(ext.get("evidence") or []),
+                     "block": ext_block},
         "fallback": local,
         "fallback_disclaimer": "本地知识库答案，仅供合规参考；正式用途请以官方原文为准。",
-        "disclaimer": "回答由云端大模型基于本地知识库（核验日期 2026-11-07）生成，仅供合规参考，不构成税务师/律师专业意见。",
+        "disclaimer": "回答由云端大模型基于本地知识库（快照 " + (KB.get("verified_at", "") or "") +
+                      "）生成，仅供合规参考，不构成税务师/律师专业意见。",
     }
 
 

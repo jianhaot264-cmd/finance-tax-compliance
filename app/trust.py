@@ -30,7 +30,7 @@ from datetime import date, datetime, timedelta
 
 __all__ = [
     "parse_verified_date", "staleness_days", "authority_rank", "expiry_state",
-    "extract_claims", "ground_claims", "conflict_scan", "trust_report",
+    "extract_claims", "ground_claims", "conflict_scan", "trust_report", "source_gate",
     "AUTHORITY_LEVELS", "TRUST_VERSION",
 ]
 
@@ -348,9 +348,41 @@ def conflict_scan(cited_entries: list[dict]) -> list[dict]:
 # L4 聚合信任分
 # ---------------------------------------------------------------------------
 
+# A 级官方域名白名单（与 external_lookup.SOURCES / SOURCES-CHANNELS.md 保持一致）
+OFFICIAL_A_DOMAINS = (
+    "flk.npc.gov.cn", "fgk.chinatax.gov.cn", "kjs.mof.gov.cn",
+    "fgk.mof.gov.cn", "mohrss.gov.cn", "gd.gov.cn", "guangdong.chinatax.gov.cn",
+)
+# gov.cn 只做精确匹配，避免把 B/C 级渠道（*.chinatax.gov.cn 等）误判为 A 级
+OFFICIAL_A_EXACT = ("gov.cn", "www.gov.cn")
+
+
+def source_gate(external_evidence: list[dict]) -> dict:
+    """L0 来源准入（策略 v1）：非白名单/单源证据不得进入结论。"""
+    from urllib.parse import urlparse
+    allowed, rejected, domains, warns = [], [], set(), []
+    for e in external_evidence or []:
+        host = (urlparse(str(e.get("url", ""))).hostname or "").lower()
+        is_a = (host in OFFICIAL_A_EXACT or
+                any(host == d or host.endswith("." + d) for d in OFFICIAL_A_DOMAINS))
+        if is_a:
+            allowed.append(e)
+            domains.add(host)
+        else:
+            rejected.append(e)
+    dual = len(domains) >= 2
+    if rejected:
+        warns.append(f"L0 来源准入：{len(rejected)} 条非 A 级官方证据已降为线索，不得作为结论依据")
+    if external_evidence and not dual:
+        warns.append("L0 来源准入：外部证据未达双源交叉，须标 [外部核验·单源]，不得作为确定结论或申报依据")
+    return {"allowed": allowed, "rejected": rejected, "dual": dual,
+            "domains": sorted(domains), "warnings": warns}
+
+
 def trust_report(q: str, answer_text: str, cited_entries: list[dict],
                  all_entries: list[dict] | None = None,
-                 today: date | None = None, mode: str = "") -> dict:
+                 today: date | None = None, mode: str = "",
+                 external_evidence: list[dict] | None = None) -> dict:
     """
     聚合四层判定，产出：
 
@@ -374,6 +406,9 @@ def trust_report(q: str, answer_text: str, cited_entries: list[dict],
     today = today or date.today()
     warnings: list[str] = []
     ungrounded: list[dict] = []
+    # L0（可选）：外部证据来源准入；默认 None 时行为与 trust-v1.0 完全一致
+    if external_evidence:
+        warnings.extend(source_gate(external_evidence)["warnings"])
 
     # ---- L1 时效性 ----
     expired, expiring, stale = [], [], []

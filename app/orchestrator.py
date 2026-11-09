@@ -114,7 +114,14 @@ def audit_answer(q, risk, abstain, confidence, verify_result, role):
     }
 
 
-def run_pipeline(q, retrieval_result, answer_text, refs, role, risk, entry_map):
+def decide_external(q, local, retrieval_result, hit_entries, cfg):
+    """Stage 2b：是否允许自主外部核验（策略 v1）。判定逻辑在 external_lookup。"""
+    import external_lookup
+    return external_lookup.should_lookup(q, local, retrieval_result, hit_entries, cfg)
+
+
+def run_pipeline(q, retrieval_result, answer_text, refs, role, risk, entry_map,
+                 external_decision=None):
     """把各阶段产出串成一条可回放的 trace。"""
     hits = retrieval_result.get("hits", [])
     retrieved_ids = [h["id"] for h in hits]
@@ -132,6 +139,10 @@ def run_pipeline(q, retrieval_result, answer_text, refs, role, risk, entry_map):
         "top_ids": retrieved_ids[:5],
         "internal": retrieval_result.get("trace", []),
     }
+    if external_decision:
+        t2["external"] = {"need": bool(external_decision.get("need")),
+                          "reason": external_decision.get("reason", ""),
+                          "signals": external_decision.get("signals", [])}
     t3 = {
         "stage": "compose", "order": 3,
         "owner": ROLE_LABEL.get(role, "精编答案库"),

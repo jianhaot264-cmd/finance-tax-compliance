@@ -5,5 +5,11 @@
     "api_key": "",
     "model": "deepseek-chat"
   },
-  "_说明": "将 enabled 改为 true 并填入 api_key 后重启 server.py，问答将切换为 LLM 驱动（OpenAI 兼容接口），知识库检索结果自动作为上下文注入。api_key 属敏感凭据，请勿提交到任何公开仓库。"
+  "_说明": "将 enabled 改为 true 并填入 api_key 后重启 server.py，问答将切换为 LLM 驱动（OpenAI 兼容接口），知识库检索结果自动作为上下文注入。api_key 属敏感凭据，请勿提交到任何公开仓库。",
+  "external_lookup": {
+    "enabled": false,
+    "timeout": 3.0,
+    "max_retries": 2,
+    "_说明": "自适应外部核验开关，默认关闭（离线部署不受影响）。开启后仅在时效/覆盖/冲突信号成立，且问题非精编规则、非计算、非澄清、非高风险、非超范围时，访问 SOURCES-CHANNELS.md 白名单官方渠道核验四类硬事实；检索失败立即回落知识库。策略与验收门禁见 reports/adaptive-retrieval-reply-policy-2026-11-09.md。"
+  }
 }
