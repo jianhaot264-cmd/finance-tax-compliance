@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#102a43">
-<meta name="description" content="财税合规智能体 · 472 条法规条目 + 30 张概念解读卡 + 30 条业务事项卡，覆盖计税方法、社保、非税、消费税、财产税、出口退税、数电票、复议诉讼、税收协定、会计准则、行业专项、立法跟踪与到期预警（生产级 v14.0）">
+<meta name="description" content="财税合规智能体 · 472 条法规条目 + 30 张概念解读卡 + 30 条业务事项卡，覆盖计税方法、社保、非税、消费税、财产税、出口退税、数电票、复议诉讼、税收协定、会计准则、行业专项、立法跟踪与到期预警（生产级 v15.0）">
 <title>财税合规智能体 · 专家团工作台</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/style.css">
@@ -266,7 +266,7 @@
             <ul class="plain-list">
               <li><b>前端</b>：零框架单页应用，经 WorkBuddy Cloud SDK 免密钥流式调用云端大模型（默认 Hy4 限时免费档，可切换）；</li>
               <li><b>后端</b>：Python 标准库服务（端口 8777），负责专家团分诊、知识库检索注入与本地兜底；</li>
-              <li><b>知识库</b>：50 个 Markdown 主题文件（法规 + 逐字法条 + 30 张概念卡 + 关联边界 + 场景路径 + 计税/社保/非税/消费税/财产税/出口退税/数电票/复议诉讼/协定逐国税率/会计进阶/行业/立法跟踪/到期预警）→ <code>build_kb.py</code> → <code>enrich_kb.py</code> → <code>build_concepts.py</code> → <code>build_v5.py</code> → <code>kb.json</code> + <code>concepts.json</code> + SQLite（10 类表）+ CSV 主数据表；</li>
+              <li><b>知识库</b>：56 个 Markdown 主题文件（法规 + 逐字法条 + 30 张概念卡 + 关联边界 + 场景路径 + 计税/社保/非税/消费税/财产税/出口退税/数电票/复议诉讼/协定逐国税率/会计进阶/行业/立法跟踪/到期预警）→ <code>build_kb.py</code> → <code>enrich_kb.py</code> → <code>build_concepts.py</code> → <code>build_v5.py</code> → <code>kb.json</code> + <code>concepts.json</code> + SQLite（10 类表）+ CSV 主数据表；</li>
               <li><b>检索与编排</b>：五路召回（BM25 全字段/标题、精确文号、FTS5 中文全文、字面 gram）+ RRF 融合 + 可解释重排 + 置信度弃答；五阶段编排（分诊→检索→精编→引用校验→赵审计复核），每次回答落 <code>query_log</code> 留痕；</li>
               <li><b>评测</b>：188 题 Golden QA（自动 109 + 手工 79），<code>eval_kb.py</code> 量化 Recall@5、MRR、引用正确率、弃答正确率、角色分诊、规则命中、要点覆盖率与禁用表述规避率；</li>
               <li><b>兜底</b>：云端断网 / 配额用尽 / 服务异常时自动回退本地精编答案库，并显示回退原因。</li>

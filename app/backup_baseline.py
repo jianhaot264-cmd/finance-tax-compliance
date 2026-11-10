@@ -20,6 +20,7 @@ OUT_DIR = os.path.join(ROOT, "backups")
 
 INCLUDE_DIRS = [
     ("knowledge-base", (".md",)),
+    ("knowledge-base/corpus", (".md", ".json")),
     ("app", (".py", ".json", ".md", ".db", ".bat")),
     ("app/static", (".html", ".css", ".js", ".svg")),
     ("reports", (".md", ".html", ".json", ".csv", ".png")),
@@ -29,7 +30,8 @@ ROOT_FILES = ["README.md", ".gitignore", "start-qa.bat",
               "context-handoff-v9-2026-11-08.md", "context-handoff-v10-2026-11-09.md",
               "context-handoff-v11-2026-11-09.md",
               "context-handoff-v12-2026-11-09.md",
-              "context-handoff-v13-2026-11-10.md"]
+              "context-handoff-v13-2026-11-10.md",
+              "context-handoff-v14-2026-11-10.md"]
 
 
 def sha16(path):

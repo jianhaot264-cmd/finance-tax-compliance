@@ -1,6 +1,6 @@
 {
  "summary": {
-  "kb_version": "v14.0",
+  "kb_version": "v15.0",
   "verified_at": "2026-11-09",
   "entries": 472,
   "files": 56,
@@ -14,7 +14,7 @@
   "assembly_compliant": 113,
   "na_field_entries": 127,
   "pending_field_entries": 7,
-  "enriched_at": "2026-11-09 18:04:41",
+  "enriched_at": "2026-11-10 14:46:08",
   "tiers": {
    "A": 317,
    "B1": 4,

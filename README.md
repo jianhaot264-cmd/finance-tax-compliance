@@ -75,7 +75,7 @@ cd app && python server.py 8777
 
 **技术栈**：Python 3.12 **纯标准库**（零第三方依赖）+ 原生前端（零框架）。离线可部署，无供应链风险。
 
-**L0 逐字原文层**：`knowledge-base/corpus/` 存放逐字条文与 `manifest.json`（含双源链接、时效、SHA256），由 `app/import_corpus.py` 校验后生成 `app/corpus-articles.json`，再由 `app/build_v5.py` 写入 `article_text`（当前 40 条）。L0 **不进 `build_kb.py` 的 FILES、不参与主检索索引**，只作溯源与引用；重建链须在 `build_v5.py` 前跑 `import_corpus.py`。
+**L0 逐字原文层**：`knowledge-base/corpus/` 存放逐字条文与 `manifest.json`（含双源链接、时效、SHA256），由 `app/import_corpus.py` 校验后生成 `app/corpus-articles.json`；新增/更新条文用 `app/fetch_corpus.py` 从两个官方源抓取并**逐条比对**（条数、条号连续性、NFKC 归一化后一致性任一不通过即拒绝入库），再由 `app/build_v5.py` 写入 `article_text`（当前 40 条）。L0 **不进 `build_kb.py` 的 FILES、不参与主检索索引**，只作溯源与引用；重建链须在 `build_v5.py` 前跑 `import_corpus.py`。
 
 **可选能力 · 自适应外部核验（默认关闭）**：把 `app/config.json` 的 `external_lookup.enabled` 设为 `true` 后，Agent 会在时效 / 覆盖 / 冲突信号成立，且问题非精编规则、非计算、非澄清、非高风险、非超范围时，按 `SOURCES-CHANNELS.md` 白名单官方渠道核验四类硬事实，并把 `[外部核验·双源]` 证据作为更新 / 补充 / 冲突提示注入上下文；检索失败立即回落知识库。**离线部署保持默认关闭即可，行为与未开启时完全一致**。策略、可替换提示词条款与回归门禁见 `reports/adaptive-retrieval-reply-policy-2026-11-09.md`。
 

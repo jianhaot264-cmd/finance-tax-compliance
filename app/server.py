@@ -2049,6 +2049,39 @@ def build_calc_answer(cr):
     return ans
 
 
+def business_case_context(q, topk=3, floor_abs=4.0, floor_norm=0.7):
+    """深度模式附带的业务事项指引：独立字段返回，不改动主答案文本、sections 与 refs。
+
+    相关性判定用「分数 / 查询长度」归一化：短问题（如「收入什么时候确认」）
+    绝对分天然偏低，只设绝对阈值会把最该命中的场景漏掉；再用绝对下限挡住
+    长句噪声，用相对条带（≥ top1 的 50%）只留同一档相关条目。
+    业务事项是实务指引而非法规原文，返回体带 note 明示。
+    """
+    q = str(q or "").strip()
+    if len(q) < 2:
+        return None
+    try:
+        r = RETRIEVER.retrieve_business_cases(q, topk=max(topk, 5))
+    except Exception:
+        return None
+    items = r.get("results") or []
+    if not items:
+        return None
+    top = float(items[0].get("score") or 0)
+    if top < floor_abs or top / len(q) < floor_norm:
+        return None
+    keep = [x for x in items
+            if float(x.get("score") or 0) >= max(floor_abs, top * 0.5)][:topk]
+    if not keep:
+        return None
+    return {
+        "items": keep,
+        "total": r.get("total", 0),
+        "note": ("业务事项层是结构化实务指引，不是法规原文；作申报或对外依据前须按 "
+                 "SOURCES-CHANNELS.md 八步 SOP 回查官方原文。"),
+    }
+
+
 def ask_local(q, mode="standard"):
     """v6：**计算类问题 → 确定性计算引擎（LLM 不出数值）**；
     其余走规则精编 → 检索兜底 → 弃答 → 五阶段编排 → 深度解读。"""
@@ -2179,6 +2212,11 @@ def ask_local(q, mode="standard"):
     # Stage 3b：深度解读（概念卡六段式 + 关联/边界/场景），不改动三段式主答案
     if mode == "deep":
         ans["deep"] = deep_dive.deep_payload(q, ENTRY_MAP)
+        # 弃答即「无可核验答案」，此时再挂业务事项会自相矛盾（如超范围/无数据问句）。
+        if ans.get("mode") != "abstain":
+            bc = business_case_context(q)
+            if bc:
+                ans["business_cases"] = bc
         ans["deep_mode"] = True
 
     # ---- P0-2 溯源四要素：所有回答统一挂载 ----
@@ -2419,7 +2457,7 @@ class Handler(BaseHTTPRequestHandler):
             out = {
                 "q": q,
                 "answer": answer,
-                "disclaimer": "本回答基于本地知识库（核验日期 2026-11-07）生成，仅供合规参考，不构成税务师/律师专业意见；正式用途请以官方原文为准。",
+                "disclaimer": "本回答基于本地知识库（核验日期 " + (KB.get("verified_at", "") or "以最新核验为准") + "）生成，仅供合规参考，不构成税务师/律师专业意见；正式用途请以官方原文为准。",
             }
             self._json(out)
         except Exception as ex:

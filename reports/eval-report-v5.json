@@ -1,7 +1,7 @@
 {
  "summary": {
-  "run_at": "2026-11-10 14:17:13",
-  "kb_version": "v14.0",
+  "run_at": "2026-11-10 14:53:48",
+  "kb_version": "v15.0",
   "total_cases": 188,
   "auto_cases": 109,
   "manual_cases": 79,
@@ -10,7 +10,7 @@
   "metrics": {
    "Recall@5 (legacy)": 0.9379,
    "Recall@5 (v5)": 1.0,
-   "MRR (legacy)": 0.6879,
+   "MRR (legacy)": 0.687,
    "MRR (v5)": 0.6836,
    "引用正确率(refs 在 v5 Top8)": 0.6451,
    "弃答正确率": 1.0,
@@ -21,7 +21,7 @@
   },
   "delta": {
    "Recall@5": 0.0621,
-   "MRR": -0.0043
+   "MRR": -0.0034
   },
   "failure_count": 0,
   "failures": [],
@@ -6598,8 +6598,8 @@
    ],
    "legacy_top5": [
     "13-13.9",
-    "28-28.1",
     "53-53.2",
+    "28-28.1",
     "15-15.17",
     "27-27.6"
    ],
@@ -6614,7 +6614,7 @@
    "abstain": false,
    "recall_legacy": 1.0,
    "recall_v5": 1.0,
-   "mrr_legacy": 0.5,
+   "mrr_legacy": 0.3333333333333333,
    "mrr_v5": 0.5,
    "api": {
     "mode": "rule",

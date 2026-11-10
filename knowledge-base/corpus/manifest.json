@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-09",
+  "generated_at": "2026-11-10",
   "verified_at": "2026-11-09",
   "layer": "L0 逐字原文层：不进 build_kb.py 的 FILES，不参与主检索索引；只供 import_corpus.py 校验与 build_v5.py 写入 article_text",
   "policy_ref": "context-handoff-v10-2026-11-09.md §5 三态分层（L0 原文 / L1 摘要 / L2 引用）",
@@ -62,6 +62,44 @@
       "verified_at": "2026-11-09",
       "sha256": "bbc56af48109dfd99a288652dabc6583da17ad8bf83baa29d3f0f2d24d8f84ac",
       "note": "收录第一条（个体工商户减半）与第二条（六税两费减半主体与范围）；第五条定义小型微利企业，作为边界依据写入知识条目，未在此逐字收录以免截断。"
+    },
+    {
+      "doc_id": "vat-law-2024",
+      "file": "vat-law-2024.md",
+      "name": "中华人民共和国增值税法",
+      "doc_no": "",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2026-01-01",
+      "expiry_date": "",
+      "sources": [
+        "https://www.gov.cn/yaowen/liebiao/202412/content_6994557.htm",
+        "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5237365/content.html"
+      ],
+      "source_count": 2,
+      "article_count": 38,
+      "verified_at": "2026-11-10",
+      "sha256": "8e2672f2bff579442e9551bf3d5b199b8452f6f3ea64f7a823b84af77c4e77ab",
+      "note": "全国人大常委会 2024-12-25 通过，2026-01-01 施行；《增值税暂行条例》同时废止。文号不臆测，以官方发布为准。"
+    },
+    {
+      "doc_id": "vat-regulation-2025",
+      "file": "vat-regulation-2025.md",
+      "name": "中华人民共和国增值税法实施条例",
+      "doc_no": "国务院令第826号",
+      "level": "行政法规",
+      "status": "现行有效",
+      "effective_date": "2026-01-01",
+      "expiry_date": "",
+      "sources": [
+        "https://www.gov.cn/zhengce/zhengceku/202512/content_7053153.htm",
+        "https://fgk.chinatax.gov.cn/zcfgk/c100010/c5246349/content.html"
+      ],
+      "source_count": 2,
+      "article_count": 54,
+      "verified_at": "2026-11-10",
+      "sha256": "bfb97d8a2a70be4130891441f45b00b61b30c6bf10828fcd8deb2ba36c2ff65e",
+      "note": "国务院令第826号，2025-12-19 国务院第75次常务会议通过、2025-12-25 公布，2026-01-01 与增值税法同步施行；共6章54条。"
     }
   ]
 }
