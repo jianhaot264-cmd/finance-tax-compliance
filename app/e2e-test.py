@@ -182,10 +182,25 @@ async def main():
         check("业务事项搜索有结果", await page.locator(".bc-item").count() > 0)
         await page.click("#bc-search-clear")
         await page.wait_for_timeout(400)
+        check("业务事项导出按钮可见", await page.is_visible("#bc-export"))
         if await page.locator(".bc-item").count():
             await page.click(".bc-item")
             check("业务事项详情 11 字段", await page.locator("#bc-detail .bc-fields tr").count() == 11)
+            n_law = await page.locator("#bc-detail .bc-law-link").count()
+            check("依据名称渲染为可跳转链接", n_law >= 1, f"{n_law} 个")
         await page.screenshot(path=os.path.join(SHOT_DIR, "05-bc-detail.png"), full_page=False)
+        try:
+            async with page.expect_download(timeout=8000) as di:
+                await page.click("#bc-export")
+            dl = await di.value
+            check("CSV 导出触发下载", dl.suggested_filename.endswith(".csv"), dl.suggested_filename)
+        except Exception as ex:
+            check("CSV 导出触发下载", False, type(ex).__name__)
+        if await page.locator("#bc-detail .bc-law-link").count():
+            await page.click("#bc-detail .bc-law-link")
+            await page.wait_for_timeout(300)
+            check("依据跳转切到法规库", await page.is_visible("#view-kb"))
+            check("依据跳转回填检索词", bool((await page.input_value("#kb-search")).strip()))
 
         # ---- 优惠速查 ----
         print("\n[5] 优惠速查结构化", flush=True)

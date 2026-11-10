@@ -1,13 +1,13 @@
 # 财税合规智能体 · 专家团工作台
 
-> 应用 **v14.0（业务事项前端入口 + 边界闭环 + L0 原文层）** ｜ 2026-11-09 ｜ 知识库 **v14.0 · 472 条 / 56 个主题文件 / 109 条精编问答 / 30 张概念卡 + 30 条业务事项卡** ｜ 核验日期 2026-11-09
+> 应用 **v14.0（业务事项前端入口 + 边界闭环 + L0 原文层）** ｜ 2026-11-09 ｜ 知识库 **v14.0 · 472 条 / 56 个主题文件 / 109 条精编问答 / 30 张概念卡 + 30 条业务事项卡** ｜ 核验日期 2026-11-09 ｜ 工程增强 2026-11-10：启动器 v2 / 依据跳转 / CSV 导出（数据层未变）
 > 零第三方依赖：后端 Python 标准库，前端原生 HTML/CSS/JS；大模型经 WorkBuddy Cloud SDK 免密钥流式调用。
-> **续作入口**：`../context-handoff-v12-2026-11-09.md`（v14 当前基线：472 条 / 56 文件 / e2e 78/78 / 重建链 / 坑位）。**回滚基线**：`../backups/baseline-v14-2026-11-09.zip`。
-> **续作入口**：`..\context-handoff-v7-2026-11-07.md`（压缩版交接单：数字基线 / 补库待办 P0–P2 / 标准流程 / 坑位清单）。**回滚基线**：`..\backups\baseline-v6-2026-11-07.zip`。
+> **续作入口**：`../context-handoff-v13-2026-11-10.md`（当前基线：472 条 / 56 文件 / e2e 83/83 / 重建链 / 坑位）。**回滚基线**：`../backups/baseline-v14-2026-11-10.zip`。
+> 历史交接单 v7–v12 与历史基线包保留为阶段快照，不再作为续作入口。
 
 ## 快速启动
 
-双击 `start_server.bat`，或在命令行执行：
+推荐双击**项目根目录** `start-qa.bat`（v2：真实健康检查 + 轮询就绪 + 失败提示 + 日志落盘到 `app/logs/server.log`；单实例保护）；也可双击本目录 `start_server.bat`，或在命令行执行：
 
 ```
 "C:\Users\aa152\AppData\Local\Programs\Python\Python312\python.exe" "E:\workbuddy-data\finance-tax-compliance\app\server.py" 8777
@@ -57,7 +57,7 @@
 | 弃答正确率 / 角色分诊 | — | **1.0000 / 0.9771** |
 | 规则命中 / 要点覆盖 / 禁用表述规避 | — | **0.9577 / 0.9674 / 0.9783** |
 
-冒烟 **19/19**、全量端到端 **78/78**、引用 ID 零悬空（329 条）。
+冒烟 **19/19**、全量端到端 **83/83**、引用 ID 零悬空（329 条）。
 
 ---
 
@@ -133,7 +133,7 @@ python app/eval_kb.py && python app/e2e-test.py --smoke && python app/e2e-test.p
 
 ### 4. 生产级数据库
 
-单一事实源链路：`knowledge-base/*.md` → `build_kb.py` → `enrich_kb.py` → `kb.json` + SQLite + CSV → `audit_kb.py`。**不要手工编辑 kb.json 或 .db**。
+单一事实源链路：`knowledge-base/*.md` + `corpus/` → `build_kb.py` → `enrich_kb.py` → `build_concepts.py` → `import_corpus.py` → `build_v5.py` → `kb.json` + SQLite + CSV → `audit_kb.py`（完整顺序见下方「知识库更新」与交接单 v13 §3）。**不要手工编辑 kb.json / .db / corpus-articles.json**。
 
 | 对象 | 说明 |
 |---|---|
@@ -252,13 +252,15 @@ app/
 ├─ kb.json                      # 结构化知识库（472 条目 / 56 主题文件，v14.0，含 entry_type/tier/双源）
 ├─ concepts.json                # 概念层导出（30 概念 / 247 关系 / 14 场景 / 44 边界 / 10 定论）
 ├─ config.json                  # 自备 Key 的 OpenAI 兼容接口（历史备用，默认关闭）
-├─ start_server.bat             # Windows 一键启动
-├─ e2e-test.py                  # Playwright 端到端回归（--smoke 19 项 / 默认全量 73 项）
+├─ import_corpus.py             # L0 逐字语料校验/去重 -> corpus-articles.json（重建链必跑）
+├─ start_server.bat             # Windows 一键启动（旧入口；推荐根目录 start-qa.bat v2）
+├─ e2e-test.py                  # Playwright 端到端回归（--smoke 19 项 / 默认全量 83 项）
 ├─ qa-screenshots/              # 回归测试自动生成的界面截图（可重生成）
 └─ static/
    ├─ index.html        # 语义化页面骨架 + SVG 图标精灵
    ├─ style.css         # 设计系统（浅/深主题、响应式、无障碍）
    ├─ app.js            # 全部交互逻辑 + 模型价格分档
+   ├─ business.js       # 业务事项视图：6 类筛选 / 11 字段 / 依据跳转 / CSV 导出
    ├─ copy.js           # 统一文案字典（术语 / 状态 / 错误 / 空态）
    ├─ ux.js             # 深度解读 / 概念面板 / 进度 / 空错态 / a11y
    ├─ ux.css            # v6 体验层样式（叠加在 style.css 之上）
@@ -276,6 +278,7 @@ app/
 | GET | `/api/examples` | 兼容旧版 `examples[]` + 8 个分组 `groups[]`（含概念辨析） |
 | GET | `/api/kb` | 全量知识库 |
 | GET | `/api/search?q=` | 法规检索（标题加权打分） |
+| GET | `/api/business-cases?q=` | 业务事项独立检索；`q` 为空按编号列出全部 30 条并含 11 字段 |
 | GET | `/api/llm-context?q=&mode=` | 云端 system 上下文（分诊 + 知识库摘录 + 概念层；`mode=deep` 注入六段式） |
 | GET | `/api/concepts` | 30 张概念卡列表 |
 | GET | `/api/concept?id=` | 单张概念卡详情（16 字段 + 关系 + 场景） |
@@ -287,10 +290,10 @@ app/
 
 ```
 python e2e-test.py --smoke   # 快速冒烟 19 项：加载、文案字典、模式切换、概念面板、运行时错误
-python e2e-test.py           # 全量 73 项：云端流式、深度解读、概念面板、空态、a11y、法规库、优惠、移动端
+python e2e-test.py           # 全量 83 项：云端流式、深度解读、概念面板、空态、a11y、法规库、优惠、业务事项导出/跳转、移动端
 ```
 
-当前结果 **78/78 通过（冒烟 19/19）**，截图输出到 `qa-screenshots/`（含 `07-about-models.png` 模型价目表）。测试会真实调用云端模型；免费档触发 429 限流时应用自动回退本地答案，回退路径已单独断言。
+当前结果 **83/83 通过（冒烟 19/19）**，截图输出到 `qa-screenshots/`（含 `07-about-models.png` 模型价目表）。测试会真实调用云端模型；免费档触发 429 限流时应用自动回退本地答案，回退路径已单独断言。
 
 ## 云端大模型
 
@@ -302,13 +305,13 @@ python e2e-test.py           # 全量 73 项：云端流式、深度解读、概
 ## 知识库更新
 
 1. 修改 `..\knowledge-base\` 下的 md（遵循 `00-index.md` 元数据规范）；
-2. 依次执行 `build_kb.py` → `enrich_kb.py` → `build_concepts.py` → `build_v5.py` → `audit_kb.py`（顺序不可颠倒）；
+2. 依次执行 `build_kb.py` → `enrich_kb.py` → `build_concepts.py` → **`import_corpus.py`** → `build_v5.py` → `audit_kb.py` → `build_coverage_matrix.py`（顺序不可颠倒；`import_corpus.py` 必须在 `build_v5.py` 之前，否则 L0 逐字条文不会入库）；
 3. 改过检索/规则时执行 `eval_kb.py` 对比 legacy 基线，再跑 `e2e-test.py --smoke` 与全量；
 4. 重启 `server.py` 生效（前端会自动读取新的分类、条目与概念卡）。
 
 ## 备份与回滚
 
-唯一回滚基线：`..\backups\baseline-v6-2026-11-07.zip`（68 个文件 / 2.26 MB）。
+当前回滚基线：`..\backups\baseline-v14-2026-11-10.zip`（本轮工程增强后的完整快照）；历史包 `baseline-v6` ~ `baseline-v14-2026-11-09` 保留为阶段快照。
 
 - 内容：`knowledge-base\` 全部 md + `app\` 全部源码与 `kb.json` / `concepts.json` / `finance-tax-compliance.db` + `static\` + `reports\`；
 - 校验：同目录 `baseline-v6-2026-11-07-manifest.json` 记录每个文件的大小与 SHA256 前 16 位；

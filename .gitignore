@@ -8,6 +8,7 @@ env/
 
 # 运行时产物
 app/qa-screenshots/
+app/logs/
 reports/reconcile-last.html
 reports/source-watch-state.json
 *.log

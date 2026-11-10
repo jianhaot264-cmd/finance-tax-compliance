@@ -11,6 +11,76 @@
   var linkify = (v) => esc(v).replace(/https?:\/\/[^\s<）)】]+/g,
     (u) => '<a href="' + u + '" target="_blank" rel="noopener noreferrer">' + u + "</a>");
 
+  /* 依据名称 → 法规库检索；URL 保持外链 */
+  function lawLinkify(v) {
+    var s = esc(v || "");
+    s = s.replace(/https?:\/\/[^\s<）)】"]+/g, (u) =>
+      '<a href="' + u + '" target="_blank" rel="noopener noreferrer">' + u + "</a>");
+    s = s.replace(/《([^》]+)》/g, (m, name) =>
+      '<a href="#" class="bc-law-link" data-law="' + name +
+      '" title="在法规库中检索该依据">《' + name + "》</a>");
+    return s;
+  }
+
+  function csvCell(v) {
+    var s = String(v == null ? "" : v).replace(/\r?\n/g, " ");
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+
+  function flashBtn(msg) {
+    var b = $("#bc-export");
+    if (!b) return;
+    var old = b.textContent;
+    b.textContent = msg;
+    b.disabled = true;
+    setTimeout(() => { b.textContent = old; b.disabled = false; }, 1400);
+  }
+
+  function exportCsv() {
+    var items = visible();
+    if (!items.length) { flashBtn("无可导出条目"); return; }
+    var head = ["编号", "条目ID", "标题", "分类", "层级", "生效状态"].concat(FIELDS);
+    var lines = [head.map(csvCell).join(",")];
+    items.forEach((x) => {
+      var f = x.fields || {};
+      var row = [x.no || "", x.id || "", x.title || "", shortCat(x.category),
+                 x.tier || "", x.status || ""].concat(FIELDS.map((k) => f[k] || ""));
+      lines.push(row.map(csvCell).join(","));
+    });
+    var d = new Date();
+    var stamp = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") +
+                "-" + String(d.getDate()).padStart(2, "0");
+    var blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "business-cases-" + stamp + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    flashBtn("已导出 " + items.length + " 条");
+  }
+
+  function jumpToKb(law) {
+    var kw = String(law || "").trim();
+    if (!kw) return;
+    var m = kw.match(/^(.+?第\d+号)/);   /* 截取「…第N号」核心词，更利于法规库命中 */
+    if (m) kw = m[1];
+    try {
+      if (window.switchTab) window.switchTab("kb");
+      else { var nav = document.querySelector('.nav-item[data-tab="kb"]'); if (nav) nav.click(); }
+    } catch (e) { /* noop */ }
+    var inp = $("#kb-search");
+    if (inp) {
+      inp.value = kw;
+      inp.dispatchEvent(new Event("input", { bubbles: true }));
+      var clr = $("#kb-search-clear");
+      if (clr) clr.hidden = false;
+      inp.focus();
+    }
+  }
+
   var CATS = [["全部", ""], ["收入", "51"], ["资产", "52"], ["费用", "53"],
               ["税费", "54"], ["往来", "55"], ["期末结转", "56"]];
   var FIELDS = ["适用范围", "确认与计量要求", "会计分录与处理流程", "税务处理规定",
@@ -85,7 +155,9 @@
     }
     var f = item.fields || {};
     var rows = FIELDS.map((k) => '<tr><th>' + esc(k) + "</th><td>" +
-      (k === "信源" ? linkify(f[k] || item.basis || "") : linkify(f[k] || "")) + "</td></tr>").join("");
+      (k === "参照依据与关键条款" ? lawLinkify(f[k] || "") :
+       k === "信源" ? linkify(f[k] || item.basis || "") :
+       linkify(f[k] || "")) + "</td></tr>").join("");
     el.innerHTML =
       '<div class="bc-detail-head">' +
       '<div class="bc-badges"><span class="bc-badge">' + esc(item.tier || "—") + ' 层</span>' +
@@ -94,7 +166,9 @@
       "<h2>" + esc(item.no || "") + " " + esc(item.title) + "</h2>" +
       '<p class="bc-id">条目 ' + esc(item.id) + " · 业务事项结构化指引 · 非法规原文</p></div>" +
       '<table class="field-table bc-fields"><tbody>' + rows + "</tbody></table>" +
-      '<div class="bc-foot">本层按业务事项组织，用于理解确认计量、分录流程与税会差异；作申报或对外依据前，请按 <code>SOURCES-CHANNELS.md</code> 八步 SOP 回查官方原文。</div>';
+      '<div class="bc-foot">本层按业务事项组织，用于理解确认计量、分录流程与税会差异。' +
+      '<b>点击带下划线的《法规名称》可跳转法规库检索</b>，右上角「导出 CSV」可导出当前筛选结果。' +
+      '作申报或对外依据前，请按 <code>SOURCES-CHANNELS.md</code> 八步 SOP 回查官方原文。</div>';
   }
 
   function render() { renderStats(); renderChips(); renderList(); renderDetail(); }
@@ -131,6 +205,16 @@
       if (!b) return;
       ST.selected = b.dataset.id;
       renderList(); renderDetail();
+    });
+    var exp = $("#bc-export");
+    if (exp) exp.addEventListener("click", exportCsv);
+    var detail = $("#bc-detail");
+    if (detail) detail.addEventListener("click", (e) => {
+      var t = e.target;
+      var a = t && t.closest ? t.closest(".bc-law-link") : null;
+      if (!a) return;
+      e.preventDefault();
+      jumpToKb(a.getAttribute("data-law"));
     });
     load("");
   }

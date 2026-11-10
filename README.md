@@ -119,11 +119,16 @@ curl -X POST http://localhost:8777/api/ask \
 cd app
 python test_trust.py       # 可信度引擎 24 项
 python e2e-test.py --smoke # UI 冒烟 19 项
-python e2e-test.py         # 全量 e2e 73 项
+python e2e-test.py         # 全量 e2e 83 项
 
-# 知识库重建（改动 knowledge-base/ 后）
+# 知识库重建（改动 knowledge-base/ 后；import_corpus.py 必须在 build_v5.py 之前）
 python build_kb.py && python enrich_kb.py && python build_concepts.py \
-  && python build_v5.py && python audit_kb.py
+  && python import_corpus.py && python build_v5.py && python audit_kb.py \
+  && python build_coverage_matrix.py
+
+# 运行与巡检
+..\start-qa.bat                  # 一键启动 v2：真实健康检查 + 轮询就绪 + 失败提示 + 日志落盘
+python expiry_scan.py            # 到期雷达：90/60/30 天临期预警 -> reports/expiry-radar.md
 ```
 
 CI（GitHub Actions）自动跑：语法检查 → trust 回归 → 计算引擎确定性断言 → 三流核对规则 → 免责声明存在性。
@@ -134,7 +139,7 @@ CI（GitHub Actions）自动跑：语法检查 → trust 回归 → 计算引擎
 
 - **Topics**：`china-tax` · `tax-compliance` · `财税` · `llm-agent` · `self-hosted` · `rag` · `docker`
 - **License**：[MIT](LICENSE)
-- **架构图 / 缺口表 / 交接单**：见 `reports/` 与 `context-handoff-v9-2026-11-08.md`
+- **架构图 / 缺口表 / 交接单**：见 `reports/` 与 `context-handoff-v13-2026-11-10.md`（当前基线；v9–v12 为历史快照）
 
 ---
 

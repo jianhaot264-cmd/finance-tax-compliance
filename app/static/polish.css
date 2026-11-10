@@ -505,6 +505,19 @@
 .clarify-free { border-style: dashed; opacity: .85; }
 .clarify-free:hover { opacity: 1; }
 
+/* ---- 业务事项：CSV 导出与依据跳转（工程增强，数据层不变） ---- */
+.bc-export-btn {
+  flex-shrink: 0; padding: 8px 14px; border: 1px solid var(--border, #e2e8f0);
+  border-radius: 9px; background: var(--surface, #fff); color: var(--text, #102a43);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: border-color var(--t-fast, .12s), background var(--t-fast, .12s), transform var(--t-fast, .12s);
+}
+.bc-export-btn:hover { border-color: var(--brand, #5b7cfa); background: var(--brand-soft, rgba(80,120,255,.10)); transform: translateY(-1px); }
+.bc-export-btn:focus-visible { outline: 2px solid var(--brand, #5b7cfa); outline-offset: 2px; }
+.bc-export-btn:disabled { opacity: .65; cursor: default; transform: none; }
+.bc-fields a.bc-law-link { text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
+.bc-fields a.bc-law-link:hover { background: var(--brand-soft, rgba(80,120,255,.12)); border-radius: 3px; }
+
 /* ---------------- 业务事项视图（v13.1） ---------------- */
 .bc-intro { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
 .bc-intro h3 { margin: 0 0 6px; font-size: 18px; }

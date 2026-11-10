@@ -20,6 +20,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
@@ -2425,13 +2426,65 @@ class Handler(BaseHTTPRequestHandler):
             self._json({"error": str(ex)}, 500)
 
 
+LOG_DIR = os.path.join(BASE, "logs")
+LOG_PATH = os.path.join(LOG_DIR, "server.log")
+
+
+class _Tee:
+    """把 stdout/stderr 同时写到控制台与日志文件；任一目标失败都不影响服务。"""
+
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, s):
+        for st in self.streams:
+            try:
+                st.write(s)
+            except Exception:
+                pass
+        return len(s)
+
+    def flush(self):
+        for st in self.streams:
+            try:
+                st.flush()
+            except Exception:
+                pass
+
+
+def _setup_logging():
+    """启动日志落盘（>1MB 轮转为 .1），便于服务被外部终止后追溯原因。"""
+    try:
+        os.makedirs(LOG_DIR, exist_ok=True)
+        if os.path.exists(LOG_PATH) and os.path.getsize(LOG_PATH) > 1024 * 1024:
+            bak = LOG_PATH + ".1"
+            if os.path.exists(bak):
+                os.remove(bak)
+            os.replace(LOG_PATH, bak)
+        lf = open(LOG_PATH, "a", encoding="utf-8", buffering=1)
+        lf.write("\n===== server start %s | pid=%d | port=%d =====\n"
+                 % (time.strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), PORT))
+        sys.stdout = _Tee(sys.__stdout__, lf)
+        sys.stderr = _Tee(sys.__stderr__, lf)
+    except Exception as ex:
+        print("[warn] 日志落盘不可用，仅输出到控制台：%s" % ex)
+
+
 def main():
-    srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    _setup_logging()
+    try:
+        srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    except OSError as ex:
+        print("[error] 端口 %d 无法绑定（可能已被其他进程占用）：%s" % (PORT, ex))
+        print("[hint]  先访问 http://localhost:%d/api/health 确认是否已有服务；"
+              "或改用其它端口，例如 server.py 8778" % PORT)
+        sys.exit(2)
     print(f"[ok] tax-compliance agent serving at http://localhost:{PORT}")
     print(f"[ok] kb entries={len(KB['entries'])}, rules={len(RULES)}, llm={'ON' if (LLM.get('enabled') and LLM.get('api_key')) else 'OFF'}")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
+        print("[info] 收到中断信号，正在关闭服务 ...")
         srv.shutdown()
 
 
