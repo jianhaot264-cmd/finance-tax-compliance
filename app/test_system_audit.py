@@ -80,7 +80,7 @@ ck("article_text 121", n_art == 121, n_art)
 ck("引用零悬空", dang == 0, dang)
 ck("alias 89", alias == 89, alias)
 ck("kb.json 472/56", len(d["entries"]) == 472 and len(d["files"]) == 56)
-ck("tier 317/4/151", [e.get("tier") for e in d["entries"]].count("A") == 317)
+ck("tier 318/4/150", [e.get("tier") for e in d["entries"]].count("A") == 318)
 
 print("=== 5. 静态资源与免责 ===", flush=True)
 html = urllib.request.urlopen(BASE + "/", timeout=15).read().decode("utf-8")

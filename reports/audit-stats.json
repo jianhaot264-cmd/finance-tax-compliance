@@ -6,24 +6,24 @@
   "files": 56,
   "complete_metadata": 281,
   "valid_status": 472,
-  "flagged_entries": 7,
-  "dual_source_entries": 354,
+  "flagged_entries": 6,
+  "dual_source_entries": 355,
   "regulation_total": 345,
-  "regulation_compliant": 219,
+  "regulation_compliant": 220,
   "assembly_total": 127,
   "assembly_compliant": 113,
   "na_field_entries": 127,
-  "pending_field_entries": 7,
-  "enriched_at": "2026-11-10 14:46:08",
+  "pending_field_entries": 6,
+  "enriched_at": "2026-11-11 16:26:07",
   "tiers": {
-   "A": 317,
+   "A": 318,
    "B1": 4,
-   "B2": 151
+   "B2": 150
   },
   "by_entry_type": {
    "regulation": {
     "total": 345,
-    "compliant": 219
+    "compliant": 220
    },
    "digest": {
     "total": 31,
@@ -79,7 +79,7 @@
   "explain_total": 92,
   "explain_compliant": 92,
   "concept_complete": 30,
-  "compliant_total": 332,
+  "compliant_total": 333,
   "status_breakdown": {
    "现行有效": 414,
    "草案阶段": 6,
@@ -94,8 +94,8 @@
    "missing_source": 19,
    "missing_issuer": 39,
    "missing_level": 41,
-   "pending_field": 7,
-   "single_source": 5
+   "pending_field": 6,
+   "single_source": 4
   },
   "blocked_items": [
    {
@@ -5777,17 +5777,14 @@
    "file": "41",
    "title": "2026-12-31 到期组（最近窗口，优先处理）",
    "entry_type": "regulation",
-   "tier": "B2",
+   "tier": "A",
    "status": "现行有效",
    "valid_status": true,
    "missing": [],
-   "flags": [
-    "single_source",
-    "pending_field"
-   ],
-   "url_count": 1,
-   "dual_source": false,
-   "compliant": false
+   "flags": [],
+   "url_count": 2,
+   "dual_source": true,
+   "compliant": true
   },
   {
    "id": "41-41.2",
@@ -7143,7 +7140,7 @@
    "valid_status": true,
    "missing": [],
    "flags": [],
-   "url_count": 2,
+   "url_count": 4,
    "dual_source": true,
    "compliant": true
   },

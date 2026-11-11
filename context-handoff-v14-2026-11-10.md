@@ -7,14 +7,14 @@
 
 ## 0. 一句话状态
 
-`E:\workbuddy-data\finance-tax-compliance\`：知识库 **v15.0 · 472 条 / 56 文件 / A 317 · B1 4 · B2 151**；`business_case` 30/30 全 A、`article_text` **121 条**（23 文件 37 + L0 原文层 84）、corpus 唯一逐字条文 **119**、引用零悬空。后端 Python 3.12 纯标准库（8777），前端 5 tab。**188 题评测 0 未达标且 v5 指标与基线逐项一致**，冒烟 19/19、e2e 83/83、trust 24/24、单测 37/37、一致性 29/29。
+`E:\workbuddy-data\finance-tax-compliance\`：知识库 **v15.0 · 472 条 / 56 文件 / A 318 · B1 4 · B2 150**；`business_case` 30/30 全 A、`article_text` **121 条**（23 文件 37 + L0 原文层 84）、corpus 唯一逐字条文 **119**、引用零悬空。后端 Python 3.12 纯标准库（8777），前端 5 tab。**188 题评测 0 未达标且 v5 指标与基线逐项一致**，冒烟 19/19、e2e 83/83、trust 24/24、单测 37/37、一致性 29/29。
 
 ## 1. 实测基线
 
 | 项 | 值 |
 |---|---|
 | `kb.json` | v15.0 / 472 条 / 56 文件 / `verified_at=2026-11-09`（全库基线；变动条目单条标 2026-11-10） |
-| tier / status | A 317 / B1 4 / B2 151；414 现行 / 50 汇编动态 / 6 草案 / 2 废止 |
+| tier / status | A 318 / B1 4 / B2 150；414 现行 / 50 汇编动态 / 6 草案 / 2 废止 |
 | entry_type | regulation 345 / digest 31 / table_row 4 / concept 30 / relation 8 / scenario 14 / verification 10 / **business_case 30（全 A）** |
 | `pending_field` | 全库 **7**（属地/到期隔离项，应保留）；business_case **0** |
 | SQLite | regulation 472、fts 472、**article_text 121**、citation_verification 15、alias 89、rule_reference 329、golden_case 79；运行时留痕 query_log / eval_run / eval_result / external_lookup_log（重建后需导回） |
