@@ -76,7 +76,7 @@ dang = con.execute("SELECT COUNT(*) FROM rule_reference r LEFT JOIN regulation g
                    "ON r.regulation_id=g.id WHERE g.id IS NULL").fetchone()[0]
 alias = con.execute("SELECT COUNT(*) FROM alias").fetchone()[0]
 con.close()
-ck("article_text 455", n_art == 455, n_art)
+ck("article_text 647", n_art == 647, n_art)
 ck("引用零悬空", dang == 0, dang)
 ck("alias 89", alias == 89, alias)
 ck("kb.json 472/56", len(d["entries"]) == 472 and len(d["files"]) == 56)

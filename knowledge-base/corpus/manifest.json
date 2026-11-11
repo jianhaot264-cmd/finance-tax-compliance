@@ -271,6 +271,177 @@
       "verified_at": "2026-11-11",
       "sha256": "885b6133cac2b72b6c0729c2a70eb21e8d9fba89f4d5e4fc92e68ec70529df49",
       "note": "2019-08-26 通过，2020-09-01 施行；《资源税暂行条例》同时废止。"
+    },
+    {
+      "doc_id": "farmland-tax-law-2018",
+      "file": "farmland-tax-law-2018.md",
+      "name": "中华人民共和国耕地占用税法",
+      "doc_no": "主席令第18号",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2019-09-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193037/content.html",
+        "https://12366.chinatax.gov.cn/bzds/122/122-6-3-2.html"
+      ],
+      "source_count": 2,
+      "article_count": 16,
+      "verified_at": "2026-11-11",
+      "sha256": "abb6592e918823a23eee34b743daa184479f5e898e3297be0d4d56f86b59c020",
+      "note": "2018-12-29 通过，2019-09-01 施行；《耕地占用税暂行条例》同时废止。"
+    },
+    {
+      "doc_id": "tobacco-tax-law-2017",
+      "file": "tobacco-tax-law-2017.md",
+      "name": "中华人民共和国烟叶税法",
+      "doc_no": "主席令第84号",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2018-07-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193027/content.html",
+        "https://www.chinatax.gov.cn/chinatax/n810214/c102374/c102377/c102378/c3286962/content.html"
+      ],
+      "source_count": 2,
+      "article_count": 10,
+      "verified_at": "2026-11-11",
+      "sha256": "4b7809bcef50e96ef8673deee9b9fb29b7d91eb054830163ddd0a31373abc4ad",
+      "note": "2017-12-27 通过，2018-07-01 施行；《烟叶税暂行条例》同时废止。"
+    },
+    {
+      "doc_id": "vehicle-purchase-tax-law-2018",
+      "file": "vehicle-purchase-tax-law-2018.md",
+      "name": "中华人民共和国车辆购置税法",
+      "doc_no": "主席令第19号",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2019-07-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193038/content.html",
+        "https://www.mof.gov.cn/zhengwuxinxi/caizhengxinwen/201901/t20190102_3112026.htm"
+      ],
+      "source_count": 2,
+      "article_count": 19,
+      "verified_at": "2026-11-11",
+      "sha256": "e318ab95d1fb942718520d3f8cec6270f7d7290bdd5eeb34ce451593722812e4",
+      "note": "2018-12-29 通过，2019-07-01 施行；《车辆购置税暂行条例》同时废止。"
+    },
+    {
+      "doc_id": "ucct-law-2020",
+      "file": "ucct-law-2020.md",
+      "name": "中华人民共和国城市维护建设税法",
+      "doc_no": "主席令第51号",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2021-09-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193055/content.html",
+        "https://www.mof.gov.cn/zhengwuxinxi/caizhengxinwen/202008/t20200812_3566258.htm"
+      ],
+      "source_count": 2,
+      "article_count": 11,
+      "verified_at": "2026-11-11",
+      "sha256": "ca9235b9096438fbc6411c2ecf72fe7af51c1667f19d4191b0b72506cce16eba",
+      "note": "2020-08-11 通过，2021-09-01 施行；《城市维护建设税暂行条例》同时废止。"
+    },
+    {
+      "doc_id": "customs-duty-law-2024",
+      "file": "customs-duty-law-2024.md",
+      "name": "中华人民共和国关税法",
+      "doc_no": "主席令第23号",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2024-12-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5234556/content.html",
+        "https://gss.mof.gov.cn/gzdt/zhengcefabu/202404/t20240426_3933677.htm"
+      ],
+      "source_count": 2,
+      "article_count": 72,
+      "verified_at": "2026-11-11",
+      "sha256": "6c8a6d3c06c55754a48f5685c6a49e05764176978eb0f555dc63516a8a6557e8",
+      "note": "2024-04-26 十四届全国人大常委会第九次会议通过，2024-12-01 施行；《进出口关税条例》同时废止。"
+    },
+    {
+      "doc_id": "tonnage-tax-law-2017",
+      "file": "tonnage-tax-law-2017.md",
+      "name": "中华人民共和国船舶吨税法",
+      "doc_no": "主席令第85号（2018年修正）",
+      "level": "法律",
+      "status": "现行有效",
+      "effective_date": "2018-07-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193036/content.html",
+        "https://gss.mof.gov.cn/gszhs/falvlagui/202012/t20201231_3638669.htm"
+      ],
+      "source_count": 2,
+      "article_count": 22,
+      "verified_at": "2026-11-11",
+      "sha256": "df2a8531ef8355ff5fa750e5b3bf1075626c8f099cec6017c40afe299c9c4693",
+      "note": "2017-12-27 通过，2018-07-01 施行；根据 2018-10-26 全国人大常委会决定删去第十一条中「或者出入境检验检疫部门」（机构改革），现行版为 2018 修正版。"
+    },
+    {
+      "doc_id": "house-tax-regulation-1986",
+      "file": "house-tax-regulation-1986.md",
+      "name": "中华人民共和国房产税暂行条例",
+      "doc_no": "国发〔1986〕90号（2011年修订）",
+      "level": "行政法规",
+      "status": "现行有效",
+      "effective_date": "1986-10-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100010/c5196866/content.html",
+        "https://www.gov.cn/gongbao/content/2011/content_1860812.htm"
+      ],
+      "source_count": 2,
+      "article_count": 11,
+      "verified_at": "2026-11-11",
+      "sha256": "d73005c4c6aefbff40538067e99956aa9e24c1b27cdb06447b58ef002e8ada1e",
+      "note": "1986-09-15 国务院发布；2011-01-08 修订。房产税尚未立法，仍为暂行条例。"
+    },
+    {
+      "doc_id": "urban-land-tax-regulation-1988",
+      "file": "urban-land-tax-regulation-1988.md",
+      "name": "中华人民共和国城镇土地使用税暂行条例",
+      "doc_no": "国务院令第17号（2019年第四次修订）",
+      "level": "行政法规",
+      "status": "现行有效",
+      "effective_date": "1988-11-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100010/c5194445/content.html",
+        "https://www.gov.cn/gongbao/content/2019/content_5468914.htm"
+      ],
+      "source_count": 2,
+      "article_count": 14,
+      "verified_at": "2026-11-11",
+      "sha256": "021ba9bc73ead2914833d7bd5c4ebb5b79347127cd2264f59d58b1475b70cb1e",
+      "note": "1988-09-27 国务院令第17号发布；经 2006/2011/2013/2019 四次修订，现行版为 2019-03-02 第四次修订。尚未立法。"
+    },
+    {
+      "doc_id": "consumption-tax-regulation-2008",
+      "file": "consumption-tax-regulation-2008.md",
+      "name": "中华人民共和国消费税暂行条例",
+      "doc_no": "国务院令第539号",
+      "level": "行政法规",
+      "status": "现行有效",
+      "effective_date": "2009-01-01",
+      "expiry_date": "",
+      "sources": [
+        "https://fgk.chinatax.gov.cn/zcfgk/c100010/c5194422/content.html",
+        "https://www.gov.cn/zhengce/2008-11/14/content_2602523.htm"
+      ],
+      "source_count": 2,
+      "article_count": 17,
+      "verified_at": "2026-11-11",
+      "sha256": "77df2cf5356abd842ca5a943d41c7af8e0ef92bb1de637b001017db77441a305",
+      "note": "1993-12-13 国务院令第135号发布；2008-11-05 国务院第34次常务会议修订通过，2009-01-01 施行。消费税法尚未出台，仍为暂行条例。"
     }
   ]
 }

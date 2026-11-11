@@ -138,12 +138,34 @@ def parse_articles(html_text):
 
 
 def trim_effect(body):
-    """末条若含施行表述，截断到该句末，剔除页面尾部噪声。"""
+    """末条剔除页面尾部噪声，尽量截断到条文最后一句。
+
+    优先按「施行。」截断。若末条无施行表述，再剥掉末尾的「标签/导航行」：
+    这类行通常很短、不含句末标点、且以逗号分隔的词语堆叠（如
+    "投资,农、林、牧、渔业,个体工商户,城镇土地使用税" / "文件"）。
+    只删满足噪声特征的行，避免误删条文的正当末行。
+    """
     for kw in ("施行。", "施行；"):
         i = body.rfind(kw)
         if i >= 0:
             return body[:i + len(kw)]
-    return body
+
+    def is_noise(line):
+        t = line.strip()
+        if not t or t[-1] in "。；;！？":
+            return False
+        # 极短行（如「文件」「打印」）
+        if len(t) <= 6:
+            return True
+        # 无句读、以多样逗号堆叠的词语行
+        if "，" not in t and "," in t and len(t) < 80:
+            return True
+        return False
+
+    lines = body.split("\n")
+    while len(lines) > 1 and is_noise(lines[-1]):
+        lines.pop()
+    return "\n".join(lines).strip()
 
 
 def norm(s):
@@ -154,7 +176,11 @@ def norm(s):
     这是各站排版习惯差异，非条文实质不同。
     """
     s = unicodedata.normalize("NFKC", s or "")
+    # 并列书名号/引号之间的顿号停顿差异：《法A》、《法B》 vs 《法A》《法B》
     s = re.sub(r"([》」』”])\s*[、，,]\s*(?=[《「『“])", r"\1", s)
+    # 公式中数字 1 被误录为字母 l/i 的 OCR 差异：（l-比例税率） vs （1-比例税率）
+    # 仅在「括号/运算符旁的单个 l」这种明确算式语境替换，避免误改正文文字。
+    s = re.sub(r"(?<=[（(])[lI](?=[-－—+×÷*/])", "1", s)
     return re.sub(r"\s+", "", s)
 
 
