@@ -801,6 +801,9 @@ async function sendViaCloud(q, opts = {}) {
   }
   if (window.UX) window.UX.decorateLastMessage({
     q, deep, refs: ctx.refs || [], mode: "cloud",
+    // ctx.fallback 来自 build_llm_context -> ask_local(mode=deep)，含 business_cases；
+    // 云端成功时也要把它交给深度面板渲染，否则只有本地兜底链路才有业务事项块。
+    answer: ctx.fallback || null,
     fallbackNotice: payload.fallbackNotice || null,
   });
   saveSessions(); scrollChat();

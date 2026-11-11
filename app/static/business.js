@@ -62,10 +62,69 @@
     flashBtn("已导出 " + items.length + " 条");
   }
 
-  function jumpToKb(law) {
+  /* ③ 依据名称 → 精确法源条目；解析不到时明提示并回退关键词检索 */
+  var LAW_INDEX = null;
+
+  function normLaw(s) {
+    return String(s || "")
+      .replace(/[《》〈〉\s]/g, "")
+      .replace(/^中华人民共和国/, "")
+      .replace(/（[^）]*）|\([^)]*\)/g, "")
+      .replace(/[—－·・,，。;；:：\-]/g, "")
+      .toLowerCase();
+  }
+
+  async function lawIndex() {
+    if (LAW_INDEX) return LAW_INDEX;
+    try {
+      var d = await fetch("/api/kb", { cache: "force-cache" }).then((r) => r.json());
+      LAW_INDEX = Array.isArray(d.entries) ? d.entries : [];
+    } catch (e) { LAW_INDEX = []; }
+    return LAW_INDEX;
+  }
+
+  async function resolveLawId(name) {
+    var raw = String(name || "").trim();
+    var key = normLaw(raw);
+    if (!key) return null;
+    var es = await lawIndex();
+    if (!es.length) return null;
+    /* 准则类条目以「CAS N」命名（如 38-38.3），先按第N号命中 */
+    if (/企业会计准则/.test(raw)) {
+      var m = raw.match(/第\s*(\d+)\s*号/);
+      if (m) {
+        var re = new RegExp("CAS\\s*0*" + m[1] + "(?!\\d)", "i");
+        var c = es.find((x) => re.test(String(x.title || "") + " " + String(x.heading || "")));
+        if (c) return c.id;
+      }
+    }
+    var best = null, bestScore = 0;
+    es.forEach((e) => {
+      var t = normLaw(e.title || "");
+      var h = normLaw(e.heading || "");
+      var dn = normLaw(e.doc_no || "");
+      var sc = 0;
+      if (t && t === key) sc = 100;
+      else if (dn && dn === key) sc = 95;
+      else if (t && key && (t.indexOf(key) === 0 || key.indexOf(t) === 0)
+               && Math.abs(t.length - key.length) <= 8) sc = 80;
+      else if (h && key.length >= 4 && h.indexOf(key) >= 0) sc = 65;
+      if (sc > bestScore) { bestScore = sc; best = e; }
+    });
+    return bestScore >= 65 ? best.id : null;
+  }
+
+  async function jumpToKb(law) {
+    var id = null;
+    try { id = await resolveLawId(law); } catch (e) { id = null; }
+    if (id && window.openDetail) {
+      window.openDetail(id);
+      return;
+    }
+    /* 回退：未定位到精确条目时按关键词检索，并明确告知用户 */
     var kw = String(law || "").trim();
     if (!kw) return;
-    var m = kw.match(/^(.+?第\d+号)/);   /* 截取「…第N号」核心词，更利于法规库命中 */
+    var m = kw.match(/^(.+?第\d+号)/);
     if (m) kw = m[1];
     try {
       if (window.switchTab) window.switchTab("kb");
@@ -79,6 +138,9 @@
       if (clr) clr.hidden = false;
       inp.focus();
     }
+    try {
+      if (window.toast) window.toast("未找到精确法源条目，已按关键词检索「" + kw + "」", "warn");
+    } catch (e) { /* noop */ }
   }
 
   var CATS = [["全部", ""], ["收入", "51"], ["资产", "52"], ["费用", "53"],

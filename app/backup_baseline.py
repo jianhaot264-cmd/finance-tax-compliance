@@ -31,7 +31,8 @@ ROOT_FILES = ["README.md", ".gitignore", "start-qa.bat",
               "context-handoff-v11-2026-11-09.md",
               "context-handoff-v12-2026-11-09.md",
               "context-handoff-v13-2026-11-10.md",
-              "context-handoff-v14-2026-11-10.md"]
+              "context-handoff-v14-2026-11-10.md",
+              "HANDOFF-FOR-EXTERNAL-AGENT-2026-11-11.md"]
 
 
 def sha16(path):

@@ -77,6 +77,30 @@
   };
 
   /* ---------------- 深度解读 / 证据链 / 追问 ---------------- */
+  /* ② 深度模式附带的业务事项结构化指引（后端 answer.business_cases） */
+  function businessCasesHTML(bc) {
+    const items = (bc.items || []).slice(0, 3);
+    if (!items.length) return "";
+    const FIELDS = ["适用范围", "确认与计量要求", "会计分录与处理流程", "税务处理规定",
+      "税会差异提示", "参照依据与关键条款", "依据层级", "生效状态",
+      "适用边界", "信源", "核验"];
+    let h = `<div class="deep-block bcx-block"><div class="deep-head"><b>业务事项结构化指引</b>
+      <span class="deep-meta">${items.length} 条 · 11 字段/条 · 非法规原文</span></div><div class="deep-body">`;
+    items.forEach((it, i) => {
+      const f = it.fields || {};
+      h += `<details class="bcx-item"${i === 0 ? " open" : ""}><summary class="bcx-summary">` +
+        `<span class="bcx-no">${esc(it.no || "")}</span>${esc(it.title || "")}` +
+        `<span class="bcx-badge">${esc(it.tier || "")} 层</span>` +
+        `<span class="bcx-badge">${esc(it.status || "")}</span></summary>` +
+        `<table class="ux-matrix bcx-fields"><tbody>` +
+        FIELDS.map(k => `<tr><th>${esc(k)}</th><td>${esc(f[k] || "")}</td></tr>`).join("") +
+        `</tbody></table></details>`;
+    });
+    h += `<div class="ux-warn">${esc(bc.note || "业务事项层为实务指引，作申报或对外依据前须回查官方原文。")}</div>` +
+      `</div></div>`;
+    return h;
+  }
+
   function deepHTML(dp) {
     if (!dp || !dp.concepts || !dp.concepts.length) {
       return `<div class="deep-block"><div class="deep-head"><b>${esc(C.label.deepBlock)}</b>
@@ -84,7 +108,7 @@
         <div class="deep-body"><div class="deep-empty">${esc(CX(dp, "warnings", [])[0] || C.empty.concepts)}</div></div></div>`;
     }
     let h = `<div class="deep-block"><div class="deep-head"><b>${esc(C.label.deepBlock)}</b>
-      <span class="deep-meta">${dp.concepts.length} 张概念卡 · ${dp.sections.length} 段解读 · 核验日期 2026-11-07</span></div><div class="deep-body">`;
+      <span class="deep-meta">${dp.concepts.length} 张概念卡 · ${dp.sections.length} 段解读 · 依据以知识库快照为准</span></div><div class="deep-body">`;
     const order = ["definition", "distinction", "causal", "conditions", "confusion", "limitation"];
     const byConcept = {};
     (dp.sections || []).forEach(s => { (byConcept[s.concept_id] = byConcept[s.concept_id] || []).push(s); });
@@ -159,7 +183,16 @@
     const wrap = msgs[msgs.length - 1];
     if (!wrap) return;
     const body = $(".msg-body", wrap);
-    if (!body || body.dataset.uxDecorated === "1") return;
+    if (!body) return;
+    if (body.dataset.uxDecorated === "1") {
+      // 云端链路会分两次调用（流式一次、结束后带 answer 一次）；
+      // 首次已装饰时仍允许把后到的 business_cases 增量补挂，且不重复渲染。
+      const bc2 = meta.answer && meta.answer.business_cases;
+      if (bc2 && bc2.items && bc2.items.length && !$(".bcx-block", body)) {
+        body.insertAdjacentHTML("beforeend", businessCasesHTML(bc2));
+      }
+      return;
+    }
     body.dataset.uxDecorated = "1";
     const dp = meta.deep || (meta.answer && meta.answer.deep);
     let html = "";
@@ -182,6 +215,8 @@
       errNode.style.display = "none";
     }
     if (dp) html += deepHTML(dp);
+    const bc = meta.answer && meta.answer.business_cases;
+    if (bc && bc.items && bc.items.length) html += businessCasesHTML(bc);
     html += followupHTML(meta, dp);
     html += evidenceHTML(meta.refs || (meta.answer && meta.answer.refs));
     body.insertAdjacentHTML("beforeend", html);

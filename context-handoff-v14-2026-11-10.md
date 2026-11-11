@@ -22,7 +22,7 @@
 | 评测 | 188 题：Recall@5 1.0 / MRR 0.6836 / 引用 0.6451 / 弃答·角色·禁用 1.0 / 规则 0.9468 / 要点 0.9714；基线 `reports/eval-report-baseline-2026-11-10-pre-s2s3.json` |
 | 前端 | 5 tab（chat / kb / incentives / about / business）；业务事项视图含 6 类筛选、11 字段、依据跳转、CSV 导出 |
 | 深度解读 | `POST /api/ask {mode:"deep"}` 额外返回 `answer.business_cases`（命中业务事项 ≤3 条，含 11 字段；**弃答不挂**） |
-| 启动 | 根 `start-qa.bat` v2（健康检查 + 轮询就绪 + 单实例 + 日志 `app/logs/server.log`）；服务为独立进程 |
+| 启动 | 主用计划任务 `TaxQA-Server`（`pythonw.exe` 无控制台，托管进程不随会话退出）：`schtasks /run /tn "TaxQA-Server"`；根 `start-qa.bat` v2（健康检查 + 轮询就绪 + 单实例 + 日志 `app/logs/server.log`）用于首次/手动拉起 |
 | 外部核验 | `config.json` 默认 `false`；本机 `app/config.local.json`（不入库）覆盖为 `true` |
 | 回滚 | `backups/baseline-v15-2026-11-10.zip`（含 corpus 目录）；重建前 DB 备份 `backups/pre-v15-rebuild*-2026-11-10.db` |
 
@@ -43,7 +43,7 @@
 4. **三条不变量**：① 业务事项层不得回到主检索（会改 BM25 IDF，实测让 Recall@5 1.0→0.9944）；② 不新增 RULES 规则来暴露新条目；③ 深度模式的业务事项只走**独立字段**，不得写进 `sections`/`text`/`refs`（否则评测与 trust 都会变）。
 5. **L0 原文层**：新增条文用 `app/fetch_corpus.py`（两源、逐条比对、条号连续）→ `import_corpus.py` → `build_v5.py`；**不要**手写 corpus md 或直接改 `kb.json` / DB / `corpus-articles.json`。逐字条文不得由模型复述。
 6. **外部核验**：本机覆盖机制见 `reports/external-lookup-implementation-2026-11-09.md` §9；策略见 `reports/adaptive-retrieval-reply-policy-2026-11-09.md`。默认关闭，离线行为不变。
-7. **服务启动**：用根 `start-qa.bat`（独立进程）；改 `server.py` 后先按 `Name -eq 'python.exe' -and CommandLine -like '*server.py*'` 精确停旧进程，再用启动器拉起。
+7. **服务启动**：首选计划任务 `schtasks /run /tn "TaxQA-Server"`（pythonw 无控制台）。**由工具/会话直接启动的进程会随会话结束被杀**（实测任务结果 -1073741510 = 0xC000013A，即控制台关闭触发 Ctrl+C），`start` 并不能真正脱离；`start-qa.bat` 只用于首次注册或手动拉起。改 `server.py` 后先按 `Name -eq 'pythonw.exe' -and CommandLine -like '*server.py*'` 精确停旧进程，再 `schtasks /run`。
 
 ## 4. 剩余不确定性（不许猜）
 
@@ -66,7 +66,7 @@
 | 项 | 值 |
 |---|---|
 | Python | `C:/Users/aa152/AppData/Local/Programs/Python/Python312/python.exe`（`python` 缺包、`py` 已坏）；脚本一律绝对路径 |
-| 服务重启 | 过滤条件必须带 `Name -eq 'python.exe'`，只按命令行文本会误杀 PowerShell 自身；启动用 `start-qa.bat` |
+| 服务重启 | 过滤必须带进程名（服务为 `pythonw.exe`）且 `CommandLine -like '*server.py*'`，只按命令行文本会误杀 PowerShell 自身；启动用 `schtasks /run /tn "TaxQA-Server"`；`tasklist` 里可能有用户自装程序的同名进程（如桌宠的 pythonw），别按名字一刀切 |
 | 评测 | 启动后预热 3 发再跑 `eval_kb.py`；188 题约 7 分钟；基线 `reports/eval-report-baseline-2026-11-10-pre-s2s3.json` |
 | 抓取法规 | **先 `--dry-run`**，看双源是否逐条一致；页脚噪声/章节标题已内置过滤；全角半角靠 NFKC 归一化；繁体镜像（big5.）不可作第二源 |
 | 批量替换 | 一次性脚本逐处打印命中数（命中 0 立即中止）；**多行拼接务必带换行**（本轮 53.2 因缺 `\n` 拼成 `\|\|` 导致降 B2）；`python -c` 内不放反引号/Windows 反斜杠 |

@@ -555,3 +555,15 @@
   .bc-detail { max-height: none; }
   .bc-fields th { width: 96px; }
 }
+
+/* ---- 深度模式业务事项块 + 精确法源跳转（v15.1 前端） ---- */
+.bcx-block { margin-top: 12px; }
+.bcx-item { border: 1px solid var(--border, #e2e8f0); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+.bcx-summary { cursor: pointer; padding: 9px 11px; font-size: 13px; font-weight: 600; background: var(--surface-2, #f0f4f8); list-style: none; }
+.bcx-summary::-webkit-details-marker { display: none; }
+.bcx-no { color: var(--brand, #5b7cfa); margin-right: 6px; font-weight: 700; }
+.bcx-badge { font-size: 11px; font-weight: 400; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: var(--brand-soft, rgba(80,120,255,.12)); color: var(--brand, #5b7cfa); }
+.bcx-fields { width: 100%; border-collapse: collapse; font-size: 12px; }
+.bcx-fields tr { border-bottom: 1px solid var(--border, #e2e8f0); }
+.bcx-fields th { width: 128px; text-align: left; vertical-align: top; padding: 7px 9px; color: var(--muted, #627d98); font-weight: 600; white-space: nowrap; }
+.bcx-fields td { padding: 7px 9px; line-height: 1.65; word-break: break-word; }

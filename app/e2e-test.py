@@ -200,7 +200,12 @@ async def main():
             await page.click("#bc-detail .bc-law-link")
             await page.wait_for_timeout(300)
             check("依据跳转切到法规库", await page.is_visible("#view-kb"))
-            check("依据跳转回填检索词", bool((await page.input_value("#kb-search")).strip()))
+            kb_detail = await page.locator("#kb-detail").inner_text()
+            kb_search = await page.input_value("#kb-search")
+            # v15.1 起为「精确跳转到法源条目」，成功时不再回填关键词检索框
+            check("依据跳转精确到法源条目",
+                  ("CAS 14" in kb_detail or "收入准则" in kb_detail) and not kb_search.strip(),
+                  f"search={kb_search!r} detail={kb_detail[:36]!r}")
 
         # ---- 优惠速查 ----
         print("\n[5] 优惠速查结构化", flush=True)
