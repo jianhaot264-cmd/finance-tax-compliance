@@ -15,8 +15,8 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(BASE, "finance-tax-compliance")
 OUT = os.path.join(BASE, "finance-tax-compliance.zip")
 
-EXCL_DIR = {"__pycache__", ".git"}
-EXCL_EXT = {".pyc", ".pyo", ".db", ".DS_Store", ".zip"}
+EXCL_DIR = {"__pycache__", ".git", "logs", ".pytest_cache"}
+EXCL_EXT = {".pyc", ".pyo", ".db", ".log", ".DS_Store", ".zip", ".tmp", ".bak"}
 
 REQUIRED = [
     "SKILL.md",
@@ -27,6 +27,10 @@ REQUIRED = [
     "bin/kb.json",
     "bin/corpus-articles.json",
 ]
+
+# 平台侧会拒收的文件类型（实测 publish 返回 400 不允许的文件类型）。
+# 打包前主动兜底校验，避免上传到一半才失败。
+FORBIDDEN_EXT = {".log", ".db", ".pyc", ".pyo", ".tmp", ".bak", ".DS_Store"}
 
 
 def main():
@@ -61,6 +65,20 @@ def main():
     print("size  : %.2f MB (limit 10 MB) %s"
           % (size / 1048576, "OK" if size <= 10 * 1048576 else "OVER"))
     print("output: %s" % OUT)
+
+    # 兜底：确认包内没有平台会拒收的文件类型
+    bad = []
+    with zipfile.ZipFile(OUT) as z:
+        for nm in z.namelist():
+            base = os.path.basename(nm)
+            if os.path.splitext(base)[1].lower() in FORBIDDEN_EXT or base == ".DS_Store":
+                bad.append(nm)
+    if bad:
+        print("\n[error] 包内含平台拒收的文件类型：")
+        for b in bad[:10]:
+            print("   ", b)
+        return 1
+
     if n > 200 or size > 10 * 1048576:
         print("\n[error] 超出 SkillHub 限制，请检查是否误入大文件。")
         return 1

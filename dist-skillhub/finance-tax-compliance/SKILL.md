@@ -1,9 +1,11 @@
 ---
 name: finance-tax-compliance
 slug: finance-tax-compliance
+displayName: 财税合规助手（中小企业版）
 display_name: 财税合规助手（中小企业版）
 display_name_en: Finance & Tax Compliance Assistant
 version: 1.0.0
+summary: 面向中国中小企业的财税合规自查助手：问答附法条出处、检索不到就明说无权威依据而不编造；涉税金额由本地确定性引擎按算式给出，大模型不产出数值；发票流水合同三流一致核对。覆盖 18 个税种、472 条知识条目、645 条双源核验逐字法条，纯标准库零依赖、离线可用。
 category: professional
 tags:
   - 财税合规
