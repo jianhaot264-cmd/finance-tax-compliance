@@ -86,13 +86,39 @@ def fetch(url, retries=2, timeout=30):
     raise RuntimeError("抓取失败 %s: %s" % (url, last))
 
 
-def parse_articles(html_text):
-    """按 <p> 段拆条；仅段首「第X条」视为新条开始。"""
+def strip_trailing_chapter(text):
+    """剥离「…。第一节 一般规定」「…。第二章 税率」这类**段尾**章节标题。
+
+    部分站（如 fgk）把章节标题与上一条正文放在同一 <p> 里，
+    若不清除会把「第一节 一般规定」并入第八条正文，造成双源伪差异。
+    只删末尾的「第X章/第X节 + 标题」，不动正文，且保留正文末句标点。
+    """
+    return re.sub(r"\s*第[一二三四五六七八九十百零\d]+[章节][\s\u3000]*[^\n。；;]{0,20}$",
+                  "", text).strip()
+
+
+def _segments(html_text):
+    """把页面切成分段文本。优先按 <p>；若 <p> 里几乎没有条文（部分站把正文
+    整块放在一个 <p> 里、用 <br> 断行，如 fgk 印花税法页），改用 <br> 切分。"""
     ps = re.findall(r"<p[^>]*>(.*?)</p>", html_text, re.S)
+    segs = [re.sub(r"<[^>]+>", "", p) for p in ps]
+    p_hits = sum(1 for s in segs if ART_HEAD.match(htmllib.unescape(s).strip()))
+    # <p> 里几乎解析不出条文（整块正文塞在一个 <p>、用 <br> 断行）时改按 <br> 切分。
+    # 判据用「<p> 命中 < 2 条」或「<br> 数量远多于 <p> 命中」，两者都说明分段方式不对。
+    if "<br" in html_text and (p_hits < 2 or html_text.count("<br") > p_hits * 3):
+        body = re.sub(r"<[^>]+>", "\n", html_text)
+        br_segs = body.split("\n")
+        br_hits = sum(1 for s in br_segs if ART_HEAD.match(htmllib.unescape(s).strip()))
+        if br_hits > p_hits:
+            segs = br_segs
+    return segs
+
+
+def parse_articles(html_text):
+    """按段拆条；仅段首「第X条」视为新条开始。"""
     arts, cur, buf = [], None, []
-    for p in ps:
-        t = re.sub(r"<[^>]+>", "", p)
-        t = htmllib.unescape(t).replace("\u3000", " ").replace("\xa0", " ").strip()
+    for p in _segments(html_text):
+        t = htmllib.unescape(p).replace("\u3000", " ").replace("\xa0", " ").strip()
         if not t:
             continue
         if CHAPTER_HEAD.match(t) or any(n in t for n in PAGE_NOISE):
@@ -100,12 +126,12 @@ def parse_articles(html_text):
         m = ART_HEAD.match(t)
         if m:
             if cur:
-                arts.append((cur, "\n".join(buf).strip()))
+                arts.append((cur, strip_trailing_chapter("\n".join(buf).strip())))
             cur, buf = "第%s条" % m.group(1), [ART_HEAD.sub("", t, count=1).strip()]
         elif cur:
             buf.append(t)
     if cur:
-        arts.append((cur, "\n".join(buf).strip()))
+        arts.append((cur, strip_trailing_chapter("\n".join(buf).strip())))
     if arts:
         arts[-1] = (arts[-1][0], trim_effect(arts[-1][1]))
     return arts
@@ -122,8 +148,13 @@ def trim_effect(body):
 
 def norm(s):
     """比对用归一化：NFKC 统一全角/半角（＋→+、（）→()、全角数字等）并去空白。
-    只消除排版差异，不改动文字本身；不用于写库正文。"""
+    只消除排版差异，不改动文字本身；不用于写库正文。
+
+    另删除并列书名号/引号之间的顿号停顿差异（《法A》、《法B》 vs 《法A》《法B》），
+    这是各站排版习惯差异，非条文实质不同。
+    """
     s = unicodedata.normalize("NFKC", s or "")
+    s = re.sub(r"([》」』”])\s*[、，,]\s*(?=[《「『“])", r"\1", s)
     return re.sub(r"\s+", "", s)
 
 
@@ -168,21 +199,30 @@ def main():
             fail.append("%s 源条号不连续，断号位置%s" % (tag, bad))
 
     diffs = []
-    for (na, ta), (nb, tb) in zip(A, B):
-        if na != nb:
-            diffs.append((na, nb, "条号错位"))
-            continue
-        x, y = norm(ta), norm(tb)
-        if x != y:
-            ratio = difflib.SequenceMatcher(None, x, y).ratio()
-            diffs.append((na, "", "相似度 %.4f" % ratio))
+    compared = 0
+    # 只有两源条数相等且非零才逐条比对；否则 zip 会静默截断，
+    # 出现「B 源 0 条却报双源一致」的假阳性（曾实测到）。
+    if len(A) == len(B) and A:
+        for (na, ta), (nb, tb) in zip(A, B):
+            compared += 1
+            if na != nb:
+                diffs.append((na, nb, "条号错位"))
+                continue
+            x, y = norm(ta), norm(tb)
+            if x != y:
+                ratio = difflib.SequenceMatcher(None, x, y).ratio()
+                diffs.append((na, "", "相似度 %.4f" % ratio))
     if diffs:
         print("\n[差异] %d 条两源不一致：" % len(diffs), flush=True)
         for d in diffs[:12]:
             print("  -", d, flush=True)
         fail.append("存在 %d 条两源差异" % len(diffs))
+    elif compared and compared == len(A):
+        print("[ok] 双源逐条一致（%d 条）" % compared, flush=True)
     else:
-        print("[ok] 双源逐条一致（%d 条）" % len(A), flush=True)
+        msg = "无法比对：A=%d 条 B=%d 条（需两源条数相等且非零）" % (len(A), len(B))
+        print("[!] " + msg, flush=True)
+        fail.append(msg)
 
     if fail:
         print("\n[拒绝入库]", flush=True)

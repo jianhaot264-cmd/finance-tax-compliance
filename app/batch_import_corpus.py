@@ -99,7 +99,9 @@ def main():
     for i, doc in enumerate(docs, 1):
         name = doc.get("law", "")
         rec = {"law": name, "out": doc.get("out", ""), "status": "pending", "detail": ""}
-        missing = [k for k in ("law", "out", "url_a", "url_b", "expect") if not doc.get(k)]
+        # expect 允许缺省/0：首次导入时未知官方条数，先 dry-run 由两源一致性兜底，
+        # 拿到实际条数后再回填 expect 做「官方章条数」交叉校验。
+        missing = [k for k in ("law", "out", "url_a", "url_b") if not doc.get(k)]
         if missing:
             rec["status"] = "skipped"
             rec["detail"] = "字段缺失：" + ", ".join(missing)

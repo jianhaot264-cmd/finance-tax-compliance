@@ -100,7 +100,7 @@
 | `change_log` / `kb_meta` | 版本留痕与库级元数据 |
 | `regulation_fts` | FTS5 **trigram** 中文全文索引（3 字以上词可检索；2 字简称走 alias 表） |
 | 视图 | `v_current_law`（现行法规）、`v_verified_a`（A 层）、`v_expiring`（到期预警） |
-| 其他表 | `concept` 30 / `concept_relation` 247 / `scenario` 14 / `boundary_item` 44 / `verification_item` 10 / `article_text` **121**（23 文件 37 + L0 原文层 84）/ `golden_case` 79 / `pending_item` 5 / `change_log` / `kb_meta` |
+| 其他表 | `concept` 30 / `concept_relation` 247 / `scenario` 14 / `boundary_item` 44 / `verification_item` 10 / `article_text **455****（23 文件 37 + L0 原文层 418）/ `golden_case` 79 / `pending_item` 5 / `change_log` / `kb_meta` |
 
 CSV 主数据表：`reports/regulations-master-2026-11-07.csv`（UTF-8 BOM，可直接导入企业系统/Excel）。
 
