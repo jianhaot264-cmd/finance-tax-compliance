@@ -12,7 +12,21 @@ checklist.py — 合规检查清单生成器（确定性）
   out = generate(enterprise_type="一般纳税人", tax_types=["增值税","企业所得税"])
 """
 
-SNAPSHOT = "2026-11-08"
+import json as _json
+import os as _os
+
+
+def _snapshot():
+    """核验日期取知识库快照（kb.json.verified_at），避免写死导致过期口径。"""
+    try:
+        p = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "kb.json")
+        with open(p, "r", encoding="utf-8") as f:
+            return _json.load(f).get("verified_at") or "以官方原文为准"
+    except Exception:
+        return "以官方原文为准"
+
+
+SNAPSHOT = _snapshot()
 
 # ---- 申报时间线（法定/常规）----
 FILINGS = {

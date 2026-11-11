@@ -9,6 +9,9 @@ env/
 # 运行时产物
 app/qa-screenshots/
 app/logs/
+# 运行时数据库：由 enrich_kb.py / build_v5.py 全链重建生成（含 query_log 用户提问，
+# 且每次重建体积都会变），属派生产物，不入库；需要时跑重建链即可复现。
+app/finance-tax-compliance.db
 reports/reconcile-last.html
 reports/source-watch-state.json
 *.log

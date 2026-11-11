@@ -129,6 +129,8 @@ python build_kb.py && python enrich_kb.py && python build_concepts.py \
 # 运行与巡检
 ..\start-qa.bat                  # 一键启动 v2：真实健康检查 + 轮询就绪 + 失败提示 + 日志落盘
 schtasks /run /tn "TaxQA-Server" # 已注册的计划任务：pythonw 无控制台，不随会话退出
+python test_system_audit.py      # 系统级审计（30 项：端点/问答模式/上下文/数据一致性/静态资源）
+python test_business_deep.py     # 业务事项前端专项（9 项：深度块渲染 + 法源精确跳转）
 python expiry_scan.py            # 到期雷达：90/60/30 天临期预警 -> reports/expiry-radar.md
 ```
 

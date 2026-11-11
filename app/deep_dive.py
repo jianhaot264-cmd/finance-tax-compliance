@@ -16,6 +16,16 @@ import re
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 CONCEPT_FILE = os.path.join(BASE, "concepts.json")
+_KB_FILE = os.path.join(BASE, "kb.json")
+
+
+def _snapshot():
+    """知识库核验日期（读 kb.json.verified_at）；不得写死，写死会随重建变成错误时效。"""
+    try:
+        with open(_KB_FILE, "r", encoding="utf-8") as f:
+            return json.load(f).get("verified_at") or "以官方原文为准"
+    except Exception:
+        return "以官方原文为准"
 
 SECTIONS = [
     ("definition", "定义", "definition"),
@@ -197,7 +207,7 @@ def deep_system_prompt(base_prompt, payload):
              "③ 卡片标注「不适用/须属地确认/以官方原文为准」的，必须原样提示限制。",
              "禁止：编造文号、数字门槛、日期；把法条原文当作现行执行口径（须检查但书与后续公告）；把解释层概念卡当作单一法规判断效力。",
              "若某段在概念卡中无内容，明确写「知识库暂无该项解读」，不得用常识补全。",
-             "\n=== 本轮概念卡内容（核验日期 2026-11-07） ==="]
+             "\n=== 本轮概念卡内容（核验日期 %s） ===" % _snapshot()]
     for c in payload["concepts"]:
         card = BY_ID.get(c["id"], {})
         lines.append(

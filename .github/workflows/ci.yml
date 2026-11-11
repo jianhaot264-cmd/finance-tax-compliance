@@ -27,7 +27,10 @@ jobs:
             app/tax_calc/router.py app/tax_calc/vat.py app/tax_calc/iit.py \
             app/tax_calc/cit.py app/tax_calc/stamp.py \
             app/reconcile/__init__.py app/reconcile/parsers.py \
-            app/reconcile/checks.py app/reconcile/report.py app/checklist.py
+            app/reconcile/checks.py app/reconcile/report.py app/checklist.py \
+            app/deep_dive.py app/orchestrator.py app/retrieval.py \
+            app/import_corpus.py app/fetch_corpus.py app/batch_import_corpus.py \
+            app/external_lookup.py app/test_business_deep.py
 
       - name: 可信度引擎回归测试
         working-directory: app
@@ -72,3 +75,29 @@ jobs:
           grep -q "不构成专业税务/法律意见" app/static/app.js
           grep -q "不构成" app/README.md
           echo "disclaimer: PASS"
+
+      - name: 核验日期不得写死（必须读 kb.json.verified_at）
+        run: |
+          # 写死的核验日会在每次重建后变成错误时效信息，属已修复缺陷，
+          # 这里加回归闸门，防止再次引入。
+          ! grep -rn "核验日期 2026-1[01]-" app/server.py app/deep_dive.py app/checklist.py
+          ! grep -rn "知识库核验日期为 2026-1" app/server.py
+          echo "snapshot-not-hardcoded: PASS"
+
+      - name: 运行时数据库不得入库（派生产物）
+        run: |
+          # DB 由 enrich_kb.py / build_v5.py 重建生成，且含 query_log 用户提问，
+          # 不应进入版本库；此处防止被误 add。
+          if git ls-files --error-unmatch app/finance-tax-compliance.db >/dev/null 2>&1; then
+            echo "::error::app/finance-tax-compliance.db 被纳入版本库，请 git rm --cached"
+            exit 1
+          fi
+          echo "db-untracked: PASS"
+
+      - name: L0 语料与 manifest 一致性
+        run: |
+          # 不改写任何内容，只校验：文号唯一、双源 >=2、时效四态、条数相符、SHA256 可算
+          python app/import_corpus.py
+          git diff --quiet -- app/corpus-articles.json knowledge-base/corpus/manifest.json \
+            || { echo "::error::corpus 校验结果与仓库不一致（manifest/corpus-articles 需一并提交）"; exit 1; }
+          echo "corpus-consistency: PASS"

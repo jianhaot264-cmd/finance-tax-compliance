@@ -24,7 +24,8 @@
 | 深度解读 | `POST /api/ask {mode:"deep"}` 额外返回 `answer.business_cases`（命中业务事项 ≤3 条，含 11 字段；**弃答不挂**） |
 | 启动 | 主用计划任务 `TaxQA-Server`（`pythonw.exe` 无控制台，托管进程不随会话退出）：`schtasks /run /tn "TaxQA-Server"`；根 `start-qa.bat` v2（健康检查 + 轮询就绪 + 单实例 + 日志 `app/logs/server.log`）用于首次/手动拉起 |
 | 外部核验 | `config.json` 默认 `false`；本机 `app/config.local.json`（不入库）覆盖为 `true` |
-| 回滚 | `backups/baseline-v15-2026-11-10.zip`（含 corpus 目录）；重建前 DB 备份 `backups/pre-v15-rebuild*-2026-11-10.db` |
+| 回滚 | `backups/baseline-v15-2026-11-11.zip`（含 corpus 目录）；重建前 DB 备份 `backups/pre-v15-rebuild*-2026-11-10.db` |
+| 版本库卫生 | `app/finance-tax-compliance.db` **已停止跟踪**（派生产物 + 含 query_log 用户提问），改由重建链生成；`.gitignore` 已覆盖 |
 
 ## 2. 本轮交付（2026-11-10 · v15.0）
 
@@ -73,6 +74,22 @@
 | .bat 写入 | Python `newline='\r\n'` + UTF-8，配 `chcp 65001`，不加 BOM |
 | 文件操作 | Write 只新建不覆盖；改已交付物先备份、起新版本留旧；删除前先出清单 |
 | 质量红线 | 文号/日期/比例/条号进文档前必须联网核验（本轮纠正「财会〔2008〕11 号」→「财会函〔2008〕60号」）；历史报告口径不篡改；不承诺 100% 准确 |
+
+---
+
+## 7. 2026-11-11 系统审计（v15.1 之后）
+
+详见 `reports/system-audit-2026-11-11.md`。修 5 处真实缺陷：
+
+1. **P0** `server.py` 系统提示词核验日写死 `2026-11-06`、`deep_dive.py` 写死 `2026-11-07` → 均改为读 `kb.json.verified_at`（现为 2026-11-09）；
+2. **P0** `app/finance-tax-compliance.db` 曾被 12 次提交（含 2237 行用户提问）→ `git rm --cached` + gitignore；
+3. **P1** CI 覆盖面不足（`deep_dive`/`orchestrator`/`retrieval`/corpus 工具链未做语法检查，`test_business_deep.py` 未接入）→ 扩到 20 模块 + 新增 3 道闸门（核验日不写死 / DB 不入库 / 语料一致性）；
+4. **P1** `checklist.py` 快照写死 `2026-11-08` → 改读快照；
+5. **P2** `apply_corrections.py` 加「已执行完毕、勿重复运行」警示。
+
+**新增可复跑审计脚本**：`app/test_system_audit.py`（30 项：端点/模式/上下文/数据一致性/静态资源）。
+
+**明确未改**：8 个独立工具脚本（非死代码）、`/api/deep-dive` 不覆盖基础术语（设计取舍）、历史 git 中的 DB blob（未重写历史，需单独授权）。
 
 ---
 

@@ -2253,10 +2253,12 @@ def ask_llm(q, local_ans):
         e = ENTRY_MAP[eid]
         ctx_parts.append(f"【{e['title']}】时效性:{e['status']}\n核心条款:{e['fields'].get('核心条款','')[:600]}\n合规要点:{e['fields'].get('合规要点','')[:400]}")
     context = "\n\n".join(ctx_parts) or "（无命中条目）"
+    # 核验日期一律取知识库快照，禁止写死：写死会在每次重建后变成错误时效信息
+    _verified = KB.get("verified_at", "") or "以官方原文为准"
     sys_prompt = (
         "你是财税合规智能体。只依据给定知识库上下文回答，禁止编造法规名称、文号、数字门槛；"
         "上下文没有覆盖时明确说明「知识库暂无收录，请以官方渠道为准」。回答结构：结论→依据→风险提示。"
-        "知识库核验日期为 2026-11-06，如涉及时效请提示用户复核。"
+        "知识库核验日期为 " + _verified + "，如涉及时效请提示用户复核。"
     )
     body = json.dumps({
         "model": LLM.get("model", "deepseek-chat"),
