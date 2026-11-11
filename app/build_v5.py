@@ -65,6 +65,9 @@ def main():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         ts TEXT, q TEXT, need INTEGER, signals TEXT, status TEXT,
         sources TEXT, evidence_count INTEGER, note TEXT);
+    -- kb_meta 原先只在 enrich_kb.py 中创建；打包分发时若不带该脚本，
+    -- build_v5.py 末尾写 kb_meta 会因缺表失败。此处补建，使其自包含。
+    CREATE TABLE IF NOT EXISTS kb_meta (key TEXT PRIMARY KEY, value TEXT);
     """)
 
     # 可重建表清空
@@ -107,13 +110,13 @@ def main():
                  source_db,source_url,verified_at) VALUES (?,?,?,?,?,?,?,?,?)""",
                 (e["id"], law_name[:80], "第" + art_no + "条", verbatim.strip(),
                  e.get("level", ""), e.get("status", ""),
-                 "企查查法律/华宇元典/同花顺法律", urls[0] if urls else "",
+                 "官方双源核验（政府网/司法部法规库/部委官网）", urls[0] if urls else "",
                  verified_at))
             inserted_articles.add(_key)
             n_art += 1
         cur.execute("""INSERT OR REPLACE INTO citation_verification VALUES (?,?,?,?,?,?,?,?,?)""",
                     (e["id"], law_name[:80], len(pairs), e.get("status", ""),
-                     "企查查法律 get_legal_citation_verify + 华宇元典语义检索",
+                     "人大/国务院/部委官网逐条比对",
                      urls[0] if urls else "",
                      "中国政府网/司法部行政法规库/财政部/税务总局官网双源",
                      verified_at,

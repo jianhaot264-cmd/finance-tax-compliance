@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<meta name="description" content="财税合规智能体 · 472 条法规条目 + 30 张概念解读卡 + 30 条业务事项卡，覆盖计税方法、社保、非税、消费税、财产税、出口退税、数电票、复议诉讼、税收协定、会计准则、行业专项、立法跟踪与到期预警（生产级 v15.0）">
+<title>财税合规智能体 · 专家团工作台</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/ux.css">
+<link rel="stylesheet" href="/polish.css">
+<script>
+/* 主题引导：在 CSS 加载前应用，避免刷新闪白 */
+(function () {
+  try {
+    var saved = localStorage.getItem('taxagent.theme') || 'system';
+    var dark = saved === 'dark' || (saved === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    var fs = localStorage.getItem('taxagent.fontsize');
+    if (fs) document.documentElement.dataset.fontsize = fs;
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主内容</a>
+
+<!-- 图标精灵 -->
+<svg class="svg-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.7 9.7 0 0 1-3.6-.7L3 21l1.8-4.8A8.2 8.2 0 0 1 3.6 11.5 8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5Z"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20M9 6h7"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7ZM12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7Z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21" stroke-linecap="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2 2-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-3v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-2-2 .1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H5v-3h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 2-2 .1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3h3v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 2 2-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1H21v3h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7 2.5 2.5 7L21 3Z"/><path d="M10 13 21 3"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z" stroke-linejoin="round"/></symbol>
+  <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 10v11H3V10h4Zm0 0 4.5-7a2 2 0 0 1 3.6 1.5L14 9h5.5a2 2 0 0 1 2 2.4l-1.4 7A2 2 0 0 1 18.1 20H7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 9v5M12 17h.01" stroke-linecap="round"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="app-shell">
+  <!-- ============ 侧栏 ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo" aria-hidden="true">税</div>
+      <div class="brand-text">
+        <strong>财税合规智能体</strong>
+        <span>COMPLIANCE WORKBENCH</span>
+      </div>
+    </div>
+
+    <nav class="side-nav" aria-label="主导航">
+      <button class="nav-item active" data-tab="chat" title="对话（快捷键 1）"><svg class="ico"><use href="#i-chat"/></svg><span>合规对话</span><kbd>1</kbd></button>
+      <button class="nav-item" data-tab="kb" title="法规库（快捷键 2）"><svg class="ico"><use href="#i-book"/></svg><span>法规库</span><kbd>2</kbd></button>
+      <button class="nav-item" data-tab="incentives" title="优惠速查（快捷键 3）"><svg class="ico"><use href="#i-gift"/></svg><span>优惠速查</span><kbd>3</kbd></button>
+      <button class="nav-item" data-tab="about" title="关于（快捷键 4）"><svg class="ico"><use href="#i-info"/></svg><span>关于与帮助</span><kbd>4</kbd></button>
+      <button class="nav-item" data-tab="business" title="业务事项（快捷键 5）"><svg class="ico"><use href="#i-layers"/></svg><span>业务事项</span><kbd>5</kbd></button>
+    </nav>
+
+    <div class="side-section">
+      <div class="side-head">
+        <span>最近会话</span>
+        <button class="mini-btn" id="new-chat" title="新建会话" aria-label="新建会话"><svg class="ico"><use href="#i-plus"/></svg></button>
+      </div>
+      <div class="session-list" id="session-list" role="list"></div>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="kb-pulse">
+        <div class="kb-pulse-row"><span class="pulse-dot" id="net-dot"></span><span id="meta-llm">正在连接…</span></div>
+        <div class="kb-pulse-sub" id="kb-summary">知识库加载中…</div>
+      </div>
+      <button class="theme-quick" id="theme-quick" title="切换深浅主题"><svg class="ico"><use href="#i-sun"/></svg><span>外观</span></button>
+    </div>
+  </aside>
+
+  <!-- ============ 主区 ============ -->
+  <div class="main-col">
+    <header class="topbar">
+      <div class="crumb">
+        <h2 id="view-title">合规对话</h2>
+        <span class="crumb-sub" id="view-sub">专家团分诊 · 结论 → 依据 → 风险提示</span>
+      </div>
+      <div class="top-actions">
+        <button class="ghost-btn" id="concept-trigger" title="概念解读面板（30 张卡 · 14 个场景）" aria-label="概念解读面板">
+          <svg class="ico"><use href="#i-layers"/></svg><span>概念</span>
+        </button>
+        <button class="ghost-btn search-trigger" id="cmd-trigger" title="全局搜索（Ctrl / ⌘ + K）">
+          <svg class="ico"><use href="#i-search"/></svg><span>搜索法规或问题</span><kbd>Ctrl K</kbd>
+        </button>
+        <button class="icon-btn" id="settings-trigger" title="设置" aria-label="设置"><svg class="ico"><use href="#i-settings"/></svg></button>
+        <button class="icon-btn mobile-only" id="mobile-new-chat" title="新建会话" aria-label="新建会话"><svg class="ico"><use href="#i-plus"/></svg></button>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ---------- 对话 ---------- -->
+      <section class="view active" id="view-chat" aria-label="合规对话">
+        <div class="chat-stage">
+          <div class="chat-scroll" id="chat-scroll" role="log" aria-live="polite" aria-relevant="additions text"></div>
+          <div class="stage-progress" id="stage-progress" hidden role="status" aria-label="回答生成进度">
+            <span class="stage-spinner" aria-hidden="true"></span>
+            <span class="stage-progress-text" id="stage-progress-text">正在检索知识库…</span>
+            <span class="stage-dots" id="stage-dots" aria-hidden="true"></span>
+          </div>
+          <button class="scroll-bottom" id="scroll-bottom" hidden><svg class="ico"><use href="#i-down"/></svg> 回到最新</button>
+        </div>
+
+        <div class="composer-wrap">
+          <div class="quick-bar">
+            <div class="quick-tabs" id="quick-tabs" role="tablist" aria-label="示例问题分组"></div>
+            <div class="quick-chips" id="examples"></div>
+          </div>
+          <div class="composer" id="composer">
+            <textarea id="chat-input" rows="1" placeholder="描述你的财税合规问题，例如：员工自愿放弃社保有效吗？" aria-label="输入问题"></textarea>
+            <div class="composer-toolbar">
+              <div class="composer-left">
+                <div class="mode-seg" id="answer-mode" role="radiogroup" aria-label="回答模式">
+                  <button type="button" data-mode="standard" class="active" role="radio" aria-checked="true" title="结论 → 依据 → 风险与合规提示">标准</button>
+                  <button type="button" data-mode="deep" role="radio" aria-checked="false" title="定义 → 辨析 → 因果 → 适用条件 → 易混淆 → 局限">深度解读</button>
+                </div>
+                <span class="mode-hint" id="mode-hint">结论 → 依据 → 风险与合规提示</span>
+                <label class="model-field" title="选择作答模型（按价格分档）">
+                  <span class="model-dot" id="model-dot"></span>
+                  <select id="model-select" aria-label="选择大模型"><option value="">本地检索</option></select>
+                  <span class="model-price" id="model-price">—</span>
+                </label>
+                <span class="char-count" id="char-count"></span>
+              </div>
+              <div class="composer-right">
+                <button class="text-btn" id="chat-clear" title="清空当前会话"><svg class="ico"><use href="#i-trash"/></svg> 清空</button>
+                <button class="stop-btn" id="chat-stop" hidden><svg class="ico"><use href="#i-stop"/></svg> 停止</button>
+                <button class="send-btn" id="chat-send"><svg class="ico"><use href="#i-send"/></svg> 发送</button>
+              </div>
+            </div>
+          </div>
+          <p class="composer-note"><kbd>Enter</kbd> 发送 · <kbd>Shift + Enter</kbd> 换行 · <b>本工具仅用于辅助合规自查，不构成专业税务/法律意见</b>；回答受知识库与确定性计算引擎约束，重要事项请以官方原文复核</p>
+        </div>
+      </section>
+
+      <!-- ---------- 法规库 ---------- -->
+      <section class="view" id="view-kb" aria-label="法规库">
+        <div class="kb-toolbar">
+          <div class="search-field">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input id="kb-search" type="search" placeholder="搜索法规名称、文号或关键词（如：滞纳金 / 首违不罚 / 横琴）" aria-label="搜索法规">
+            <button id="kb-search-clear" class="clear-btn" hidden aria-label="清空搜索">×</button>
+          </div>
+          <div class="filter-chips" id="kb-filters" aria-label="分类筛选"></div>
+          <div class="kb-meta">
+            <span id="kb-count" class="result-count">—</span>
+            <label class="inline-select">排序
+              <select id="kb-sort" aria-label="排序方式">
+                <option value="default">按知识库顺序</option>
+                <option value="title">按名称</option>
+                <option value="status">按时效性</option>
+              </select>
+            </label>
+            <button class="chip-toggle" id="kb-fav-toggle" aria-pressed="false"><svg class="ico"><use href="#i-star"/></svg> 仅收藏</button>
+          </div>
+        </div>
+        <div class="kb-layout" id="kb-layout">
+          <div class="kb-list" id="kb-list" role="listbox" aria-label="法规条目列表"></div>
+          <article class="kb-detail" id="kb-detail" aria-live="polite"></article>
+        </div>
+      </section>
+
+      <!-- ---------- 优惠速查 ---------- -->
+      <section class="view" id="view-incentives" aria-label="优惠速查">
+        <div class="inc-intro">
+          <div>
+            <h3>优惠政策速查</h3>
+            <p>所有「减按 / 加计 / 免征」类政策均需核对<b>有效期</b>与<b>适用条件</b>双字段后使用。已到期与待核验项会单独标注，不作现行依据。</p>
+          </div>
+          <div class="inc-stats" id="inc-stats"></div>
+        </div>
+        <div class="inc-toolbar">
+          <div class="search-field">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input id="inc-search" type="search" placeholder="搜索政策名称、依据文号或条件" aria-label="搜索优惠政策">
+            <button id="inc-search-clear" class="clear-btn" hidden aria-label="清空搜索">×</button>
+          </div>
+          <div class="filter-chips" id="inc-filters"></div>
+          <button class="chip-toggle" id="inc-export"><svg class="ico"><use href="#i-external"/></svg> 导出 CSV</button>
+        </div>
+        <div id="incentives-body" class="inc-body"></div>
+      </section>
+
+      <!-- ---------- 业务事项 ---------- -->
+      <section class="view" id="view-business" aria-label="业务事项">
+        <div class="bc-intro">
+          <div>
+            <h3>业务事项结构化指引</h3>
+            <p>按收入 / 资产 / 费用 / 税费 / 往来 / 期末结转组织，每条含适用范围、确认计量、会计分录与流程、税务处理、税会差异、参照依据与边界。<b>本层不是法规原文</b>，作申报或对外依据前须回查官方原文。</p>
+          </div>
+          <div class="bc-stats" id="bc-stats"></div>
+        </div>
+        <div class="bc-toolbar">
+          <div class="search-field">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input id="bc-search" type="search" placeholder="搜索业务事项、准则或税种（如：赊销 / 折旧 / 进项转出）" aria-label="搜索业务事项">
+            <button id="bc-search-clear" class="clear-btn" hidden aria-label="清空搜索">×</button>
+          </div>
+          <div class="filter-chips" id="bc-filters"></div>
+          <button id="bc-export" class="bc-export-btn" type="button" title="导出当前筛选/搜索结果为 CSV">导出 CSV</button>
+        </div>
+        <div class="bc-body">
+          <div class="bc-list" id="bc-list" role="listbox" aria-label="业务事项列表"></div>
+          <article class="bc-detail" id="bc-detail" aria-live="polite" aria-label="业务事项详情">
+            <div class="detail-empty"><b>选择左侧业务事项查看完整指引</b><span>含 11 项结构化字段与官方依据边界</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ---------- 关于 ---------- -->
+      <section class="view" id="view-about" aria-label="关于与帮助">
+        <div class="about-grid">
+          <div class="about-card span-2">
+            <div class="about-hero">
+              <div class="brand-logo lg" aria-hidden="true">税</div>
+              <div>
+                <h3>财税合规智能体 · 专家团工作台</h3>
+                <p>面向中小企业与财税从业者的法规问答、检索与合规参考工具。知识库 <b id="about-entries">—</b> 条结构化条目（含 <b>30 张概念解读卡</b>），核验日期 <b id="about-verified">—</b>；支持「标准答复」与「六段式深度解读」，全部结论强制附出处与时效状态。</p>
+              </div>
+            </div>
+            <div class="fact-row" id="about-facts"></div>
+          </div>
+
+          <div class="about-card">
+            <h4><svg class="ico"><use href="#i-route"/></svg> 专家团分诊</h4>
+            <p>问题按关键词路由到对应角色，再由主理人汇编为「结论 → 依据 → 风险提示」三段式输出。</p>
+            <div class="role-grid" id="about-roles"></div>
+          </div>
+
+          <div class="about-card">
+            <h4><svg class="ico"><use href="#i-shield"/></svg> 五道准确性防线</h4>
+            <ol class="check-list">
+              <li><b>强制引用</b>：答案必须附法规名称、文号与知识库条目；</li>
+              <li><b>时效过滤</b>：草案 / 修订中 / 已到期文件不作为现行依据；</li>
+              <li><b>双源交叉</b>：入库前核对官方信源与文号；</li>
+              <li><b>不确定即承认</b>：知识库未收录时明确说明，不猜测补全；</li>
+              <li><b>高风险转介</b>：虚开、偷税、失信等事项强制提示专业人士介入。</li>
+            </ol>
+          </div>
+
+          <div class="about-card">
+            <h4><svg class="ico"><use href="#i-layers"/></svg> 运行架构</h4>
+            <ul class="plain-list">
+              <li><b>前端</b>：零框架单页应用，经 WorkBuddy Cloud SDK 免密钥流式调用云端大模型（默认 Hy4 限时免费档，可切换）；</li>
+              <li><b>后端</b>：Python 标准库服务（端口 8777），负责专家团分诊、知识库检索注入与本地兜底；</li>
+              <li><b>知识库</b>：56 个 Markdown 主题文件（法规 + 逐字法条 + 30 张概念卡 + 关联边界 + 场景路径 + 计税/社保/非税/消费税/财产税/出口退税/数电票/复议诉讼/协定逐国税率/会计进阶/行业/立法跟踪/到期预警）→ <code>build_kb.py</code> → <code>enrich_kb.py</code> → <code>build_concepts.py</code> → <code>build_v5.py</code> → <code>kb.json</code> + <code>concepts.json</code> + SQLite（10 类表）+ CSV 主数据表；</li>
+              <li><b>检索与编排</b>：五路召回（BM25 全字段/标题、精确文号、FTS5 中文全文、字面 gram）+ RRF 融合 + 可解释重排 + 置信度弃答；五阶段编排（分诊→检索→精编→引用校验→赵审计复核），每次回答落 <code>query_log</code> 留痕；</li>
+              <li><b>评测</b>：188 题 Golden QA（自动 109 + 手工 79），<code>eval_kb.py</code> 量化 Recall@5、MRR、引用正确率、弃答正确率、角色分诊、规则命中、要点覆盖率与禁用表述规避率；</li>
+              <li><b>兜底</b>：云端断网 / 配额用尽 / 服务异常时自动回退本地精编答案库，并显示回退原因。</li>
+              <li><b>深度解读</b>：六段式（定义→辨析→因果→条件→易混淆→局限）+ 概念面板 + 证据链 + 五阶段实时进度；每段强制挂法规条目引用。</li>
+            </ul>
+          </div>
+
+          <div class="about-card">
+            <h4><svg class="ico"><use href="#i-settings"/></svg> 快捷键与设置</h4>
+            <div class="keymap" id="about-keymap"></div>
+            <p class="muted">外观（浅色 / 深色 / 跟随系统）、正文字号、流式输出开关均可在右上角设置中调整，偏好保存在本机浏览器。</p>
+          </div>
+
+          <div class="about-card span-2">
+            <h4><svg class="ico"><use href="#i-layers"/></svg> 作答模型与成本</h4>
+            <div id="about-models"></div>
+          </div>
+
+          <div class="about-card span-2 disclaimer-card">
+            <h4><svg class="ico"><use href="#i-warn"/></svg> 免责声明与边界</h4>
+            <p>本应用输出仅为合规参考，<b>不构成税务师、律师专业意见</b>。稽查案件、重大交易税务安排、争议应对等高风险事项请转介执业专业人士。所有结论以官方发布原文为准；知识库标注「待核验」的字段在复核前不得直接引用。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- 移动端底部导航 -->
+<nav class="mobile-nav" aria-label="移动端导航">
+  <button class="mobile-nav-item active" data-tab="chat"><svg class="ico"><use href="#i-chat"/></svg><span>对话</span></button>
+  <button class="mobile-nav-item" data-tab="kb"><svg class="ico"><use href="#i-book"/></svg><span>法规库</span></button>
+  <button class="mobile-nav-item" data-tab="incentives"><svg class="ico"><use href="#i-gift"/></svg><span>优惠</span></button>
+  <button class="mobile-nav-item" data-tab="about"><svg class="ico"><use href="#i-info"/></svg><span>关于</span></button>
+  <button class="mobile-nav-item" data-tab="business"><svg class="ico"><use href="#i-layers"/></svg><span>事项</span></button>
+</nav>
+
+<!-- 命令面板 -->
+<div class="overlay" id="cmd-overlay" hidden>
+  <div class="cmd-panel" role="dialog" aria-modal="true" aria-label="全局搜索">
+    <div class="cmd-input-row">
+      <svg class="ico"><use href="#i-search"/></svg>
+      <input id="cmd-input" type="text" placeholder="搜索法规、示例问题或跳转功能…" autocomplete="off" aria-label="全局搜索输入">
+      <button class="clear-btn" id="cmd-close" aria-label="关闭">×</button>
+    </div>
+    <div class="cmd-results" id="cmd-results" role="listbox"></div>
+    <div class="cmd-foot"><span><kbd>↑</kbd><kbd>↓</kbd> 选择</span><span><kbd>Enter</kbd> 打开</span><span><kbd>Esc</kbd> 关闭</span></div>
+  </div>
+</div>
+
+<!-- 设置面板 -->
+<div class="overlay" id="settings-overlay" hidden>
+  <div class="settings-panel" role="dialog" aria-modal="true" aria-label="设置">
+    <div class="panel-head"><h3>偏好设置</h3><button class="clear-btn" id="settings-close" aria-label="关闭">×</button></div>
+    <div class="setting-group">
+      <label>外观主题</label>
+      <div class="seg" id="theme-seg" role="radiogroup" aria-label="外观主题">
+        <button data-val="light" role="radio">浅色</button>
+        <button data-val="dark" role="radio">深色</button>
+        <button data-val="system" role="radio">跟随系统</button>
+      </div>
+    </div>
+    <div class="setting-group">
+      <label>正文字号</label>
+      <div class="seg" id="font-seg" role="radiogroup" aria-label="正文字号">
+        <button data-val="normal" role="radio">标准</button>
+        <button data-val="large" role="radio">大字号</button>
+      </div>
+    </div>
+    <div class="setting-group">
+      <label>对话体验</label>
+      <label class="switch-row"><input type="checkbox" id="opt-stream" checked><span>流式逐字输出</span></label>
+      <label class="switch-row"><input type="checkbox" id="opt-autoscroll" checked><span>自动滚动到最新消息</span></label>
+    </div>
+    <p class="panel-note">偏好仅保存在本机浏览器，不影响知识库与模型数据。</p>
+  </div>
+</div>
+
+<!-- 概念解读面板 -->
+<div class="overlay" id="concept-overlay" hidden>
+  <div class="concept-panel" role="dialog" aria-modal="true" aria-label="概念解读面板">
+    <div class="panel-head">
+      <h3>概念解读面板 <span class="panel-badge" id="concept-count">加载中…</span></h3>
+      <button class="clear-btn" id="concept-close" aria-label="关闭">×</button>
+    </div>
+    <div class="concept-toolbar">
+      <div class="search-field">
+        <svg class="ico"><use href="#i-search"/></svg>
+        <input id="concept-search" type="search" placeholder="搜索概念名称、编号或定义（如：进项 / 广宣费 / C13）" aria-label="搜索概念">
+      </div>
+    </div>
+    <div class="concept-layout">
+      <div class="concept-list" id="concept-list" role="listbox" aria-label="概念列表"></div>
+      <article class="concept-detail" id="concept-detail" aria-live="polite" aria-label="概念详情">
+        <div class="detail-empty"><b>选择一张概念卡查看完整解读</b><span>包含定义辨析、因果逻辑、适用条件、边界与例外、易混淆点、局限说明与法规依据。</span></div>
+      </article>
+    </div>
+    <div class="concept-foot">概念卡属解释层，不是单一法规；引用其中的数字或文号前请点「查看法规依据」回查官方原文。核验日期 2026-11-07。</div>
+  </div>
+</div>
+
+<div class="toast-root" id="toast-root" aria-live="polite"></div>
+
+<div class="fatal" id="fatal" hidden>
+  <div class="fatal-card">
+    <svg class="ico"><use href="#i-warn"/></svg>
+    <h3>暂时无法连接到本地服务</h3>
+    <p id="fatal-msg">请确认 server.py 已启动，然后重试。</p>
+    <button class="send-btn" id="fatal-retry">重新加载</button>
+  </div>
+</div>
+
+<script src="/cloud-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+<script src="/copy.js"></script>
+<script src="/app.js"></script>
+<script src="/ux.js"></script>
+<script src="/business.js"></script>
+</body>
+</html>

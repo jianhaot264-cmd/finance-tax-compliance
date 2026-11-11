@@ -22,7 +22,7 @@
       "source_count": 2,
       "article_count": 37,
       "verified_at": "2026-11-09",
-      "sha256": "06db3483067acd74bebb5593d52590dc58cd586ea6a86a953e33f36ad0b07518",
+      "sha256": "69de1bd9244c2b548c4037a87e59dca001644dd7657fde817ead69566623cc19",
       "note": "由 23-authoritative-articles.md 经三家权威法律数据库回库核验 + 官网双源交叉的逐字法条；本文件为从 article_text 表导出的结构化副本，与 23 文件解析结果重叠，build_v5.py 按 (法规名, 条号) 去重。"
     },
     {
