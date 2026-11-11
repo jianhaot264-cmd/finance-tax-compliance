@@ -19,6 +19,7 @@ import re
 import sqlite3
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime
 
@@ -74,6 +75,53 @@ def forbidden_hit(term, text):
             continue
         return True
     return False
+
+
+def ask_llm_context(q):
+    """取 /api/llm-context 的系统提示词，用于校验「权威逐字法条」注入是否与提问匹配。
+
+    背景：article_text 由 121 扩到 647 条，但 188 题评测只测知识库条目检索
+    （Recall@5/MRR），**完全不覆盖法条注入**，导致扩容三次指标一字未变、
+    而 610 条法条实际因 entry_id 悬空而注入不到（已修）。此处补上该盲区。
+    """
+    try:
+        u = API.rstrip("/").rsplit("/api", 1)[0] + "/api/llm-context?q=" + urllib.parse.quote(q)
+        with urllib.request.urlopen(u, timeout=15) as resp:
+            d = json.loads(resp.read().decode("utf-8"))
+        return d.get("system_prompt") or ""
+    except (urllib.error.URLError, OSError, ValueError, KeyError):
+        return None
+
+
+# 法条注入检查用例：(提问, 期望注入的法规关键词)
+ARTICLE_INJECT_CASES = [
+    ("关税税率有哪几种", "关税法"),
+    ("耕地占用税税额标准", "耕地占用税法"),
+    ("印花税税率是多少", "印花税法"),
+    ("船舶吨税怎么交", "船舶吨税法"),
+    ("资源税的税目有哪些", "资源税法"),
+    ("车辆购置税税率多少", "车辆购置税法"),
+    ("契税税率幅度", "契税法"),
+    ("环境保护税怎么计算", "环境保护税法"),
+]
+
+
+def check_article_injection():
+    """统计「注入的法条是否属于被问及的那部法」的命中率。"""
+    ok = tot = 0
+    detail = []
+    for q, expect in ARTICLE_INJECT_CASES:
+        sp = ask_llm_context(q)
+        if sp is None:
+            detail.append({"q": q, "ok": None, "note": "API 不可用"})
+            continue
+        laws = re.findall(r"【权威逐字法条 · ([^】]+)】", sp)
+        tot += 1
+        hit = any(expect in x for x in laws)
+        if hit:
+            ok += 1
+        detail.append({"q": q, "ok": hit, "injected": laws[:3]})
+    return (ok / tot if tot else 0.0), detail
 
 
 def ask_api(q):
@@ -206,6 +254,10 @@ def main():
             "禁用表述规避率": avg("kw_avoid"),
         },
     }
+    # ---- 法条注入正确性（补盲区：article_text 是否真的注入到对应提问的上下文）----
+    inj_rate, inj_detail = check_article_injection()
+    summary["metrics"]["法条注入命中率"] = round(inj_rate, 4)
+    summary["article_injection"] = inj_detail
     r0, r1 = summary["metrics"]["Recall@5 (legacy)"], summary["metrics"]["Recall@5 (v5)"]
     m0, m1 = summary["metrics"]["MRR (legacy)"], summary["metrics"]["MRR (v5)"]
     summary["delta"] = {

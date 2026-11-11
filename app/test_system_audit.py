@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """系统级功能审计：各 API 端点 + 各问答模式 + 数据一致性，逐项断言。"""
 import json
+import re
 import sqlite3
 import urllib.parse
 import urllib.request
 
-BASE = "http://localhost:8777"
+# 用 127.0.0.1 而非 localhost：Windows 上 localhost 会先试 IPv6 ::1，
+# 服务只监听 IPv4，导致每个请求多 ~2 秒的解析回退延迟（实测 2037ms vs 50ms）。
+BASE = "http://127.0.0.1:8777"
 R = "E:/workbuddy-data/finance-tax-compliance"
 CHECKS = []
 
@@ -76,11 +79,48 @@ dang = con.execute("SELECT COUNT(*) FROM rule_reference r LEFT JOIN regulation g
                    "ON r.regulation_id=g.id WHERE g.id IS NULL").fetchone()[0]
 alias = con.execute("SELECT COUNT(*) FROM alias").fetchone()[0]
 con.close()
-ck("article_text 647", n_art == 647, n_art)
+ck("article_text ≥600（L0 已扩容）", n_art >= 600, n_art)
+# 说明：此处不写死精确条数。此前写死 121→455→647 三次，每次数据合法变动都会误报，
+# 断言本身成了噪声源。改为下限断言 + 下方「条号完整性」结构性检查。
 ck("引用零悬空", dang == 0, dang)
 ck("alias 89", alias == 89, alias)
 ck("kb.json 472/56", len(d["entries"]) == 472 and len(d["files"]) == 56)
 ck("tier 318/4/150", [e.get("tier") for e in d["entries"]].count("A") == 318)
+
+print("=== 4.5 法条层结构性检查 ===", flush=True)
+# 4.5a 企税条例必须 132 条无缺号（曾因 23 文件摘要版抢位，缺 28/40-44/53 共 7 条）
+con = sqlite3.connect(R + "/app/finance-tax-compliance.db")
+_rows = [r[0] for r in con.execute(
+    "SELECT article_no FROM article_text WHERE law_name='中华人民共和国企业所得税法实施条例'")]
+_linked = con.execute("SELECT COUNT(*) FROM article_text WHERE entry_id<>''").fetchone()[0]
+_n = con.execute("SELECT COUNT(*) FROM article_text").fetchone()[0]
+con.close()
+
+_CN = "零一二三四五六七八九"
+
+
+def _artnum(s):
+    m = re.search(r"第([一二三四五六七八九十百零]+)条", s or "")
+    if not m:
+        return None
+    t, v, tmp = m.group(1), 0, 0
+    for ch in t:
+        if ch in _CN:
+            tmp = _CN.index(ch)
+        elif ch == "十":
+            v += (tmp or 1) * 10
+            tmp = 0
+        elif ch == "百":
+            v += (tmp or 1) * 100
+            tmp = 0
+    return v + tmp
+
+
+_nums = {_artnum(x) for x in _rows}
+_missing = [i for i in range(1, 133) if i not in _nums]
+ck("企税条例 132 条无缺号", len(_rows) >= 132 and not _missing, _missing or len(_rows))
+ck("法条关联条目率 ≥95%", _n > 0 and _linked / _n >= 0.95,
+   f"{_linked}/{_n}={_linked / _n:.1%}" if _n else "-")
 
 print("=== 5. 静态资源与免责 ===", flush=True)
 html = urllib.request.urlopen(BASE + "/", timeout=15).read().decode("utf-8")

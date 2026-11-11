@@ -1908,17 +1908,74 @@ def build_llm_context(q, mode="standard"):
             f"合规要点：{f.get('合规要点', '')[:500]}"
         )
     # 权威逐字法条注入（回库确认现行有效）
+    # 只注入 entry_id 命中本次检索条目的法条，避免按表顺序取前 N 条导致
+    # 「问企税却注入增值税条文」；同一法规内按条号自然序，跨法规按条目命中顺序。
     try:
         import sqlite3
-        con = sqlite3.connect(DB_PATH)
         hit = set(ids)
-        n = 0
-        for eid, law, art, verb in con.execute(
-                "SELECT entry_id,law_name,article_no,verbatim FROM article_text"):
-            if eid in hit and n < 6:
-                blocks.append(f"【权威逐字法条 · {law} {art}】（回库核验：现行有效）\n{verb[:700]}")
-                n += 1
+        blocks_art = []
+        con = sqlite3.connect(DB_PATH)
+        if hit:  # 空集合会让 IN () 语法错误
+            for eid, law, art, verb in con.execute(
+                    "SELECT entry_id,law_name,article_no,verbatim FROM article_text "
+                    "WHERE entry_id IN (%s)" % ",".join("?" * len(hit)), tuple(hit)):
+                blocks_art.append((eid, law, art, verb))
         con.close()
+        # 按命中条目顺序排列，同条目内按条号数字序
+        order = {eid: i for i, eid in enumerate(ids)}
+
+        def art_no_key(s):
+            m = re.search(r"第([一二三四五六七八九十百零\d]+)条", s or "")
+            if not m:
+                return 9999
+            t = m.group(1)
+            if t.isdigit():
+                return int(t)
+            digits = "零一二三四五六七八九"
+            units = {"十": 10, "百": 100}
+            val, tmp = 0, 0
+            for ch in t:
+                if ch in digits:
+                    tmp = digits.index(ch)
+                elif ch in units:
+                    val += (tmp or 1) * units[ch]
+                    tmp = 0
+            return val + tmp
+
+        blocks_art.sort(key=lambda x: (order.get(x[0], 99), art_no_key(x[2])))
+
+        # 单条目最多挂 125 条法条（如企税条例），若只按条号取前 6 条，
+        # 则永远只注入「第一至六条」，用户问具体条款时拿不到对应法条。
+        # 故在「同一条目内」按与提问的字面相关度重排。
+        # 注意：中文无空格分隔，不能按「2 字以上词片段」切（整句会成一整段永远匹配不上），
+        # 必须用字符级二元组（bigram）计算重合，再以条号序兜底保证稳定。
+        if q:
+            q_chars = re.sub(r"[^\u4e00-\u9fa5A-Za-z0-9%]", "", q or "")
+            q_bg = {q_chars[i:i + 2] for i in range(len(q_chars) - 1)}
+            # 法规名会贡献「企业」「所得」「实施」等公共二元组，若直接做减法会连带
+            # 剔掉「职工」这类实质词（因「企业」与「职工」共享不了，但「业所」会）。
+            # 改为「降权」而非「剔除」：命中法规名的二元组记 1 分，其余记 3 分。
+            law_bg = {x[i:i + 2] for law in {b[1] for b in blocks_art}
+                      for x in [re.sub(r"[^\u4e00-\u9fa5A-Za-z0-9]", "", law or "")]
+                      for i in range(len(x) - 1)}
+            focus_bg = q_bg - law_bg
+            weight = 1.0 / max(len(focus_bg), 1)
+
+            def _rel(verb):
+                v = re.sub(r"[^\u4e00-\u9fa5A-Za-z0-9%]", "", verb or "")
+                if not v:
+                    return 0.0
+                v_bg = {v[i:i + 2] for i in range(len(v) - 1)}
+                # 实质词权重高（每个 +1），法规名共有词权重低（每个 +weight），
+                # 这样「职工教育经费」类实词能把对应条款顶到前面，而不会被法规名淹没。
+                hit_focus = len(focus_bg & v_bg)
+                hit_law = len((q_bg & law_bg) & v_bg)
+                return hit_focus + hit_law * weight
+
+            blocks_art.sort(
+                key=lambda x: (order.get(x[0], 99), -_rel(x[3]), art_no_key(x[2])))
+        for eid, law, art, verb in blocks_art[:6]:
+            blocks.append(f"【权威逐字法条 · {law} {art}】（回库核验：现行有效）\n{verb[:700]}")
     except Exception:
         pass
     # 法条原文 vs 现行口径的判定规则必须随上下文注入
