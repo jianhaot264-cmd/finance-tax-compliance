@@ -91,7 +91,7 @@ def audit_answer(q, risk, abstain, confidence, verify_result, role):
     """Stage 5：赵审计合规复核 —— 必须给出明确裁定，不回避。"""
     findings = []
     if risk == "high":
-        findings.append("高风险事项（虚开/偷税/骗税/重大补税）：必须转介执业税务师或律师")
+        findings.append("高风险事项（违规开票/税款申报不实/违规申报退税/重大补税）：必须转介执业税务师或律师")
     if abstain:
         findings.append("检索置信度不足：应明确回答「知识库暂无收录」，不得猜测补全")
     if confidence and confidence < 0.5:
