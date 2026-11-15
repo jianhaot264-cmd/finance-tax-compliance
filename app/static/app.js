@@ -384,32 +384,32 @@ function renderStructured(a, disclaimer, container) {
   let html = "";
   if (a.matched_q && a.mode === "rule") html += `<div class="hint-block">识别为示例问题：${esc(a.matched_q)}</div>`;
   (a.sections || []).forEach(sec => {
-    if (sec.type === "conclusion") html += `<div class="sec-title">结论</div><div class="sec-conclusion">${esc(sec.text)}</div>`;
+    if (sec.type === "conclusion") html += `<div class="sec-title">结论</div><div class="sec-conclusion">${inlineMD(sec.text)}</div>`;
     else if (sec.type === "basis") {
       html += `<div class="sec-title">法规依据</div><ul class="sec-basis">`;
-      (sec.items || []).forEach(it => html += `<li>${esc(it.text)}${it.ref ? ` <span class="ref-chip" data-ref="${esc(it.ref)}">原文 ↗</span>` : ""}</li>`);
+      (sec.items || []).forEach(it => html += `<li>${inlineMD(it.text)}${it.ref ? ` <span class="ref-chip" data-ref="${esc(it.ref)}">原文 ↗</span>` : ""}</li>`);
       html += `</ul>`;
     } else if (sec.type === "tips") {
-      html += `<div class="sec-title">风险与合规提示</div><ul class="sec-tips">${(sec.items || []).map(t => `<li>${esc(t)}</li>`).join("")}</ul>`;
+      html += `<div class="sec-title">风险与合规提示</div><ul class="sec-tips">${(sec.items || []).map(t => `<li>${inlineMD(t)}</li>`).join("")}</ul>`;
     } else if (sec.type === "retrieval") {
       html += `<div class="sec-title">${esc(sec.title || "检索结果")}</div><ul class="sec-retrieval">`;
-      (sec.items || []).forEach(it => html += `<li><b>${esc(it.title)}</b>｜${esc(it.status)}｜${esc(it.category)}${it.id ? ` <span class="ref-chip" data-ref="${esc(it.id)}">详情 ↗</span>` : ""}<br><span style="color:var(--text-3);font-size:12.4px">${esc(it.snippet || it.preview || "")}</span></li>`);
+      (sec.items || []).forEach(it => html += `<li><b>${esc(it.title)}</b>｜${esc(it.status)}｜${esc(it.category)}${it.id ? ` <span class="ref-chip" data-ref="${esc(it.id)}">详情 ↗</span>` : ""}<br><span style="color:var(--text-3);font-size:12.4px">${inlineMD(it.snippet || it.preview || "")}</span></li>`);
       html += `</ul>`;
     } else if (sec.type === "clarify") {
-      html += `<div class="sec-title">${esc(sec.title || "请先选择方向")}</div><div class="sec-conclusion">${esc(sec.text || "")}</div>`;
+      html += `<div class="sec-title">${esc(sec.title || "请先选择方向")}</div><div class="sec-conclusion">${inlineMD(sec.text || "")}</div>`;
       html += `<div class="clarify-row">`;
       (sec.options || []).forEach((op, i) => {
         html += `<button class="clarify-opt" data-clarify="${esc(op.q || op.label)}" data-idx="${i}">${esc(op.label || op.q)}</button>`;
       });
       html += `<button class="clarify-opt clarify-free" data-clarify-free="1">都不匹配，我直接描述</button>`;
       html += `</div>`;
-    } else if (sec.type === "escalate") html += `<div class="sec-escalate">${esc(sec.text)}</div>`;
+    } else if (sec.type === "escalate") html += `<div class="sec-escalate">${inlineMD(sec.text)}</div>`;
   });
   if (a.refs && a.refs.length) {
     html += `<div class="sec-title">知识库条目</div>`;
     a.refs.forEach(rid => {
       const e = S.kbIndex[rid];
-      if (e) html += `<span class="ref-chip" data-ref="${esc(rid)}">${esc(e.no || "")} ${esc(e.title)}</span>`;
+      if (e) html += `<span class="ref-chip" data-ref="${esc(rid)}">${esc(e.no || "")} ${inlineMD(e.title)}</span>`;
     });
   }
   if (a.stage_trace && a.stage_trace.length) {
@@ -442,7 +442,7 @@ function bindRefs(root) {
 function renderLLMAnswer(p, container) {
   let html = "";
   if (p.fallbackNotice) html += `<div class="llm-fallback-notice">${esc(p.fallbackNotice)}</div>`;
-  if (p.reasoning) html += `<details class="reasoning-box"><summary>思考过程（点击展开）</summary><div class="reasoning-text">${esc(p.reasoning.slice(-1500))}</div></details>`;
+  if (p.reasoning) html += `<details class="reasoning-box"><summary>思考过程（点击展开）</summary><div class="reasoning-text">${inlineMD(p.reasoning.slice(-1500))}</div></details>`;
   if (p.stopped) html += `<div class="hint-block">已手动停止生成，以上为已输出内容。</div>`;
   html += `<div class="md-out llm-stream">${p.content ? renderLLMText(p.content, false) : `<span class="typing"><i></i><i></i><i></i></span>`}</div>`;
   html += `<div class="llm-extra"></div>`;
@@ -453,7 +453,7 @@ function renderLLMAnswer(p, container) {
     e += `<div class="sec-title">知识库条目</div>`;
     p.refs.forEach(rid => {
       const ent = S.kbIndex[rid];
-      if (ent) e += `<span class="ref-chip" data-ref="${esc(rid)}">${esc(ent.no || "")} ${esc(ent.title)}</span>`;
+      if (ent) e += `<span class="ref-chip" data-ref="${esc(rid)}">${esc(ent.no || "")} ${inlineMD(ent.title)}</span>`;
     });
   }
   if (p.risk === "high") e += `<div class="sec-escalate">🔴 本问题涉及高风险事项，请转介执业税务师 / 律师处理；本应用输出仅供参考。</div>`;
@@ -493,6 +493,15 @@ function inlineMD(s) {
     .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+/* 复制到剪贴板 / 导出时剥离 Markdown 标记，避免把 ** 带给用户 */
+function plainMD(s) {
+  return String(s == null ? "" : s)
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "");
 }
 
 /* 迷你 Markdown（法规原文） */
@@ -723,7 +732,12 @@ async function sendViaCloud(q, opts = {}) {
               body.insertAdjacentHTML("afterbegin", `<details class="reasoning-box"><summary>思考过程（点击展开）</summary><div class="reasoning-text"></div></details>`);
               box = reBox();
             }
-            box.querySelector(".reasoning-text").textContent = reasoning.slice(-1500);
+            /* 流式输出中会出现未闭合的 ** 或孤立 Markdown 标记，
+               全部剥离后再显示，避免思考过程里露出星号（用户可见细节）。 */
+            let shown = reasoning.slice(-1500)
+              .replace(/\*\*/g, "").replace(/`/g, "")
+              .replace(/^\s*#{1,4}\s+/gm, "");
+            box.querySelector(".reasoning-text").textContent = shown;
           }
         }
         ok = true;
@@ -962,7 +976,7 @@ function statusClass(st) {
 }
 const ENTRY_TYPE_LABEL = { regulation: "单一法规", digest: "汇编", table_row: "速查表行", practice: "实务指引" };
 function highlight(text, q) {
-  const safe = esc(text);
+  const safe = inlineMD(text);
   if (!q) return safe;
   const needle = esc(q);
   const i = safe.toLowerCase().indexOf(needle.toLowerCase());
@@ -1056,7 +1070,7 @@ function openDetail(id) {
   const related = S.kb.entries.filter(x => x.id !== id && x.category === e.category).slice(0, 6);
 
   let html = `<button class="detail-back" id="detail-back"><svg class="ico"><use href="#i-back"/></svg> 返回列表</button>
-    <div class="detail-top"><h2>${esc(e.title)}</h2>
+    <div class="detail-top"><h2>${inlineMD(e.title)}</h2>
       <div class="detail-actions">
         <button id="detail-fav" class="${fav ? "on" : ""}" title="${fav ? "取消收藏" : "收藏"}"><svg class="ico"><use href="#i-star"/></svg></button>
         <button id="detail-copy" title="复制条目摘要"><svg class="ico"><use href="#i-copy"/></svg></button>
@@ -1071,7 +1085,7 @@ function openDetail(id) {
     fieldOrder(e.fields).forEach(k => {
       const v = String(e.fields[k] || "");
       const flag = /待核验|待复核|已到期|未通过|草案/.test(v) ? " flag" : "";
-      html += `<tr><td>${esc(k)}</td><td class="${flag}">${esc(v).replace(/\n/g, "<br>")}</td></tr>`;
+      html += `<tr><td>${esc(k)}</td><td class="${flag}">${inlineMD(v).replace(/\n/g, "<br>")}</td></tr>`;
     });
     html += `</table>`;
   } else {
@@ -1079,7 +1093,7 @@ function openDetail(id) {
   }
   html += `<div class="md-body">${renderMD(e.body_md)}</div>`;
   if (related.length) html += `<div class="related-box"><b>同分类相关条目</b><div class="related-list">${related.map(r =>
-    `<span class="ref-chip" data-ref="${esc(r.id)}">${esc(r.title)}</span>`).join("")}</div></div>`;
+    `<span class="ref-chip" data-ref="${esc(r.id)}">${inlineMD(r.title)}</span>`).join("")}</div></div>`;
   html += `<div class="detail-nav">
     ${prev ? `<button data-go="${esc(prev.id)}"><svg class="ico"><use href="#i-back"/></svg><span>${esc(prev.title)}</span></button>` : `<button disabled><span>已是第一条</span></button>`}
     ${next ? `<button data-go="${esc(next.id)}"><span>${esc(next.title)}</span><svg class="ico" style="transform:rotate(180deg)"><use href="#i-back"/></svg></button>` : `<button disabled><span>已是最后一条</span></button>`}
@@ -1088,7 +1102,7 @@ function openDetail(id) {
   pane.scrollTop = 0;
   $("#detail-fav").addEventListener("click", () => toggleFav(id));
   $("#detail-copy").addEventListener("click", async () => {
-    const text = `${e.title}\n文号：${e.fields["文号"] || e.no || ""}\n发文机关：${e.fields["发文机关"] || ""}\n时效性：${e.status}\n核心条款：${e.fields["核心条款"] || ""}\n合规要点：${e.fields["合规要点"] || ""}`;
+    const text = `${e.title}\n文号：${e.fields["文号"] || e.no || ""}\n发文机关：${e.fields["发文机关"] || ""}\n时效性：${e.status}\n核心条款：${plainMD(e.fields["核心条款"] || "")}\n合规要点：${plainMD(e.fields["合规要点"] || "")}`;
     try { await navigator.clipboard.writeText(text); toast("条目摘要已复制"); }
     catch (_) { toast("复制失败，请手动选择文本", "warn"); }
   });
@@ -1175,7 +1189,7 @@ function renderIncentives() {
       <div class="inc-table-wrap"><table class="inc-table"><thead><tr>${t.headers.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
       <tbody>${t.rows.map(r => `<tr class="${r.state === "expired" ? "row-expired" : ""}">${r.cells.map((c, i) => {
         const cls = i === expiryIdx ? `expiry ${r.state}` : "";
-        return `<td class="${cls}">${q ? highlight(c, q) : esc(c)}</td>`;
+        return `<td class="${cls}">${q ? highlight(c, q) : inlineMD(c)}</td>`;
       }).join("")}</tr>`).join("")}</tbody></table></div>
       <div class="inc-note">⚠️ 标注「已到期」的政策不作为现行依据；「待核验」字段引用前须复核官方原文。</div>
     </div>`;

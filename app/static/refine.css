@@ -426,3 +426,82 @@ html[data-theme="dark"] .topbar { background: rgba(20, 32, 51, .88); }
   .cap-grid { grid-template-columns: 1fr !important; }
   .welcome-chip:nth-child(n+3) { display: none; }
 }
+
+/* ==========================================================================
+   PC 可用性优化（2026-11-15）
+   概念解读面板：字号、点击热区、滚动可见性、段落节奏、键盘与鼠标反馈
+   ========================================================================== */
+.concept-panel { max-width: 1040px; height: min(82vh, 780px); }
+.concept-panel .panel-head { padding: 18px 24px 14px; }
+.concept-panel .panel-head h3 { font-size: 16px; font-weight: 650; color: var(--brand-ink); }
+.concept-toolbar { padding: 12px 24px; }
+.concept-toolbar .search-field { max-width: 460px; }
+.concept-layout { grid-template-columns: 250px minmax(0, 1fr); }
+
+/* 列表：更大的点击热区 + 常驻细滚动条 + 清晰的 hover/焦点 */
+.concept-list { padding: 10px; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.concept-list::-webkit-scrollbar { width: 8px; }
+.concept-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+.concept-list::-webkit-scrollbar-track { background: transparent; }
+.concept-item {
+  min-height: 40px;
+  padding: 10px 12px;
+  font-size: 13.2px;
+  margin-bottom: 2px;
+}
+.concept-item:hover { background: var(--accent-soft); color: var(--brand); }
+.concept-item:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.concept-item .c-code { font-size: 11px; min-width: 26px; }
+
+/* 详情：PC 上放大字号与行距，字段之间留白更清楚 */
+.concept-detail { padding: 22px 30px 30px; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.concept-detail::-webkit-scrollbar { width: 8px; }
+.concept-detail::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+.concept-detail h3 { font-size: 20px; line-height: 1.4; margin-bottom: 10px; }
+.concept-detail .c-meta { font-size: 12px; margin-bottom: 20px; gap: 7px; }
+.concept-detail .c-pill { padding: 3px 10px; }
+.concept-detail .c-field { margin: 0 0 16px; }
+.concept-detail .c-field > b { font-size: 12px; margin-bottom: 6px; }
+.concept-detail .c-field span { font-size: 14px; line-height: 1.85; }
+/* 正文里由 Markdown 生成的重点加粗：行内、深色、不换行 */
+.concept-detail .c-field span b { display: inline; font-size: inherit; letter-spacing: normal; color: var(--brand-ink); font-weight: 650; }
+.concept-detail .c-actions { margin-top: 22px; gap: 10px; }
+.concept-detail .c-actions button { min-height: 36px; padding: 8px 14px; font-size: 12.8px; }
+.concept-detail .c-actions button:hover { background: var(--accent-soft); }
+.concept-detail .c-actions button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.concept-foot { padding: 10px 24px; font-size: 11.5px; color: var(--text-3); }
+
+/* 关闭按钮：PC 鼠标点击热区不小于 32px */
+#concept-close { min-width: 32px; min-height: 32px; font-size: 20px; line-height: 1; border-radius: 8px; }
+#concept-close:hover { background: var(--surface-2); color: var(--brand); }
+
+/* 主回答区同样受益：正文加粗必须行内 */
+.sec-conclusion b, .sec-basis b, .sec-tips b, .sec-retrieval b,
+.field-table td b, .md-body b { display: inline; font-weight: 650; color: var(--brand-ink); }
+.field-table td code, .sec-conclusion code {
+  font-family: var(--font-mono, monospace); font-size: .92em;
+  background: var(--surface-2); padding: 1px 4px; border-radius: 4px;
+}
+
+/* ---- PC 指针设备：点击热区不小于 32px，键盘焦点清晰可见 ---- */
+.mini-btn, #new-chat { min-width: 34px; min-height: 34px; }
+.quick-tabs button, .quick-tab { min-height: 32px; padding: 6px 11px; }
+.mode-seg button { min-height: 30px; padding: 6px 12px; }
+.example-chip, .quick-chips .example-chip { min-height: 30px; padding: 6px 12px; }
+.top-actions button, .top-actions .icon-btn { min-width: 34px; min-height: 34px; }
+.clarify-opt { min-height: 36px; padding: 8px 14px; }
+.followup-chip { min-height: 32px; padding: 7px 13px; }
+.ref-chip { min-height: 26px; display: inline-flex; align-items: center; padding: 2px 8px; }
+.filter-chip, .chip-toggle { min-height: 32px; padding: 6px 12px; }
+
+/* 统一键盘焦点：PC 上 Tab 导航必须看得见落点 */
+button:focus-visible, a:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* 鼠标 hover 反馈：让可点击元素一眼可辨 */
+button:not(:disabled) { cursor: pointer; }
+.concept-item, .kb-item, .bc-item, .filter-chip, .chip-toggle,
+.clarify-opt, .followup-chip { cursor: pointer; }

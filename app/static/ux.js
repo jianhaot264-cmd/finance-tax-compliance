@@ -11,6 +11,20 @@
   const esc = (s) => String(s == null ? "" : s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  /* 知识库正文含 Markdown 强调标记（**重点** `代码`）。
+     直接 esc() 输出会把星号原样显示在界面上，用户看到的是符号而非重点。
+     md() 在转义后把标记还原为语义标签；plain() 用于复制/导出时剥离标记。 */
+  const md = (s) => esc(s)
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  const plain = (s) => String(s == null ? "" : s)
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, "$1")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "");
   const toast = (m, t) => { try { window.toast(m, t || "ok"); } catch (e) { /* noop */ } };
   const CX = (o, k, d) => (o && o[k] != null ? o[k] : d);
 
@@ -117,7 +131,7 @@
       const secs = (byConcept[c.id] || []).slice().sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
       secs.forEach((s, i) => {
         h += `<div class="deep-sec"><div class="deep-sec-label"><i>${i + 1}</i>${esc(s.label)}</div>
-          <div class="deep-sec-text">${esc(s.text)}<div>` +
+          <div class="deep-sec-text">${md(s.text)}<div>` +
           (s.refs || []).map(r => `<span class="deep-ref" data-ref="${esc(r)}">${esc(r)} ↗</span>`).join("") +
           `</div></div></div>`;
       });
@@ -128,21 +142,21 @@
     if (dp.confusions && dp.confusions.length) {
       h += `<div class="ux-subhead">${esc(C.label.confusions)}</div><table class="ux-matrix"><thead><tr>
         <th>概念 A</th><th>概念 B</th><th>关键不同点</th><th>判断顺序</th><th>答错后果</th></tr></thead><tbody>` +
-        dp.confusions.slice(0, 5).map(x => `<tr><td>${esc(x.a)}</td><td>${esc(x.b)}</td><td>${esc(x.difference)}</td><td>${esc(x.order)}</td><td>${esc(x.cost)}</td></tr>`).join("") +
+        dp.confusions.slice(0, 5).map(x => `<tr><td>${md(x.a)}</td><td>${md(x.b)}</td><td>${md(x.difference)}</td><td>${md(x.order)}</td><td>${md(x.cost)}</td></tr>`).join("") +
         `</tbody></table>`;
     }
     if (dp.thresholds && dp.thresholds.length) {
       h += `<div class="ux-subhead">${esc(C.label.boundaries)}</div><table class="ux-matrix"><thead><tr>
         <th>数字</th><th>口径</th><th>生效时点</th><th>例外 / 边界</th><th>依据条目</th></tr></thead><tbody>` +
-        dp.thresholds.slice(0, 8).map(x => `<tr><td>${esc(x.value)}</td><td>${esc(x.scope)}</td><td>${esc(x.effective)}</td><td>${esc(x.edge)}</td><td>${esc(x.ref_entry)}</td></tr>`).join("") +
+        dp.thresholds.slice(0, 8).map(x => `<tr><td>${md(x.value)}</td><td>${md(x.scope)}</td><td>${md(x.effective)}</td><td>${md(x.edge)}</td><td>${md(x.ref_entry)}</td></tr>`).join("") +
         `</tbody></table>`;
     }
     if (dp.scenarios && dp.scenarios.length) {
       h += `<div class="ux-subhead">${esc(C.label.scenarios)}</div>`;
       dp.scenarios.slice(0, 3).forEach(s => {
         h += `<div class="deep-sec-text" style="margin-bottom:8px"><b>${esc(s.name)}</b><br>` +
-          (s.path || []).slice(0, 5).map((p, i) => `${i + 1}. ${esc(p)}`).join("<br>") +
-          (s.pitfalls ? `<br><span style="color:var(--risk-mid)">易错：${esc(s.pitfalls)}</span>` : "") + `</div>`;
+          (s.path || []).slice(0, 5).map((p, i) => `${i + 1}. ${md(p)}`).join("<br>") +
+          (s.pitfalls ? `<br><span style="color:var(--risk-mid)">易错：${md(s.pitfalls)}</span>` : "") + `</div>`;
       });
     }
     h += `</div></div>`;
@@ -304,9 +318,9 @@
         <span class="c-pill">${esc(c.tier)} 层</span>
         <span class="c-pill" title="${esc(C.label.statusHint(c.status))}">${esc(c.status)}</span>
         <span class="c-pill">${(c.sources || []).length} 个官方信源</span></div>` +
-      fields.map(([label, key]) => c[key] ? `<div class="c-field"><b>${esc(label)}</b><span>${esc(c[key])}</span></div>` : "").join("") +
+      fields.map(([label, key]) => c[key] ? `<div class="c-field"><b>${esc(label)}</b><span>${md(c[key])}</span></div>` : "").join("") +
       (c.confusions && c.confusions.length ? `<div class="c-field"><b>易混淆对照</b><span>` +
-        c.confusions.slice(0, 3).map(x => `${esc(x.a)} vs ${esc(x.b)}：${esc(x.difference)}`).join("<br>") + `</span></div>` : "") +
+        c.confusions.slice(0, 3).map(x => `${md(x.a)} vs ${md(x.b)}：${md(x.difference)}`).join("<br>") + `</span></div>` : "") +
       (c.scenarios && c.scenarios.length ? `<div class="c-field"><b>关联场景</b><span>` +
         c.scenarios.map(x => esc(x.name)).join("、") + `</span></div>` : "") +
       `<div class="c-actions">
@@ -327,7 +341,7 @@
         if (rid) { closeConceptPanel(); try { window.openDetail(rid); } catch (e) { /* noop */ } }
         else toast(C.empty.refs, "warn");
       } else if (act === "copy") {
-        const txt = `${c.code} ${c.name}\n` + fields.map(([l, k]) => c[k] ? `${l}：${c[k]}` : "").filter(Boolean).join("\n");
+        const txt = `${c.code} ${c.name}\n` + fields.map(([l, k]) => c[k] ? `${l}：${plain(c[k])}` : "").filter(Boolean).join("\n");
         try { await navigator.clipboard.writeText(txt); toast("概念卡已复制"); } catch (e) { toast("复制失败", "warn"); }
       }
     }));

@@ -8,12 +8,21 @@
   var esc = (v) => String(v == null ? "" : v)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-  var linkify = (v) => esc(v).replace(/https?:\/\/[^\s<）)】]+/g,
+  /* 知识库字段含 **重点** 等 Markdown 标记，界面与导出都需还原为纯文本语义 */
+  var md = (v) => esc(v)
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
+  var plain = (v) => String(v == null ? "" : v)
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "");
+  var linkify = (v) => md(v).replace(/https?:\/\/[^\s<）)】]+/g,
     (u) => '<a href="' + u + '" target="_blank" rel="noopener noreferrer">' + u + "</a>");
 
   /* 依据名称 → 法规库检索；URL 保持外链 */
   function lawLinkify(v) {
-    var s = esc(v || "");
+    var s = md(v || "");
     s = s.replace(/https?:\/\/[^\s<）)】"]+/g, (u) =>
       '<a href="' + u + '" target="_blank" rel="noopener noreferrer">' + u + "</a>");
     s = s.replace(/《([^》]+)》/g, (m, name) =>
@@ -23,7 +32,7 @@
   }
 
   function csvCell(v) {
-    var s = String(v == null ? "" : v).replace(/\r?\n/g, " ");
+    var s = plain(v).replace(/\r?\n/g, " ");
     return '"' + s.replace(/"/g, '""') + '"';
   }
 
