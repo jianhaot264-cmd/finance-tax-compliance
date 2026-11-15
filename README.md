@@ -73,7 +73,7 @@ docker-compose up -d        # → http://localhost:8777
 cd app && python server.py 8777
 ```
 
-**技术栈**：Python 3.12 **纯标准库**（零第三方依赖）+ 原生前端（零框架）。离线可部署，无供应链风险。
+**技术栈**：Python 3.12 **纯标准库**（运行时零第三方依赖）+ 原生前端（零框架）。离线可部署，无供应链风险。注：`e2e-test.py` / `test_business_deep.py` 两个 E2E 测试脚本需 Playwright，运行时不依赖。
 
 **L0 逐字原文层**：`knowledge-base/corpus/` 存放逐字条文与 `manifest.json`（含双源链接、时效、SHA256），由 `app/import_corpus.py` 校验后生成 `app/corpus-articles.json`；新增/更新条文用 `app/fetch_corpus.py` 从两个官方源抓取并**逐条比对**（条数、条号连续性、NFKC 归一化后一致性任一不通过即拒绝入库），再由 `app/build_v5.py` 写入 `article_text`（当前 40 条）。L0 **不进 `build_kb.py` 的 FILES、不参与主检索索引**，只作溯源与引用；重建链须在 `build_v5.py` 前跑 `import_corpus.py`。
 
