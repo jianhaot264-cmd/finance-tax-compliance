@@ -232,7 +232,7 @@ function welcomeHTML() {
     <p>描述你的合规疑问，智能体会先检索已核验的法规知识库，再由专家团对应角色给出「结论 → 依据 → 风险提示」，并附可点击的原文条目。</p>
     <div class="cap-grid">${caps.map(c => `<div class="cap-card"><div class="cap-ico"><svg class="ico"><use href="#${c[0]}"/></svg></div><div><b>${c[1]}</b><span>${esc(c[2])}</span></div></div>`).join("")}</div>
     <div class="welcome-label">试试这些问题</div>
-    <div class="welcome-chips">${hot.items.slice(0, 6).map(it =>
+    <div class="welcome-chips">${hot.items.slice(0, 4).map(it =>
       `<button class="welcome-chip" data-q="${esc(it.q)}">${esc(it.q)}<span class="arrow">↗</span></button>`).join("")}</div>
     <p class="welcome-fine"><b>本工具仅用于辅助合规自查，不构成专业税务/法律意见。</b>回答基于知识库核验日期 ${esc(S.meta ? S.meta.verified_at : "—")}，全部结论以官方发布原文为准；涉税计算由本地确定性引擎产出，大模型不直接算税。</p>
   </div>`;
@@ -249,7 +249,17 @@ function renderChat() {
     box.classList.remove("is-empty"); s.messages.forEach(m => appendMessage(m));
   }
   S.stick = true;
-  requestAnimationFrame(() => scrollChat(true));
+  // 空对话（欢迎区）应停在顶部，否则欢迎标题与说明会被强制滚到底部裁掉。
+  const isEmpty = !s || !s.messages.length;
+  requestAnimationFrame(() => {
+    if (isEmpty) {
+      const sc = $("#chat-scroll");
+      if (sc) sc.scrollTop = 0;
+      if (typeof updateScrollBtn === "function") updateScrollBtn();
+    } else {
+      scrollChat(true);
+    }
+  });
 }
 function bindWelcome() {
   $$(".welcome-chip").forEach(b => b.addEventListener("click", () => ask(b.dataset.q)));
@@ -263,6 +273,8 @@ function scrollChat(force) {
 function updateScrollBtn() {
   const sc = $("#chat-scroll"), btn = $("#scroll-bottom");
   if (!sc || !btn) return;
+  // 空对话只有欢迎区，不需要「回到最新」浮层
+  if (sc.classList.contains("is-empty")) { btn.hidden = true; return; }
   const far = sc.scrollHeight - sc.scrollTop - sc.clientHeight > 110;
   btn.hidden = !far;
 }

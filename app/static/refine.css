@@ -1,0 +1,428 @@
+/* ==========================================================================
+   refine.css · 界面整体视觉重构层（2026-11-15）
+   目标：美观 / 简洁明了 / 色彩干净明确 / 信息层级清晰
+   原则：不改 DOM、不改 JS，仅通过 CSS 收敛密度与统一色板，零功能风险。
+   加载顺序：style.css → ux.css → polish.css → refine.css（最后覆盖）
+   ========================================================================== */
+
+:root {
+  /* ---- 统一色板：一个主色 + 一套中性灰 + 一组语义色 ---- */
+  --brand:            #1d4ed8;
+  --brand-hover:      #1e40af;
+  --brand-ink:        #0f172a;
+  --on-brand:         #ffffff;
+  --bg:               #f7f9fc;
+  --surface:          #ffffff;
+  --surface-2:        #f4f7fb;
+  --surface-3:        #eaf0f8;
+  --border:           #e4eaf2;
+  --border-strong:    #cdd8e6;
+  --text:             #17253a;
+  --text-2:           #5a6b80;
+  --text-3:           #8b9aab;
+  --accent:           #1d4ed8;
+  --accent-soft:      #eef3ff;
+  --sidebar-bg:       #101d33;
+  --sidebar-hover:    #1c2f4d;
+  --sidebar-fg:       #eef3fa;
+  --sidebar-muted:    #94a6bf;
+
+  --r-xs: 6px; --r-sm: 9px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --shadow-1: 0 1px 2px rgba(16, 29, 51, .04);
+  --shadow-2: 0 6px 20px rgba(16, 29, 51, .08);
+  --shadow-3: 0 18px 48px rgba(16, 29, 51, .16);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+html[data-theme="dark"] {
+  --brand:            #5b8cff;
+  --brand-hover:      #7aa2ff;
+  --brand-ink:        #eef3fa;
+  --bg:               #0d1523;
+  --surface:          #142033;
+  --surface-2:        #1a2b42;
+  --surface-3:        #22354f;
+  --border:           #25374f;
+  --border-strong:    #36506f;
+  --text:             #e8eff8;
+  --text-2:           #aab9cc;
+  --text-3:           #7f90a6;
+  --accent:           #5b8cff;
+  --accent-soft:      #1c3055;
+  --sidebar-bg:       #0a1220;
+  --sidebar-hover:    #1a2b42;
+  --sidebar-fg:       #eef3fa;
+  --sidebar-muted:    #8497b0;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, .22);
+  --shadow-2: 0 6px 20px rgba(0, 0, 0, .30);
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font); }
+
+/* ---------- 侧栏：更安静、更聚焦 ---------- */
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid rgba(255, 255, 255, .06);
+}
+.brand { padding: 22px 20px 18px; }
+.brand-text { color: var(--sidebar-fg); }
+.brand-logo {
+  background: var(--brand);
+  color: #fff;
+  border-radius: 10px;
+}
+.side-nav { padding: 6px 10px; gap: 2px; }
+.side-nav a,
+.side-nav button,
+.nav-item {
+  border-radius: 9px;
+  color: var(--sidebar-muted);
+  font-size: 13.5px;
+  letter-spacing: .1px;
+}
+.side-nav a:hover,
+.side-nav button:hover,
+.nav-item:hover { background: var(--sidebar-hover); color: var(--sidebar-fg); }
+.side-nav .active,
+.side-nav a.active,
+.nav-item.active {
+  background: rgba(91, 140, 255, .16);
+  color: #fff;
+  font-weight: 600;
+}
+/* 侧栏数字角标含义不明 → 弱化为不抢眼的小圆点 */
+.side-nav .nav-count,
+.side-nav .badge,
+.side-nav .count {
+  background: rgba(255, 255, 255, .10) !important;
+  color: var(--sidebar-muted) !important;
+  border: 0 !important;
+  font-size: 10.5px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 6px;
+}
+.side-head, .side-section > h3, .side-section .side-title {
+  color: var(--sidebar-muted);
+  font-size: 11px;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.sidebar-foot { border-top: 1px solid rgba(255, 255, 255, .07); }
+.kb-pulse {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 10px;
+}
+.kb-pulse-row { color: var(--sidebar-fg); font-size: 12.5px; }
+.kb-pulse-sub { color: var(--sidebar-muted); font-size: 11px; line-height: 1.55; }
+
+/* ---------- 顶栏：更轻、更明确 ---------- */
+.topbar {
+  background: rgba(255, 255, 255, .86);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  min-height: 58px;
+  padding-inline: 26px;
+}
+html[data-theme="dark"] .topbar { background: rgba(20, 32, 51, .88); }
+.crumb { color: var(--text); font-size: 15px; font-weight: 600; letter-spacing: -.1px; }
+.crumb small, .crumb .sub { color: var(--text-3); font-weight: 400; font-size: 12px; margin-left: 8px; }
+.top-actions { gap: 8px; }
+.top-actions button, .top-actions .btn, .top-actions .icon-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  border-radius: 9px;
+  font-size: 12.5px;
+  transition: .18s ease;
+}
+.top-actions button:hover, .top-actions .icon-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--brand);
+  background: var(--accent-soft);
+}
+
+/* ---------- 欢迎区：拉开层级，减少堆叠 ---------- */
+.welcome { max-width: 760px; padding: 26px 0 18px; }
+.welcome-eyebrow {
+  background: var(--accent-soft);
+  color: var(--brand);
+  border: 1px solid color-mix(in srgb, var(--brand) 18%, transparent);
+  font-size: 11px;
+  letter-spacing: .7px;
+  font-weight: 600;
+  padding: 5px 12px;
+}
+.welcome h2 {
+  font-size: clamp(25px, 3vw, 31px);
+  line-height: 1.35;
+  font-weight: 700;
+  letter-spacing: -.5px;
+  color: var(--brand-ink);
+  margin: 18px 0 8px;
+}
+.welcome h2 em { color: var(--brand); }
+.welcome > p {
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.75;
+  max-width: 620px;
+  margin-bottom: 22px;
+}
+
+/* 能力卡：去掉图标色块等装饰噪声，改成干净的等高三卡 */
+.cap-grid { gap: 12px; margin-bottom: 26px; }
+.cap-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-1);
+  padding: 16px 18px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.cap-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+  border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
+}
+.cap-ico {
+  background: var(--accent-soft);
+  color: var(--brand);
+  border-radius: 9px;
+  flex: none;
+}
+.cap-card b { font-size: 13.5px; color: var(--brand-ink); font-weight: 650; margin-bottom: 4px; }
+.cap-card span { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+
+.welcome-label {
+  font-size: 11.5px;
+  color: var(--text-3);
+  letter-spacing: .8px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.welcome-chips { gap: 8px; }
+/* 首屏示例问题从 6 个收敛到 4 个，减少视觉堆叠 */
+.welcome-chip:nth-child(n+5) { display: none; }
+.welcome-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  border-radius: 999px;
+  font-size: 12.8px;
+  padding: 9px 14px;
+  box-shadow: none;
+}
+.welcome-chip:hover {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  transform: none;
+  box-shadow: var(--shadow-2);
+}
+.welcome-chip .arrow { color: var(--text-3); }
+.welcome-chip:hover .arrow { color: rgba(255, 255, 255, .8); }
+.welcome-fine {
+  margin-top: 20px;
+  padding: 11px 14px;
+  background: var(--surface-2);
+  border-left: 3px solid var(--border-strong);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  color: var(--text-3);
+  font-size: 11.5px;
+  line-height: 1.7;
+}
+.welcome-fine b { color: var(--text-2); font-weight: 600; }
+
+/* ---------- 输入区：唯一强焦点 ---------- */
+.composer-wrap {
+  background: linear-gradient(to top, var(--bg) 72%, transparent);
+  padding: 14px 26px 18px;
+}
+.quick-bar { margin-bottom: 10px; gap: 8px; }
+.quick-tabs { gap: 4px; }
+.quick-tabs button, .quick-tab {
+  font-size: 11.5px;
+  color: var(--text-3);
+  border-radius: 7px;
+  padding: 4px 9px;
+  background: transparent;
+  border: 0;
+}
+.quick-tabs button.active, .quick-tab.active {
+  background: var(--accent-soft);
+  color: var(--brand);
+  font-weight: 600;
+}
+.example-chip, .quick-chips .example-chip {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  font-size: 11.5px;
+  padding: 5px 11px;
+  box-shadow: none;
+}
+.example-chip:hover { background: var(--brand); color: #fff; border-color: var(--brand); transform: none; }
+
+.composer {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-2);
+  padding: 14px 16px 10px;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.composer:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 12%, transparent), var(--shadow-2);
+}
+#chat-input, .composer textarea {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  resize: none;
+}
+#chat-input::placeholder { color: var(--text-3); }
+.composer-toolbar {
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+  padding-top: 9px;
+  gap: 8px;
+}
+.mode-seg {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+}
+.mode-seg button {
+  font-size: 11.8px;
+  color: var(--text-3);
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 5px 11px;
+}
+.mode-seg button.active {
+  background: var(--surface);
+  color: var(--brand);
+  font-weight: 600;
+  box-shadow: var(--shadow-1);
+}
+.mode-hint, .composer-hint, .composer .hint {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.model-field, .composer-right .model-field {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.model-price { color: var(--text-3); font-size: 10.5px; }
+
+/* 主按钮：唯一的高饱和色块 */
+.composer .send-btn, .composer #send-btn, .composer button.send,
+.composer-right .primary, .composer .btn-primary {
+  background: var(--brand);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 18px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand) 28%, transparent);
+  transition: .18s ease;
+}
+.composer .send-btn:hover, .composer #send-btn:hover, .composer .btn-primary:hover {
+  background: var(--brand-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--brand) 36%, transparent);
+}
+.composer .icon-btn, .composer .ghost {
+  color: var(--text-3);
+  background: transparent;
+  border: 0;
+  font-size: 11.5px;
+}
+.composer .icon-btn:hover { color: var(--brand); }
+
+/* ---------- 回答区：更清晰的卡片与引用 ---------- */
+.chat-scroll { padding: 8px 26px 20px; }
+.msg, .message { max-width: 780px; margin-inline: auto; }
+.msg-user .bubble, .message.user .bubble {
+  background: var(--brand);
+  color: #fff;
+  border-radius: 14px 14px 4px 14px;
+}
+.msg-ai .bubble, .message.assistant .bubble, .answer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+}
+.section-title, .answer-card h3, .bubble h3 {
+  color: var(--brand-ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+.ref-chip, .ref-pill {
+  background: var(--accent-soft);
+  color: var(--brand);
+  border: 1px solid color-mix(in srgb, var(--brand) 16%, transparent);
+  border-radius: 6px;
+  font-size: 11px;
+}
+.risk-high { color: var(--risk-high); }
+.risk-mid  { color: var(--risk-mid); }
+.risk-low  { color: var(--risk-low); }
+
+/* ---------- 通用：弱化装饰、统一节奏 ---------- */
+.card, .panel, .about-card, .bc-card, .inc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-1);
+}
+.filter-chip, .chip-toggle {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.filter-chip.active, .chip-toggle[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--brand) 32%, var(--border));
+  color: var(--brand);
+  font-weight: 600;
+}
+.disclaimer-card {
+  background: var(--surface-2) !important;
+  border-left: 3px solid var(--border-strong) !important;
+}
+
+/* 减少动画噪声：只保留必要的位移 */
+.cap-card, .welcome-chip, .example-chip, .top-actions button { transition-duration: .16s; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* 窄屏：侧栏收起时保证输入区不拥挤 */
+@media (max-width: 760px) {
+  .composer-wrap { padding: 12px 14px 16px; }
+  .chat-scroll { padding: 8px 14px 16px; }
+  .topbar { padding-inline: 14px; }
+  .welcome { padding: 18px 0 12px; }
+  .cap-grid { grid-template-columns: 1fr !important; }
+  .welcome-chip:nth-child(n+3) { display: none; }
+}

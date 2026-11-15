@@ -53,9 +53,12 @@ def collect(entry):
             continue
         # 「截至」是「截至某日的情况」而非到期日，等长替换后再匹配，避免误报
         vt = v.replace("截至", "□□")
-        # 时效性字段：任何 YYYY-MM-DD 都算候选
+        # 时效性字段：只认「到期语义」的日期。
+        # 旧实现把该字段里任何 YYYY-MM-DD 都算候选，导致「2008-01-01 施行」
+        # 「截至 2026-11-07 复核」被误判为已过期 6893 天（86 条假警报）。
+        # 施行 / 生效 / 公布 / 印发 属于「起始日」，不是到期日，必须排除。
         if any(h in k for h in STATUS_FIELD_HINT):
-            for m in re.finditer(DATE, vt):
+            for m in PAT.finditer(vt):
                 d = norm(*m.groups())
                 if d and (d, "时效性") not in seen:
                     seen.add((d, "时效性"))
@@ -65,6 +68,16 @@ def collect(entry):
             g = m.groups()
             d = norm(g[0], g[1], g[2])
             if d and (d, k) not in seen:
+                # 只排除「施行/生效」紧邻日期前的情形（如「2008-01-01 施行」被
+                # CUE 中的「至」误捕）。「自 X 至 Y」的区间仍保留 Y 为到期日。
+                tail = vt[m.end():m.end() + 6]
+                if tail.lstrip().startswith(("施行", "生效", "实施", "执行之日起")):
+                    continue
+                # 排除「重大订正」说明里引用的旧日期、以及「可延至」等历史过渡节点：
+                # 这些是叙述性回溯，不是当前待办的政策到期日。
+                ctx = vt[max(0, m.start() - 40):m.start()]
+                if any(s in ctx for s in ("旧库", "已过时", "已接续", "后续是否延续", "可延至", "过渡期")):
+                    continue
                 seen.add((d, k))
                 out.append((d, snippet(v, m.start(), m.end()), k))
     # 兜底：正文里显著的「YYYY-12-31」且带 2027/2026 年份

@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/ux.css">
 <link rel="stylesheet" href="/polish.css">
+<link rel="stylesheet" href="/refine.css">
 <script>
 /* 主题引导：在 CSS 加载前应用，避免刷新闪白 */
 (function () {
@@ -380,7 +381,7 @@
 </div>
 
 <script src="/cloud-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js" onerror="/* 离线可用：云端模型为可选增强，加载失败时自动降级为本地检索 */"></script>
 <script src="/copy.js"></script>
 <script src="/app.js"></script>
 <script src="/ux.js"></script>

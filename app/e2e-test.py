@@ -56,7 +56,8 @@ async def main():
 
         check("无致命错误遮罩", await page.is_hidden("#fatal"))
         check("欢迎空状态渲染", await page.locator(".welcome").count() == 1)
-        check("热门示例 6 条", await page.locator(".welcome-chip").count() == 6)
+        # 2026-11-15 UI 重构：首屏示例问题由 6 条收敛为 4 条，降低信息密度
+        check("热门示例 4 条", await page.locator(".welcome-chip").count() == 4)
         check("示例分组 8 组（含概念辨析）", await page.locator(".quick-tab").count() == 8)
         check("法规库侧栏统计", "472 条法规" in (await page.text_content("#kb-summary")))
         check("关于页角色卡 6 个", await page.locator("#about-roles .role-card").count() == 6)
